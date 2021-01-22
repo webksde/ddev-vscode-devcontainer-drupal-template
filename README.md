@@ -11,8 +11,8 @@ beautifully packaged for easy project and environment switching.
 
 ## Who is this for?
 For every developer who loves VSCode, Drupal and DDEV / Docker and wants to have an easy to use and switch development environment without headache!
-*(Disclaimer: But it's only what we like, doesn't have to be everyones darling ;))*
 
+*(Disclaimer: But it's only what we like, doesn't have to be everyones darling ;))*
 
 
 ## Future Integrations
