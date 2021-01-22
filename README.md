@@ -1,7 +1,7 @@
 # ddev-vscode-devcontainer-drupal9-template
-*Drupal 9 DDEV based development container for Visual Studio Code with Remote - Containers.*
+*(Drupal 9 CMS)[https://www.drupal.org] (DDEV)[https://www.ddev.com/] based development container for Visual Studio Code with Remote - Containers.*
 
-Provides a plug and play DDEV (Docker) based development environment for VSCode IDE with predefined webks GmbH best practice
+Provides a plug and play (DDEV)[https://www.ddev.com/] (Docker) based development environment for VSCode IDE with predefined webks GmbH best practice
 - Extensions
 - Settings
 - Launch configuration
