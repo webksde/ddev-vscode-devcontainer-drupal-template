@@ -9,6 +9,7 @@ beautifully packaged for easy project and environment switching.
 
 ## Who is this for?
 For every developer who loves VSCode, Drupal and DDEV / Docker and wants to have an easy to use and switch development environment without headache!
+(Disclaimer: But it's only what we like, doesn't have to be everyones darling ;))
 
 **TODO - This is work in progress to provide best-practice from our previous setups**
 
@@ -34,28 +35,38 @@ For every developer who loves VSCode, Drupal and DDEV / Docker and wants to have
  - devel_php  
  - devel_debug_log  
  - devel
+ - backup_migrate
  - examples
  - stage_file_proxy 
  
 ### Additional Settings and Files
  - init.sh and custom_init.sh
  - ddev.yml and custom_ddev.yml
- 
+ - launch.json
+ - tasks.json ??
 
 ## Documentation
 ### Installation
+TODO
 
 #### VSCode integration
+TODO
 
 ### Usage
 #### Run vanilla Drupal project
+TODO
 
 #### Import and run existing Drupal project
+TODO
 
 #### Coding (linting, auto-completition, formatting)
+TODO
 
 #### Code sniffing & detecting mess (phpcs / php-cs-fixer / phpmd)
+TODO
 
 #### Debugging (XDebug)
+TODO
 
 #### Profiling (xhprof)
+TODO
