@@ -1,3 +1,5 @@
+**TODO - This is work in progress to provide best-practice from our previous setups**!
+
 # ddev-vscode-devcontainer-drupal9-template
 *[Drupal 9 CMS](https://www.drupal.org) [DDEV](https://www.ddev.com/) based development container for Visual Studio Code with Remote - Containers.*
 
@@ -9,9 +11,9 @@ beautifully packaged for easy project and environment switching.
 
 ## Who is this for?
 For every developer who loves VSCode, Drupal and DDEV / Docker and wants to have an easy to use and switch development environment without headache!
-(Disclaimer: But it's only what we like, doesn't have to be everyones darling ;))
+*(Disclaimer: But it's only what we like, doesn't have to be everyones darling ;))*
 
-**TODO - This is work in progress to provide best-practice from our previous setups**
+
 
 ## Future Integrations
 
