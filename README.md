@@ -29,8 +29,8 @@ For every developer who loves VSCode, Drupal and DDEV / Docker and wants to have
  
 ### VS-Code Support
  - Dev-Container Support
- - Preexisting "Best Practice" Extensions and Settings
- - XDebug, PHPCS, PHP-CS-Fixer, PHP-Unit 
+ - "Best Practice" Extensions and Settings
+ - XDebug, PHPCS, PHP-CS-Fixer, PHP-Unit, ...
 
 ### Drupal "Best Practice" development modules
  - admin_toolbar
