@@ -1,74 +1,70 @@
-**TODO - This is work in progress to provide best-practice from our previous setups**!
-
 # ddev-vscode-devcontainer-drupal9-template
-*[Drupal 9 CMS](https://www.drupal.org) [DDEV](https://www.ddev.com/) based development container for Visual Studio Code with Remote - Containers.*
+*Drupal 9 DDEV based development container for Visual Studio Code with Remote - Containers.*
 
-Provides a plug and play [DDEV](https://www.ddev.com/) (Docker) based Drupal 9 development environment for VSCode IDE with predefined webks GmbH best practice
+Provides a plug and play DDEV (Docker) based development environment for VSCode IDE with predefined webks GmbH best practice
 - Extensions
 - Settings
-- Launch configuration
+- Launch configuration (Run & Debug)
 beautifully packaged for easy project and environment switching.
 
-## Who is this for?
-For every developer who loves VSCode, Drupal and DDEV / Docker and wants to have an easy to use and switch development environment without headache!
+**TODO - This is work in progress to provide best-practice from our previous setups**
 
-*(Disclaimer: But it's only what we like, doesn't have to be everyones darling ;))*
-
+## Typical Use-Cases:
+- Create a simple Drupal 9 Sandbox for offline / local
+ - Contrib Module / Theme evaluation
+ - Contrib Module merge request / patch creation (Git clone / commit / push)
+ - Custom Module / Theme development & Testing
+ - Full project creation
+- Fetch an online project copy for
+ - Local development / testing / evaluation
 
 ## Future Integrations
-
-### Project Services and Configurations:
- - Drupal 9 up and running (or import from existing)
+**Project Services and Configurations:**
+ - Drupal 9 CMS Support & Template
  - Apache Webserver
  - PHP-Support
  - Maria DB
- - Composer
  - Drush
  - Mailhog
  - Phpmyadmin
+ - Composer
  
-### VS-Code Support
+**VS-Code Support**
  - Dev-Container Support
- - "Best Practice" Extensions and Settings
- - XDebug, PHPCS, PHP-CS-Fixer, PHP-Unit, ...
+ - Preexisting "Best Practice" Extensions and Settings
+ - XDebug, PHPCS, PHP-CS-Fixer, PHP-Unit 
 
-### Drupal "Best Practice" development modules
- - admin_toolbar
+**Drupal "Best Practice" Template**
+ - stage_file_proxy  
+ - examples  
  - devel_php  
  - devel_debug_log  
- - devel
- - backup_migrate
- - examples
- - stage_file_proxy 
+ - devel  
+ - admin_toolbar
  
-### Additional Settings and Files
+**Additional Settings and Files**
  - init.sh and custom_init.sh
  - ddev.yml and custom_ddev.yml
- - launch.json
- - tasks.json ??
+ 
 
 ## Documentation
-### Installation
-TODO
+### Functionality
+#### 1. Create an "empty" best-practice working Drupal 9 CMS Development instance
+- Sets up best-practice development Server
+- Sets up ready to log in latest Drupal 9 Copy
+- Installs best-practice Drupal 9 Modules & Configuration
 
-#### VSCode integration
-TODO
+#### 2a. Fetch a 1:1 copy of an existing Drupal 9 CMS Project
+- Sets up best-practice development Server
+- Fetches existing database
+- Fetches existing file structure
 
-### Usage
-#### Run vanilla Drupal project
-TODO
+#### 2b. Fetch a development copy of an existing Drupal 9 CMS Project with additional development and debugging tools / modules
+(2a.) PLUS
+- Optionally installs development modules: TODO
 
-#### Import and run existing Drupal project
-TODO
-
-#### Coding (linting, auto-completition, formatting)
-TODO
-
-#### Code sniffing & detecting mess (phpcs / php-cs-fixer / phpmd)
-TODO
-
-#### Debugging (XDebug)
-TODO
-
-#### Profiling (xhprof)
-TODO
+#### 3. Extract and push database & configuration changes back to the origin
+2 a / b PLUS:
+- Log database changes to put into update hook
+- Log configuration changes to export
+- Push to origin
