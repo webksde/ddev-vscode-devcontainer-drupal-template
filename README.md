@@ -34,7 +34,7 @@ beautifully packaged for easy project and environment switching.
  - Preexisting "Best Practice" Extensions and Settings
  - XDebug, PHPCS, PHP-CS-Fixer, PHP-Unit 
 
-**Drupal "Best Practice" Template**
+**Drupal "Best Practice" Development Template**
  - stage_file_proxy  
  - examples  
  - devel_php  
