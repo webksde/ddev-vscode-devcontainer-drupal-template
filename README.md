@@ -28,6 +28,7 @@ beautifully packaged for easy project and environment switching.
  - Mailhog
  - Phpmyadmin
  - Composer
+ - Optional Non-Drupal Branch with Basic PHP Libraries (Xdebug etc.)
  
 **VS-Code Support**
  - Dev-Container Support
