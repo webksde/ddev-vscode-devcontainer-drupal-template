@@ -1,0 +1,40 @@
+#
+# As part of our demo, we implement a simple "file system" that lets us read and
+# write files out of the session object. This isn't very practical, but it's a
+# simple way to demonstrate what you can do with PHP's stream wrappers.
+#
+# To get a stream wrapper to work to define a stream wrapper class, we need to
+# register that with the system.  We can either do this manually by calling up
+# the 'stream_wrapper.manager' service, but the better way to do this is to have
+# the system autoload it by tagging the service, as we do here.
+#
+# We also want to securely serve up our fake session files. We'd like to use the
+# same nice file paths that Core uses for private files.  Since Drupal 8 no
+# longer allows us to have "menu tails" (i.e., extra/parts/of/the/path after the
+# default part of the path), we need to get some router superpowers. Our route
+# (in stream_wrapper_example.routing.yml) will "gather up" the path with with a
+# regular expression.  But we need to do a little more that that.  We also need
+# to convince the routing system to see our weird, extra long route route. We do
+# that using a "Path Processor". We register the path_process.sessions service
+# with special tags to get it loaded for when the Drupal's routing system
+# decides which path should get used.
+#
+# @see src/StreamWrapper/SessionStreamWrapper.php
+# @see src/PathProcessor/PathProcessorSessions.php
+# @see stream_wrapper_example.routing.yml
+#
+services:
+  stream_wrapper_example.stream_wrapper:
+    class: Drupal\stream_wrapper_example\StreamWrapper\SessionStreamWrapper
+    tags:
+      - { name: stream_wrapper, scheme: session }
+    arguments: ['@stream_wrapper_example.session_helper']
+
+  stream_wrapper_example.session_helper:
+    class: Drupal\stream_wrapper_example\SessionHelper
+    arguments: ['@request_stack']
+
+  path_processor.sessions:
+    class: Drupal\stream_wrapper_example\PathProcessor\PathProcessorSessions
+    tags:
+      - { name: path_processor_inbound, priority: 200 }

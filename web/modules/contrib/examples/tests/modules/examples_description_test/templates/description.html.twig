@@ -1,0 +1,25 @@
+{*
+
+Description template test example.
+
+This is a test template that demonstrates how an Examples module can
+implement its description controller by using a Twig template.
+
+*}
+
+<!-
+Template loaded!
+-->
+
+{% trans %}
+
+<h2>Sample Description</h2>
+
+<p>Here is a sample description.  It embeds some Twig variables.</p>
+
+<ol>
+    <li>Used in module: {{ module }}.</li>
+    <li>Our slogan for today: {{slogan}}.</li>
+</ol>
+
+{% endtrans %}

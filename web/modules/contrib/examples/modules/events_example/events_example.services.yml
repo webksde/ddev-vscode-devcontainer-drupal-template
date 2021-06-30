@@ -1,0 +1,16 @@
+# Subscribing to an event requires you to create a new service tagged with the
+# 'event_subscriber' tag. This tells the service container, and by proxy the
+# event dispatcher service, that the class registered here can be queried to get
+# a list of events that it would like to be notified about.
+#
+# For more on defining and tagging services see
+# https://api.drupal.org/api/drupal/core%21core.api.php/group/container/8.2.x
+services:
+  # Give your service a unique name, convention is to prefix service names with
+  # the name of the module that implements them.
+  events_example_subscriber:
+    # Point to the class that will contain your implementation of
+    # \Symfony\Component\EventDispatcher\EventSubscriberInterface
+    class: Drupal\events_example\EventSubscriber\EventsExampleSubscriber
+    tags:
+      - {name: event_subscriber}

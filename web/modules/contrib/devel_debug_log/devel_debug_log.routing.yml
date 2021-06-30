@@ -1,0 +1,7 @@
+devel_debug_log.list:
+  path: 'admin/reports/debug'
+  defaults:
+    _controller: '\Drupal\devel_debug_log\Controller\DevelDebugLogController::listLogs'
+    _title: 'Debug messages'
+  requirements:
+    _permission: 'access debug messages'

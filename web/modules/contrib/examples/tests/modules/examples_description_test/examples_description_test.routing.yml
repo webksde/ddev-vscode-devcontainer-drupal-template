@@ -1,0 +1,6 @@
+example_description_test.description:
+  path: '/examples/tests/example-description'
+  defaults:
+    _controller: '\Drupal\examples_description_test\Controller\SampleExampleController::description'
+  requirements:
+    _permission: 'access content'

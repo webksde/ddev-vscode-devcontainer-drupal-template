@@ -1,0 +1,22 @@
+# Imports a new node type that we use for testing REST. The content that we
+# create, read, update and delete will be of this type.
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - rest_example
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: 'REST Example Test'
+type: rest_example_test
+description: 'This content is created through the REST API'
+help: ''
+new_revision: false
+preview_mode: 0
+display_submitted: true

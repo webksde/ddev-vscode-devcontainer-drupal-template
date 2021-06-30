@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * This is an example outlining how a module can use the DBTNG database API.
+ *
+ * @todo Demonstrate more things.
+ *   https://www.drupal.org/project/examples/issues/718672
+ */
+
+/**
+ * @defgroup dbtng_example Example: Database (DBTNG)
+ * @ingroup examples
+ * @{
+ * Database examples, including DBTNG.
+ *
+ * 'DBTNG' means 'Database: The Next Generation.' Yes, Drupallers are nerds.
+ *
+ * The interesting database queries for this example module are located in the
+ * \Drupal\dbtng_example\DbtngExampleRepository class.
+ *
+ * General documentation is available at @link
+ * https://www.drupal.org/docs/8/api/database-api Database API @endlink.
+ *
+ * @see database
+ * @see \Drupal\dbtng_example\DbtngExampleRepository
+ * @see \Drupal\Core\Database\Connection:delete()
+ * @see \Drupal\Core\Database\Connection:insert()
+ * @see \Drupal\Core\Database\Connection:select()
+ * @see \Drupal\Core\Database\Connection:update()
+ */
+
+/**
+ * @} End of "defgroup dbtng_example".
+ */

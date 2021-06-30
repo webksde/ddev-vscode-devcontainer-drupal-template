@@ -1,0 +1,4 @@
+access debug messages:
+  title: 'Access debug messages'
+  description: 'Access the page where the debug messages are displayed.'
+  restrict access: TRUE

@@ -1,0 +1,4 @@
+#Define the administer permission for the robot config entity.
+'administer robots':
+  title: 'Administer robots'
+  description: Create and edit robots.

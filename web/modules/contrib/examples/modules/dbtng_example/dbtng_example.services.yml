@@ -1,0 +1,8 @@
+# This declares the plugin manager to the service container. For background
+# information on the service container, see https://www.drupal.org/node/2133171.
+# Changes here require that the cache be cleared in order to have Drupal notice
+# them.
+services:
+  dbtng_example.repository:
+    class: Drupal\dbtng_example\DbtngExampleRepository
+    arguments: ['@database', '@string_translation', '@messenger']

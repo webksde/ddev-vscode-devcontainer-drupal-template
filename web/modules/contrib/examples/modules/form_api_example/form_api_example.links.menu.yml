@@ -1,0 +1,78 @@
+# Define default links for this module.
+form_api_example.description:
+  title: Form API Examples
+  description: Form examples using Drupal Form API.
+  route_name: form_api_example.description
+  expanded: TRUE
+
+form_api_example.simple_form:
+  title: Simple form
+  description: A simple form example with submit processing.
+  route_name: form_api_example.simple_form
+  parent: form_api_example.description
+  weight: -9
+
+form_api_example.multistep_form:
+  title: Multistep form
+  description: Multistep form example with submit processing.
+  route_name: form_api_example.multistep_form
+  parent: form_api_example.description
+  weight: -8
+
+form_api_example.input_demo:
+  title: Common input elements
+  description: A form to demonstrate input elements.
+  route_name: form_api_example.input_demo
+  parent: form_api_example.description
+  weight: -7
+
+form_api_example.build_demo:
+  title: Build form demo
+  description: Demonstrates the order of firing of from controller methods.
+  route_name: form_api_example.build_demo
+  parent: form_api_example.description
+  weight: -6
+
+form_api_example.container_demo:
+  title: Container elements
+  description: A form to demonstrate use of containers.
+  route_name: form_api_example.container_demo
+  parent: form_api_example.description
+  weight: -5
+
+form_api_example.state_demo:
+  title: Form state binding
+  description: A form to demonstrate binding of form state.
+  route_name: form_api_example.state_demo
+  parent: form_api_example.description
+  weight: -4
+
+form_api_example.vertical_tabs_demo:
+  title: Vertical tab elements
+  description: A form to demonstrate use of vertical tabs.
+  route_name: form_api_example.vertical_tabs_demo
+  parent: form_api_example.description
+  weight: -3
+
+form_api_example.ajax_color_demo:
+  title: Ajax form
+  description: AJAX form demo.
+  route_name: form_api_example.ajax_color_demo
+  parent: form_api_example.description
+  weight: -2
+
+form_api_example.ajax_addmore:
+  title: Add-more button
+  description: Form with 'add more' and 'remove' buttons.
+  route_name: form_api_example.ajax_addmore
+  parent: form_api_example.description
+  weight: -1
+
+form_api_example.modal_form:
+  title: Modal form
+  description: Demonstrates using Drupal's modal form.
+  route_name: form_api_example.modal_form
+  route_parameters:
+    nojs: nojs
+  parent: form_api_example.description
+  weight: 0

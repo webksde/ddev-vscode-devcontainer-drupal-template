@@ -1,0 +1,43 @@
+{#
+
+Description text for the Hooks Example.
+
+#}
+
+{% set help_hooks_example = path('help.page', {'name': 'hooks_example'}) %}
+{% set node_add_page = path('node.add_page') %}
+{% set user_login = path('user.login') %}
+
+{% trans %}
+
+<h2>Implementing, defining, and invoking hooks</h2>
+
+<p>The code in this module implements a couple of new features which you can see
+in action.</p>
+
+<p><strong>Implements <code>hook_help()</code>:</strong> In
+<code>hooks_example.module</code> you'll find an implementation of the
+<code>hook hook_help()</code> which is used to add contents to this module's
+help overview. Visible at <a href={{ help_hooks_example }}>
+<code>admin/help/hooks_example</code></a>.</p>
+
+<p><strong>View counts:</strong> <code>hooks_example_node_view()</code> is an
+implementation of the hook <code>hook_ENTITY_TYPE_view()</code> that adds a
+basic page view counter. You can see this in action by navigating to any node on
+the site and looking for the the text telling you how many times you've viewed
+that page.</p>
+
+<p>Don't have any nodes? <a href={{ node_add_page }}>Add some</a> and look at
+their counters.</p>
+
+<p><strong>Implements <code>hook_form_alter()</code>:</strong> In
+<code>hooks_example.module</code> you'll find an implementation of
+<code>hook_form_alter()</code> which demonstrates the use of one of the most
+commonly used alter hooks. You can view the altered form at
+<a href={{ user_login }}><code>user/login</code></a>.</p>
+
+<p>To learn more about how to implement an existing hook, or how to define and
+invoke a new hook start by reading the <code>@docblock</code> comments in
+<code>hooks_example.module</code>.</p>
+
+{% endtrans %}

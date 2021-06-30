@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * This is a demonstration of how to the REST service in Drupal works.
+ */
+
+/**
+ * @defgroup rest_example Example: REST
+ * @ingroup examples
+ * @{
+ * This module will give you a brief demonstration of how the REST service
+ * works.
+ *
+ * This example uses nodes, because they works out of the box. But any entity
+ * could be used.
+ *
+ * To complete a demo, we'll need a server site, containing the nodes, and a
+ * client, that sends requests to the server. The same site can very well act
+ * as both client and server.
+ *
+ * First thing you want to do, is visit 'examples/rest-client-settings' and
+ * setup what website you want to interact with. To avoid complications, and
+ * minimize the chance of failure, I'll sugest that you start using the same
+ * site as both server and client, using the user 1 credentials. And when you
+ * have gotten the feel of how things works, try to use two seperate sites, and
+ * maybe another user. Please note that you need to install this module on both
+ * client and server site.
+ *
+ * Next thing you want is to go to 'examples/rest-client-actions'. This page
+ * contains a table where all the remote nodes, of the type rest_example_test,
+ * will be displayed. At first there might not be any.
+ *
+ * From the same page you can create, edit and delete nodes on the remote site.
+ *
+ * The server site actually only uses the View (rest_serice) and the node type
+ * (rest_example_test), imported upon installatin of this module. The rest of
+ * the functionallity comes from Drupal Core modules, like 'rest', 'basic_auth'
+ * and 'hal'.
+ *
+ * The client part of the site uses the following classes:
+ *
+ *  - @see
+ *    \Drupal\rest_example\Controller\RestExampleClientController::indexAction()
+ *    Builds the list of nodes on the remote server.
+ *
+ *  - @see \Drupal\rest_example\Form\RestExampleClientSettings
+ *    A form that can creates/edits nodes.
+ *
+ *  - @see \Drupal\rest_example\Form\RestExampleClientSettings
+ *    A form used to confirm the deletion of the node.
+ *
+ *  - @see \Drupal\rest_example\Form\RestExampleClientSettings
+ *    A form wher you setup what site you want to interact with.
+ *
+ *  - @see \Drupal\rest_example\RestExampleClientCalls
+ *    This class handles all the calls to the remote site, and returns the
+ *    response back, to be processed by the requesting method.
+ */
+
+/**
+ * @} End of "defgroup rest_example".
+ */

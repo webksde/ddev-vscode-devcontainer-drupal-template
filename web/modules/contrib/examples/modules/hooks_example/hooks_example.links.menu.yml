@@ -1,0 +1,5 @@
+hooks_example.description:
+  title: Hooks Example
+  description: Hook examples using Drupal hooks.
+  route_name: hooks_example.description
+  expanded: TRUE

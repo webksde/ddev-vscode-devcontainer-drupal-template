@@ -1,0 +1,93 @@
+ajax_example.description:
+  path: '/examples/ajax-example'
+  defaults:
+    _controller: '\Drupal\ajax_example\Controller\AjaxExampleController::description'
+    _title: 'AJAX Example'
+  requirements:
+    _permission: 'access content'
+
+ajax_example.simplest:
+  path: '/examples/ajax-example/simplest'
+  defaults:
+    _form: '\Drupal\ajax_example\Form\Simplest'
+    _title: 'Simplest AJAX example'
+  requirements:
+    _permission: 'access content'
+
+ajax_example.autotextfields:
+  path: '/examples/ajax-example/autotextfields'
+  defaults:
+    _form: '\Drupal\ajax_example\Form\Autotextfields'
+    _title: 'Generate textfields'
+  requirements:
+    _permission: 'access content'
+
+ajax_example.submit_driven_ajax:
+  path: '/examples/ajax-example/submit-driven-ajax'
+  defaults:
+    _form: '\Drupal\ajax_example\Form\SubmitDriven'
+    _title: 'Submit-driven AJAX'
+  requirements:
+    _permission: 'access content'
+
+ajax_example.dependent_dropdown:
+  path: '/examples/ajax-example/dependent-dropdown/{nojs}'
+  defaults:
+    _form: '\Drupal\ajax_example\Form\DependentDropdown'
+    _title: 'Dependent dropdown'
+    nojs: ajax
+  requirements:
+    _permission: 'access content'
+
+ajax_example.dynamic_form_sections:
+  path: '/examples/ajax-example/dynamic-form-sections/{nojs}'
+  defaults:
+    _form: '\Drupal\ajax_example\Form\DynamicFormSections'
+    _title: 'Dynamic form sections'
+    nojs: 'ajax'
+  requirements:
+    _permission: 'access content'
+
+ajax_example.wizard:
+  path: '/examples/ajax-example/wizard'
+  defaults:
+    _form: '\Drupal\ajax_example\Form\Wizard'
+    _title: 'Wizard with graceful degradation'
+  requirements:
+    _permission: 'access content'
+
+ajax_example.wizardnojs:
+  path: '/examples/ajax-example/wizard-nojs/{no_js_use}'
+  defaults:
+    _form: '\Drupal\ajax_example\Form\Wizard'
+    _title: 'Wizard with graceful degradation, w/JS turned off'
+    no_js_use: TRUE
+  requirements:
+    _permission: 'access content'
+
+ajax_example.ajax_link_render:
+  path: '/examples/ajax-example/ajax-link-renderable'
+  defaults:
+    _controller: '\Drupal\ajax_example\Controller\AjaxExampleController::renderLinkRenderableArray'
+    _title: 'AJAX link from a render array'
+  requirements:
+    _permission: 'access content'
+
+# This route is for an AJAX callback. It is used by the AJAX system on
+# ajax_example.ajax_link_render. It has a {nojs} parameter, which gives us
+# a way to know whether the request is an AJAX request or is from some other
+# source.
+ajax_example.ajax_link_callback:
+  path: '/examples/ajax-example/ajax-link-callback/{nojs}'
+  defaults:
+    _controller: '\Drupal\ajax_example\Controller\AjaxExampleController::ajaxLinkCallback'
+  requirements:
+    _permission: 'access content'
+
+ajax_example.autocomplete_user:
+  path: '/examples/ajax_example/user_autocomplete'
+  defaults:
+    _form: '\Drupal\ajax_example\Form\EntityAutocomplete'
+    _title: 'Autocomplete users with entity_autocomplete'
+  requirements:
+    _permission: 'access content'

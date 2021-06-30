@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * Pager Example.
+ */
+
+/**
+ * @defgroup pager_example Example: Pager
+ * @ingroup examples
+ * @{
+ * Output nodes in the table with pagination.
+ *
+ * @see \Drupal\Core\Database\Query\PagerSelectExtender
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function pager_example_theme() {
+  // We use a template file to allow for translation of blocks of content.
+  // Therefore we need to add this content at the theming layer.
+  return [
+    'pager_example_description' => [
+      'template' => 'description',
+      'variables' => [],
+    ],
+  ];
+}
+
+/**
+ * @} End of "defgroup pager_example".
+ */

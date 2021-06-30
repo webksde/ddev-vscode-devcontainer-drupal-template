@@ -1,0 +1,197 @@
+<?php
+
+/**
+ * @file
+ * An example field using the Field Types API.
+ */
+
+/**
+ * @defgroup field_permission_example Example: Field Permissions
+ * @ingroup examples
+ * @{
+ * Example using permissions on a Field API field.
+ *
+ * This example is a relatively simple text field you can attach to any
+ * fieldable entity.
+ *
+ * In this module we demonstrate how to limit access to a field. Drupal's Field
+ * API gives you two operations to permit or restrict: view and edit. So you can
+ * then decide who gets to see fields, who can edit them, and who can manage
+ * them.
+ *
+ * Our field is called field_permission_example_fieldnote. It has a simple
+ * default widget of a text area, and a default formatter that applies a CSS
+ * style to make it look like a sticky note.
+ *
+ * In addition to demonstrating how to set up permissions-based access to a
+ * field, this module also demonstrates the absolute minimum required to
+ * implement a field, since it doesn't have any field settings.
+ *
+ * If you wish to use this code as skeleton code for a field without
+ * permissions, you can simply omit field_permission_example.permissions.yml and
+ * remove field_permission_example_entity_field_access().  In addition, our call
+ * to field_permission_example_theme() is used to set up our description page
+ * for the example, which you don't  need for a working field.
+ *
+ * How does it work?
+ *
+ * You can install this module and go to path /examples/field_permission_example
+ * for an introduction on how to use this field.
+ *
+ * OK, how does the code work?
+ *
+ * As with any permission system, we create a MODULE_NAME.permissions.yml file
+ * in order to define a few permissions. In our case, users will want to either
+ * view or edit fieldnote fields. And, similar to the way node permissions work,
+ * we'll also include a context of either their own content or any content. So
+ * that gives us 4 permissions which administrators can assign to various roles.
+ * See field_permission_example.permissions.yml for the list.
+ *
+ * With our permissions defined in the YAML file, we can now handle requests for
+ * access. Those come in through hook_entity_field_access(), which we've
+ * implemented as field_permission_example_entity_field_access(). This function
+ * determines whether the user has the ability to view or edit the field in
+ * question by calling $account->hasPermission(). We also give special edit
+ * access to users with the 'bypass node access', 'administer content types'
+ * permissions, defined by the node module, and the 'administer the fieldnote
+ * field' we define for the module.
+ *
+ * One tricky part is that our field won't always be attached to nodes. It could
+ * be attached to any type of entity. Fortunately, most content entities
+ * implement EntityOwnerInterface, which gives us a way to check this. An
+ * exception to this is the User entity; here, we just check to see that the
+ * account name matches that of $account.  We can get the entity itself by
+ * calling $items->getEntity(), since these "know" what entity they belong to.
+ *
+ * In a real application, we'd have use-case specific permissions which might be
+ * more complex than these. Or perhaps simpler.
+ *
+ * You can see a more complex field implementation in field_example.module.
+ *
+ * @see field_example
+ * @see field_example.module
+ * @see field_types
+ * @see field
+ */
+
+// Use statements to support hook_entity_field_access.
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Access\AccessResult;
+
+// Interfaces used by entities to declare "ownership".
+use Drupal\user\EntityOwnerInterface;
+use Drupal\user\UserInterface;
+
+// Use statements for hook_entity_test_access.
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_entity_field_access().
+ *
+ * We want to make sure that fields aren't being seen or edited
+ * by those who shouldn't.
+ */
+function field_permission_example_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+  $messenger = \Drupal::messenger();
+  // Find out what field we're looking at.  If it isn't
+  // our sticky note widget, tell Drupal we don't care about its access.
+  if ($field_definition->getType() != 'field_permission_example_fieldnote') {
+    return AccessResult::neutral();
+  }
+
+  // First we'll check if the user has the 'superuser'
+  // permissions that node provides. This way administrators
+  // will be able to administer the content types.
+  if ($account->hasPermission('bypass node access')) {
+    $messenger->addMessage(t('User can bypass node access.'));
+    return AccessResult::allowed();
+  }
+  if ($account->hasPermission('administer content types', $account)) {
+    $messenger->addMessage(t('User can administer content types.'));
+    return AccessResult::allowed();
+  }
+  if ($account->hasPermission('administer the fieldnote field', $account)) {
+    $messenger->addMessage(t('User can administer this field.'));
+    return AccessResult::allowed();
+  }
+
+  // For anyone else, it depends on the desired operation.
+  if ($operation == 'view' and $account->hasPermission('view any fieldnote')) {
+    $messenger->addMessage(t('User can view any field note.'));
+    return AccessResult::allowed();
+  }
+
+  if ($operation == 'edit' and $account->hasPermission('edit any fieldnote')) {
+    $messenger->addMessage(t('User can edit any field note.'));
+    return AccessResult::allowed();
+  }
+
+  // At this point, we need to know if the user "owns" the entity we're attached
+  // to. If it's a user, we'll use the account name to test. Otherwise rely on
+  // the entity implementing the EntityOwnerInterface. Anything else can't be
+  // owned, and we'll refuse access.
+  if ($items) {
+    $entity = $items->getEntity();
+    if ((($entity instanceof EntityOwnerInterface) and
+         $entity->getOwner()->getAccountName() == $account->getAccountName()) or
+        (($entity instanceof UserInterface) and
+         $entity->name->value == $account->getAccountName())
+        ) {
+      if ($operation == 'view' and $account->hasPermission('view own fieldnote')) {
+        $messenger->addMessage(t('User can view their own field note.'));
+        return AccessResult::allowed();
+      }
+      if ($operation == 'edit' and $account->hasPermission('edit own fieldnote')) {
+        $messenger->addMessage(t('User can edit their own field note.'));
+        return AccessResult::allowed();
+      }
+    }
+  }
+  // Anything else on this field is forbidden.
+  return AccessResult::forbidden();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ *
+ * Note: this routine is added so we can more easily test our access code. Core
+ * defines an entity_test entity that is used for testing fields in core. We add
+ * this routine to make the entity_test entity editable by our tests.
+ */
+function field_permission_example_entity_test_access(EntityInterface $entity, $operation, AccountInterface $account, $langcode) {
+  if ($operation == 'edit') {
+    $perms = [
+      'administer the fieldnote field',
+      'edit any fieldnote',
+      'edit own fieldnote',
+    ];
+    foreach ($perms as $perm) {
+      if ($account->hasPermission($perm)) {
+        return AccessResult::allowed();
+      }
+    }
+  }
+  return AccessResult::neutral();
+}
+
+/**
+ * @} End of "defgroup field_permission_example".
+ */
+
+/**
+ * Implements hook_theme().
+ *
+ * Since we have a lot to explain, we're going to use Twig to do it.
+ */
+function field_permission_example_theme() {
+  return [
+    'field_permission_description' => [
+      'template' => 'description',
+      'variables' => [
+        'admin_link' => NULL,
+      ],
+    ],
+  ];
+}

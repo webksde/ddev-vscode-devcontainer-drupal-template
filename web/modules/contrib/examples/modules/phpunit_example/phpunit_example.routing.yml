@@ -1,0 +1,8 @@
+# phpunit_example only has one route. It is to a page explaining
+# the module.
+phpunit_example.description:
+  path: '/examples/phpunit-example'
+  defaults:
+    _controller: '\Drupal\phpunit_example\Controller\PHPUnitExampleController::description'
+  requirements:
+    _permission: 'access content'

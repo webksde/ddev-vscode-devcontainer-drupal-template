@@ -1,0 +1,19 @@
+stage_file_proxy.settings:
+  type: config_object
+  label: 'Stage file proxy settings'
+  mapping:
+    hotlink:
+      type: boolean
+      label: "Hotlink"
+    origin:
+      type: string
+      label: "Origin"
+    origin_dir:
+      type: string
+      label: "Origin dir"
+    use_imagecache_root:
+      type: boolean
+      label: "Use imagecache root"
+    verify:
+      type: boolean
+      label: "Verify SSL"

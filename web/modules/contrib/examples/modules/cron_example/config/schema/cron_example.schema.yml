@@ -1,0 +1,12 @@
+# Set configuration defaults. This schema describes the cron_example.settings
+# config. The defaults for this config are set in
+# config/install/cron_example.settings.yml and then used by
+# \Drupal\cron_example\Form\CronExampleForm.
+# @see https://www.drupal.org/node/1905070
+cron_example.settings:
+  type: config_object
+  label: 'Cron Example settings'
+  mapping:
+    interval:
+      type: integer
+      label: 'Period between cron runs'

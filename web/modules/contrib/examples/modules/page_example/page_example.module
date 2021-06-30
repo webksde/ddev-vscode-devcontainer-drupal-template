@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Module file for page_example_module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * @defgroup page_example Example: Page
+ * @ingroup examples
+ * @{
+ * This example demonstrates how a module can display a page at a given URL.
+ *
+ * It's important to understand how the menu system works in order to
+ * implement your own pages. See the Menu Example module for some insight.
+ *
+ * @see menu_example
+ */
+
+/**
+ * Implements hook_help().
+ *
+ * Through hook_help(), a module can make documentation available to the user
+ * for the module as a whole or for specific routes. Where the help appears
+ * depends on the $route_name specified.
+ *
+ * Help text will be displayed in the region designated for help text. Typically
+ * this is the 'Help' region which can be found at admin/structure/block.
+ *
+ * The help text in the first example below, will appear on the simple page at
+ * examples/page-example/simple.
+ *
+ * The second example text will be available on the admin help page (admin/help)
+ * in the list of help topics using the name of the module. To specify help in
+ * the admin section combine the special route name of 'help.page' with the
+ * module's machine name, as in 'help.page.page_example' below.
+ *
+ * See the Help text standard page for the proposed format of help texts.
+ *
+ * @see https://www.drupal.org/documentation/help-text-standards
+ *
+ * @see hook_help()
+ */
+function page_example_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'page_example.simple':
+      // Help text for the simple page registered for this path.
+      return t('This is help text for the simple page.');
+
+    case 'help.page.page_example':
+      // Help text for the admin section, using the module name in the path.
+      return t("This is help text created in page example's implementation of hook_help().");
+  }
+}
+
+/**
+ * @} End of "defgroup page_example".
+ */

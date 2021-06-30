@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * Install and uninstall functions for the tabledrag example module.
+ *
+ * This file contains the functions required to perform install and
+ * uninstall operations.
+ */
+
+use Drupal\tabledrag_example\Fixtures;
+
+/**
+ * Implements hook_schema().
+ *
+ * This defines the database table which will hold the example item info.
+ *
+ * @ingroup tabledrag_example
+ */
+function tabledrag_example_schema() {
+  $schema['tabledrag_example'] = [
+    'description' => 'Stores some entries for our tabledrag fun.',
+    'fields' => [
+      'id' => [
+        'description' => 'The primary identifier for each item',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'name' => [
+        'description' => 'A name for this item',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'description' => [
+        'description' => 'A description for this item',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'itemgroup' => [
+        'description' => 'The group this item belongs to',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'weight' => [
+        'description' => 'The sortable weight for this item',
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'pid' => [
+        'description' => 'The primary id of the parent for this item',
+        'type' => 'int',
+        'length' => 11,
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ *
+ * Populates newly created database table with fixtures for all module's
+ * examples. This hook executed after hook_schema() tables are created by core.
+ *
+ * @see \Drupal\Core\Extension\ModuleInstaller::install()
+ *
+ * @ingroup tabledrag_example
+ */
+function tabledrag_example_install() {
+  /** @var \Drupal\Core\Database\Connection $connection */
+  $connection = \Drupal::database();
+  $rows = Fixtures::getSampleItems();
+  foreach ($rows as $row) {
+    $connection->insert('tabledrag_example')->fields($row)->execute();
+  }
+}

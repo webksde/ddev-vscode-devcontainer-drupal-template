@@ -1,0 +1,55 @@
+# In order to to create pages it is necessary to define routes for them. A route
+# maps a URL path to a controller. It defines with what function or method will
+# be called when a URL is accessed. The following lines defines three of them
+# for this module.
+
+# Menu items corresponding to these URLs are defined separately in the
+# page_example.links.menu.yml file.
+
+# If the user accesses http://example.com/?q=examples/page-example, the routing
+# system will look for a route with that path. In this case it will find a
+# match, and execute the _controller callback. In this case the callback is
+# defined as a classname
+# ("\Drupal\page_example\Controller\PageExampleController") and a method
+# ("description").
+
+# Access to this path is not restricted. This is notated as _access: 'TRUE'.
+page_example.description:
+  path: '/examples/page-example'
+  defaults:
+    _controller: '\Drupal\page_example\Controller\PageExampleController::description'
+    _title: 'Page Example'
+  requirements:
+    _permission: 'access content'
+
+# If the user accesses http://example.com/?q=examples/page-example/simple,
+# the routing system will look for a route with that path. In this case it will
+# find a match, and execute the _controller callback. Access to this path
+# requires "access simple page" permission.
+page_example.simple:
+  path: '/examples/page-example/simple'
+  defaults:
+    _controller: '\Drupal\page_example\Controller\PageExampleController::simple'
+    _title: 'Simple - no arguments'
+  requirements:
+    _permission: 'access simple page'
+
+# If the user accesses
+# http://example.com/?q=examples/page-example/arguments/1/2, the routing system
+# will first look for examples/page-example/arguments/1/2. Not finding a match,
+# it will look for examples/page-example/arguments/1/{*}. Again not finding a
+# match, it will look for examples/page-example/arguments/{*}/2. Yet again not
+# finding a match, it will look for examples/page-example/arguments/{*}/{*}.
+# This time it finds a match, and so it will execute the _controller callback.
+# In this case, it's PageExampleController::arguments().
+
+# Since the parameters are passed to the function after the match, the function
+# can do additional checking or make use of them before executing the callback
+# function. The placeholder names "first" and "second" are arbitrary but must
+# match the variable names in the callback method, e.g. "$first" and "$second".
+page_example.arguments:
+  path: '/examples/page-example/arguments/{first}/{second}'
+  defaults:
+    _controller: '\Drupal\page_example\Controller\PageExampleController::arguments'
+  requirements:
+    _permission: 'access arguments page'

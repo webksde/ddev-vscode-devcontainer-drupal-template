@@ -1,0 +1,85 @@
+{#
+
+Description text for the PHPUnit Example.
+
+#}
+
+{% set sum_in_hands = path('testing_example.sum_in_hands') %}
+
+{% trans %}
+<h2>Testing Frameworks in Drupal</h2>
+
+<p>This module <a href={{ sum_in_hands }}>provides a path</a> so we can test it.
+    The path takes two numeric arguments, and tells you how many hands are
+    required to count the sum of both numbers.</p>
+
+<h3>How to use this example module</h3>
+<p>You really should be reading the various docblocks in the files under
+  <code>tests/src/</code>.</p>
+
+<h3>How To:</h3>
+<ul>
+  <li>PHPUnit-based Drupal tests go in the <code>tests/src</code> directory, so
+    they will not be loaded by the autoloader during normal bootstrap.
+  </li>
+
+  <li>Unit tests go in <code>[your_module]/tests/src/Unit</code>.</li>
+  <li>Kernel tests go in <code>[your_module]/tests/src/Kernel</code>.</li>
+  <li>Functional tests go in <code>[your_module]/tests/src/Functional</code>.</li>
+</ul>
+
+<table>
+  <thead>
+  <tr>
+    <td><b>Type</b></td>
+    <td><b>Location</b></td>
+    <td><b>Namespace</b></td>
+    <td><b>Subclass of</b></td>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Unit test</td>
+    <td>[your_module]/tests/src/Unit</td>
+    <td>Drupal\Tests\[your_module]\Unit\</td>
+    <td>Drupal\Tests\UnitTestCase</td>
+  </tr>
+  <tr>
+    <td>Kernel test</td>
+    <td>[your_module]/tests/src/Kernel</td>
+    <td>Drupal\Tests\[your_module]\Kernel\</td>
+    <td>Drupal\KernelTests\KernelTestBase</td>
+  </tr>
+  <tr>
+    <td>Functional test</td>
+    <td>[your_module]/tests/src/Functional</td>
+    <td>Drupal\Tests\[your_module]\Functional\</td>
+    <td>Drupal\Tests\BrowserTestBase</td>
+  </tr>
+  <tr>
+    <td>FunctionalJavascript test</td>
+    <td>[your_module]/tests/src/FunctionalJavascript</td>
+    <td>Drupal\Tests\[your_module]\FunctionalJavascript\</td>
+    <td>Drupal\FunctionalJavascriptTests\WebDriverTestBase</td>
+  </tr>
+  <tr>
+    <td>Shared test traits</td>
+    <td>[your_module]/tests/src/Traits</td>
+    <td>Drupal\Tests\[your_module]\Traits\</td>
+    <td>n/a</td>
+  </tr>
+
+  </tbody>
+</table>
+
+<h3>Standard PHPUnit Practices</h3>
+<p>You can run PHPUnit from the command line or via the run-tests.sh command.</p>
+<p>You can specify which type of test you're running via
+  <pre><code>phpunit --testsuite</code></pre> and
+  <pre><code>run-tests.sh --types</code><pre>.
+<p>There are many options to phpunit, but, for instance, to run all of the
+  testing_example phpunit tests, you could
+<pre><code>./vendor/phpunit/phpunit/phpunit -c core/ ./modules/examples/testing_example</code></pre>
+</p>
+
+{% endtrans %}

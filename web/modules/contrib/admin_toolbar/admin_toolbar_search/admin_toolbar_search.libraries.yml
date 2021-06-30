@@ -1,0 +1,11 @@
+search:
+  css:
+    theme:
+      css/admin.toolbar_search.css: {}
+  js:
+    js/admin_toolbar_search.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once
+    - core/jquery.ui.autocomplete

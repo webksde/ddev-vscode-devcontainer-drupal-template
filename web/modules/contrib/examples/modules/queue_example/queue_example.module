@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Demonstrates use of the Queue API in Drupal.
+ */
+
+/**
+ * @defgroup queue_example Example: Queue
+ * @ingroup examples
+ * @{
+ *  Demonstrating the Queue API
+ *
+ * The Queue API provides a traditional FIFO (first-in-first-out) queue,
+ * but also provides the concepts of:
+ * - "Creating" a queued item, which means inserting it into a queue.
+ * - "Claiming" a queued item, which essentially means requesting the next item
+ *   from the queue and holding a lock on that item for a specified period of
+ *   time.
+ * - "Releasing" an item, which means giving up a claim but leaving the item in
+ *   the queue.
+ * - "Deleting" an item, which means finally removing it from the queue.
+ *
+ * This example demonstrates only basic queue functionality, and will use the
+ * default queue implementation, which is SystemQueue, managed using
+ * persistent database storage.
+ *
+ * Further resources include the limited @link queue @endlink documentation.
+ * More:
+ *
+ * @link https://www.ent.iastate.edu/it/Batch_and_Queue.pdf Batch vs Queue Presentation slides by John VanDyk @endlink
+ * @link https://archive.org/details/BatchVs.QueueAnApiSmackdown session video. @endlink
+ */
+
+/**
+ * @} End of "defgroup queue_example".
+ */

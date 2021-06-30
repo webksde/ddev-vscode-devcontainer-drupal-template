@@ -1,0 +1,23 @@
+# This file contains entries that will appear in the "Tool" menu.
+
+# Help page
+rest_example:
+  title: 'REST Example'
+  description: 'How to use the REST example module'
+  route_name: rest_example.getting_started
+  expanded: TRUE
+
+# Creates a link that points to the page where we can setup the REST client, so
+# that it will know where the server resides, and how to authenticate.
+rest_example.settings:
+  title: 'Client Settings'
+  description: 'Callback for REST client settings form.'
+  route_name: rest_example.client_settings
+
+# This link points to the page where all the magic happens: The display of the
+# nodes on the remote server, and from where we can create, edit and delete them
+# too.
+rest_example.actions:
+  title: 'Client Actions'
+  description: 'Callback for REST client action form.'
+  route_name: rest_example.client_actions_index

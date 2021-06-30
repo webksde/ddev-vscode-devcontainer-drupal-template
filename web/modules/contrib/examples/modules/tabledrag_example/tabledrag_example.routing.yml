@@ -1,0 +1,39 @@
+tabledrag_example.description:
+  path: '/examples/tabledrag-example'
+  defaults:
+    _controller: '\Drupal\tabledrag_example\Controller\TableDragExampleController::description'
+    _title: 'Tabledrag overview'
+  requirements:
+    _permission: 'access content'
+
+tabledrag_example.simple_form:
+  path: '/examples/tabledrag-example/row'
+  defaults:
+    _form: '\Drupal\tabledrag_example\Form\TableDragExampleSimpleForm'
+    _title: 'Simple rows tabledrag'
+  requirements:
+    _permission: 'access content'
+
+tabledrag_example.parent_form:
+  path: '/examples/tabledrag-example/nested'
+  defaults:
+    _form: '\Drupal\tabledrag_example\Form\TableDragExampleNestedForm'
+    _title: 'Nested tabledrag'
+  requirements:
+    _permission: 'access content'
+
+tabledrag_example.rootleaf_form:
+  path: '/examples/tabledrag-example/roots-and-leaves'
+  defaults:
+    _form: '\Drupal\tabledrag_example\Form\TableDragExampleRootLeafForm'
+    _title: 'Roots and leaves tabledrag'
+  requirements:
+    _permission: 'access content'
+
+tabledrag_example.reset_form:
+  path: '/examples/tabledrag-example/reset'
+  defaults:
+    _form: '\Drupal\tabledrag_example\Form\TableDragExampleResetForm'
+    _title: 'Tabledrag data reset'
+  requirements:
+    _permission: 'access content'

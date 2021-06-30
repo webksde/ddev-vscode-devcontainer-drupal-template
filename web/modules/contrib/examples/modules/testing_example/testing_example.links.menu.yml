@@ -1,0 +1,12 @@
+testing_example.description:
+  title: Testing Example
+  route_name: testing_example.description
+  expanded: TRUE
+testing_example.simpletest_description:
+  title: Simpletest information
+  route_name: testing_example.simpletest_description
+  parent: testing_example.description
+testing_example.sum_in_hands:
+  title: Sum in hands
+  route_name: testing_example.sum_in_hands
+  parent: testing_example.description

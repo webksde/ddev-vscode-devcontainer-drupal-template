@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * Demonstrates how to define a new configuration entity type.
+ */
+
+/**
+ * @defgroup config_entity_example Example: Config Entity
+ * @ingroup examples
+ * @{
+ * Implement a Config Entity.
+ *
+ * This module demonstrates implementing a Config Entity.
+ *
+ * This is an example of a simple configuration entity, the kind you might
+ * create to store administrator-defined objects like blocks or views.
+ *
+ * In this module we define a configuration entity named 'Robot'. The entity
+ * has a unique ID (also called a machine name), a human-readable label used
+ * for display, and a universally unique identifier. You can create new robots
+ * by navigating to &lt;your_site_root&gt;/examples/config_entity_example. A
+ * default robot, "marvin", is included with the module.
+ *
+ * What's special about a Configuration Entity?
+ *
+ * Configuration entities are entities just like content entities. The key
+ * difference is where the data is stored. Content entities are stored in the
+ * database. Configuration entities are stored in *.yml files, typically under
+ * &lt;your_site_root&gt;/sites/default/files/config_&lt;unique_id&gt;.
+ *
+ * Another key difference with configuration entities is the expectation they
+ * are created by administrators, and not end users. As files, configuration
+ * entities can be added to a version control system.
+ *
+ * Originally based on code from blog post at
+ * http://previousnext.com.au/blog/understanding-drupal-8s-config-entities
+ */
+
+/**
+ * @} End of "defgroup config_entity_example".
+ */

@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    /*--------------------------------------------------PHP Specific Extensions--------------------------------------------------*/
+
+    "felixfbecker.php-debug",
+    "mrmlnc.vscode-apache",
+    "bmewburn.vscode-intelephense-client",
+    "phproberto.vscode-php-getters-setters",
+    "mehedidracula.php-namespace-resolver",
+    "neilbrayfield.php-docblocker",
+    "wayou.vscode-todo-highlight",
+    //"shevaua.phpcs", 			needs php code-sniffer
+    //"junstyle.php-cs-fixer"	needs php code sniffer
+
+    /*--------------------------------------------------Drupal 8 Specific Extensions--------------------------------------------------*/
+
+    "ikappas.composer",
+    "tsega.drupal-8-javascript-snippets",
+    "tsega.drupal-8-twig-snippets",
+    "mblode.twig-language", //Switch to "mblode.twig-language-2" if necessary
+
+    /*--------------------------------------------------Drupal 7 Specific Extension--------------------------------------------------*/
+
+    //"juniormucciolo.drupal-7-snippets",
+    //"pauloamgomes.drupal7-hooks-snippets",
+  ]
+}

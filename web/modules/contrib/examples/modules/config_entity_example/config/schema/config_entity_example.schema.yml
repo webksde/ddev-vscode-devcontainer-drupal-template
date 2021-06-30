@@ -1,0 +1,28 @@
+# Schema for the configuration files of the Config Entity Example module.
+
+# This schema tells the config system how to read our config YML files.
+# See for example the file config/config_entity_example.robot.marvin.yml, which
+# contains our default config entity.
+
+# Documentation for schema files like this one is located here:
+# https://drupal.org/node/1905070
+
+config_entity_example.robot.*:
+  type: config_entity
+  label: 'Robot'
+  mapping:
+    id:
+      type: string
+      label: 'Robot id'
+    uuid:
+      type: string
+      label: 'UUID'
+    label:
+      type: label
+      label: 'Label'
+    floopy:
+      type: boolean
+      label: 'Floopy'
+    langcode:
+      type: string
+      label: 'Default language'

@@ -1,0 +1,3 @@
+phpunit_example.description:
+  title: PHPUnit Example
+  route_name: phpunit_example.description

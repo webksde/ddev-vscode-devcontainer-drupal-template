@@ -1,0 +1,111 @@
+<?php
+
+/**
+ * @file
+ * Contains Drupal\devel_debug_log\devel_debug_log.module.
+ */
+
+
+/**
+ * Saves a debug message.
+ *
+ * @param mixed $message
+ *  A debug message to save, which can be:
+ *    - string: saved as it is;
+ *    - object/array: serialized before saving;
+ *
+ *  Currently, there's development going on regarding the serialization part,
+ * since most of the data in D8 contains references to injected services and
+ * maybe even plugins.
+ *  A discussion about this topic can be found here:
+ *  @see https://www.drupal.org/node/2705731
+ *
+ * @param string $title
+ *  Title of the debug message.
+ */
+function ddl($message, $title = '') {
+  $serialized = FALSE;
+  $message = devel_debug_log_ob_kint($message);
+  // TODO Find a way to store the initial message, instead of storing the entire
+  // debug markup returned by kint().
+
+  $connection = \Drupal::database();
+  $query = $connection->insert('devel_debug_log')
+    ->fields(array(
+      'timestamp' => \Drupal::time()->getRequestTime(),
+      'title' => $title,
+      'message' => $message,
+      'serialized' => $serialized ? 1 : 0,
+    ));
+  $query->execute();
+}
+
+/**
+ * Checks if the message has already been saved during the current page request,
+ * and saves the message only if it is not a repetition of a previous one.
+ *
+ * @param $message
+ *   A debug message to save, which can be:
+ *   - string: saved as is.
+ *   - object or array: saved serialized.
+ * @param string $title
+ *  Title for the debug message.
+ */
+function ddl_once($message, $title = '') {
+  $message_history = &drupal_static(__FUNCTION__);
+
+  if (!is_resource($message)) {
+    $serialized = serialize($message);
+    $hash = md5($serialized);
+
+    if (in_array($hash, $message_history)) {
+      return;
+    }
+
+    $message_history[] = $hash;
+  }
+  ddl($message, $title);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function devel_debug_log_theme($existing, $type, $theme, $path) {
+  return array(
+    'devel_debug_log_list' => array(
+      'variables' => array(
+        'content' => NULL,
+        'delete_form' => NULL,
+      ),
+    )
+  );
+}
+
+/**
+ * Provides debug output for later printing.
+ *
+ * kint() outputs the debug information at the top of the page. This function
+ * allows you to get the output and use it for later printing.
+ *
+ * @param mixed $message
+ *  The data that's displayed for debugging.
+ *
+ * @return string
+ *  The debug information.
+ */
+function devel_debug_log_ob_kint($message) {
+  ob_start();
+  if (PHP_SAPI == 'cli') {
+    // Load the Kint class from devel/kint.
+    kint_require();
+
+    Kint::enabled(Kint::MODE_RICH);
+    Kint::dump($message);
+  } else {
+    kint($message);
+  }
+  $output = ob_get_contents();
+  ob_end_clean();
+
+  return $output;
+}

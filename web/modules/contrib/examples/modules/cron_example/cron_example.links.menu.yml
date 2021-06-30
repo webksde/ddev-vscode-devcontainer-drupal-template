@@ -1,0 +1,3 @@
+cron_example.description:
+  title: Cron Example
+  route_name: cron_example.description

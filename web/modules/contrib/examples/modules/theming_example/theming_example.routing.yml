@@ -1,0 +1,32 @@
+# Main page of the theming example.
+theming_example.entry:
+  path: '/examples/theming_example'
+  defaults:
+    _controller: '\Drupal\theming_example\Controller\ThemingPageController::entryPage'
+    _title: 'Theming example'
+  requirements:
+    _permission: 'access content'
+
+theming_example.list:
+  path: '/examples/theming_example/list'
+  defaults:
+    _controller: '\Drupal\theming_example\Controller\ThemingPageController::list'
+    _title: 'Theming a list'
+  requirements:
+    _permission: 'access content'
+
+theming_example.form_select:
+  path: '/examples/theming_example/form_select'
+  defaults:
+    _form: '\Drupal\theming_example\Form\SelectForm'
+    _title: 'Theming a form (select form)'
+  requirements:
+    _permission: 'access content'
+
+theming_example.form_text:
+  path: '/examples/theming_example/form_text'
+  defaults:
+    _form: '\Drupal\theming_example\Form\TextForm'
+    _title: 'Theming a form (text form)'
+  requirements:
+    _permission: 'access content'

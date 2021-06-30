@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Module file for tabledrag_example module.
+ */
+
+/**
+ * @defgroup tabledrag_example Example: Draggable Table Forms
+ * @ingroup examples
+ * @{
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
+
+/**
+ * Implements hook_help().
+ *
+ * Show a bit of information about this module on the example page.
+ */
+function tabledrag_example_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.tabledrag_example':
+      $table_class_url = Url::fromUri('https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!Element!Table.php/class/Table/8');
+      $table_class_link = Link::fromTextAndUrl(t("Drupal.org — class Table"), $table_class_url);
+
+      $table_change_url = Url::fromUri('https://www.drupal.org/node/1876710');
+      $table_change_link = Link::fromTextAndUrl(t("Drupal.org — Change records | New render element #type 'table'"), $table_change_url);
+
+      $attach_change_url = Url::fromUri('https://api.drupal.org/api/drupal/core!includes!common.inc/function/drupal_attach_tabledrag/8');
+      $attach_change_link = Link::fromTextAndUrl(t("Drupal.org — function drupal_attach_tabledrag"), $attach_change_url);
+
+      $example_url = Url::fromRoute('tabledrag_example.description');
+      $example_link = Link::fromTextAndUrl(t('Tabledrag examples overview page'), $example_url);
+
+      $help_text = '<p>' . t("This module demonstrates how to code a module in order to use Drupal 8's TableDrag theme function.") . '</p>';
+      $help_text .= '<h3>' . t('Reference links') . '</h3>';
+      $help_text .= '<ul>';
+      $help_text .= '<li>' . $table_class_link->toString() . '</li>';
+      $help_text .= '<li>' . $table_change_link->toString() . '</li>';
+      $help_text .= '<li>' . $attach_change_link->toString() . '</li>';
+      $help_text .= '</ul>';
+      $help_text .= '<p>' . t('To see this Example module in action:') . ' ' . $example_link->toString() . '</p>';
+      return $help_text;
+  }
+}
+
+/**
+ * @} End of "defgroup batch_example".
+ */

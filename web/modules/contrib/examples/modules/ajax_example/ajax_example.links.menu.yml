@@ -1,0 +1,72 @@
+ajax_example.description:
+  title: 'AJAX Example'
+  route_name: 'ajax_example.description'
+  expanded: TRUE
+
+ajax_example.simplest:
+  title: 'Simplest AJAX example'
+  route_name: 'ajax_example.simplest'
+  parent: ajax_example.description
+  weight: 0
+
+ajax_example.submit-driven:
+  title: 'Submit-driven AJAX'
+  route_name: 'ajax_example.submit_driven_ajax'
+  parent: ajax_example.description
+  weight: 1
+
+ajax_example.render-link:
+  title: 'AJAX link in a render array'
+  route_name: 'ajax_example.ajax_link_render'
+  parent: ajax_example.description
+  weight: 2
+
+ajax_example.wizard-example:
+  title: 'Wizard example'
+  route_name: 'ajax_example.wizard'
+  parent: ajax_example.description
+  weight: 2
+
+ajax_example.wizard-examplenojs:
+  title: 'Wizard example w/JS turned off'
+  route_name: 'ajax_example.wizardnojs'
+  parent: ajax_example.description
+  weight: 3
+
+ajax_example.autocomplete-user:
+  title: 'Autocomplete user with entity_autocomplete'
+  route_name: 'ajax_example.autocomplete_user'
+  parent: ajax_example.description
+  weight: 4
+
+ajax_example.autotextfields:
+  title: 'Generate textfields'
+  route_name: 'ajax_example.autotextfields'
+  parent: ajax_example.description
+  weight: 5
+
+ajax_example.dependent-dropdown:
+  title: 'Dependent dropdown'
+  route_name: 'ajax_example.dependent_dropdown'
+  parent: ajax_example.description
+  weight: 6
+ajax_example.dependent-dropdown-nojs:
+  title: 'Dependent dropdown w/ no JS'
+  route_name: 'ajax_example.dependent_dropdown'
+  route_parameters:
+    nojs: nojs
+  parent: ajax_example.description
+  weight: 6
+
+ajax_example.dynamic-form-sections:
+  title: 'Dynamic form sections'
+  route_name: 'ajax_example.dynamic_form_sections'
+  parent: ajax_example.description
+  weight: 10
+ajax_example.dynamic-form-sections-nojs:
+  title: 'Dynamic form sections w/ no JS'
+  route_name: 'ajax_example.dynamic_form_sections'
+  route_parameters:
+    nojs: nojs
+  parent: ajax_example.description
+  weight: 10

@@ -1,0 +1,32 @@
+.toolbar-icon-admin-toolbar-tools-help {
+  text-indent: -9999px;
+}
+
+.toolbar-icon-9 .toolbar-icon-admin-toolbar-tools-help:before {
+  box-sizing: content-box;
+  background-image: url(../misc/icons/ffffff/drupal-9-logo.svg);
+  padding-bottom: 0;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 2px;
+  margin-left: 4px;
+}
+
+.toolbar-icon-9 .toolbar-icon-admin-toolbar-tools-help:active:before,
+.toolbar-icon-9 .toolbar-icon-admin-toolbar-tools-help.active:before {
+  background-image: url(../misc/icons/ffffff/drupal-9-logo.svg);
+}
+
+.toolbar-icon-8 .toolbar-icon-admin-toolbar-tools-help:before {
+  box-sizing: content-box;
+  background-image: url(../misc/icons/ffffff/drupal-8-logo.svg);
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 8px;
+  padding-top: 2px;
+}
+
+.toolbar-icon-8 .toolbar-icon-admin-toolbar-tools-help:active:before,
+.toolbar-icon-8 .toolbar-icon-admin-toolbar-tools-help.active:before {
+  background-image: url(../misc/icons/ffffff/drupal-8-logo.svg);
+}

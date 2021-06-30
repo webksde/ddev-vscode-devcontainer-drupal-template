@@ -1,0 +1,8 @@
+tablesort_example.description:
+  path: '/examples/tablesort-example'
+  defaults:
+    _controller: '\Drupal\tablesort_example\Controller\TableSortExampleController::description'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: 'TRUE'

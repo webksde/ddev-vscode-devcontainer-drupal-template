@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Contains Drupal\content_entity_example\content_entity_example.module.
+ */
+
+/**
+ * @defgroup content_entity_example Example: Content Entity
+ * @ingroup examples
+ * @{
+ * Implement a content entity.
+ *
+ * This module demonstrates implementing a content entity.
+ *
+ * Entity API is the API that stores pieces of content and configuration for
+ * Drupal core. For instance, if you've encountered node content types, you've
+ * encountered entities of type 'node.'
+ *
+ * This example implements the Entity API so that we have an entity type usable
+ * by the user which you might think of as specialized nodes, but which are
+ * different from nodes. These entities are called Contact, and are known
+ * internally by the machine name content_entity_example_contact.
+ *
+ * Contact is a fieldable content entity used to hold structured information
+ * without the overhead of using a node content type. 'Fieldable' means you can
+ * attach fields to it, like you can with nodes. It is defined programmatically
+ * (completely in code). We will show the main techniques to handle and expose
+ * the contents of this entity type.
+ *
+ * The Contact entity will demonstrate the main tasks for an entity:
+ * - define
+ * - save
+ * - load
+ * - view
+ * - edit
+ * - delete
+ * - control access
+ *
+ * Where ever possible, we use the amazing tools built into D8 natively.
+ *
+ * @see Drupal\content_entity_example\Entity\Contact
+ * @see config_entity_example
+ * }
+ */

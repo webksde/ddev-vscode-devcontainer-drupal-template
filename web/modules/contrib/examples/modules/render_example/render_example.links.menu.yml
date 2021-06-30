@@ -1,0 +1,19 @@
+render_example.description:
+  title: Render Example
+  description: Examples of building and altering render arrays.
+  route_name: render_example.description
+  expanded: TRUE
+
+render_example.arrays:
+  title: Building render arrays
+  description: Building render arrays in controllers.
+  route_name: render_example.arrays
+  parent: render_example.description
+  weight: -9
+
+render_example.altering:
+  title: Altering render arrays
+  description: Using hooks and callbacks to alter render arrays.
+  route_name: render_example.altering
+  parent: render_example.description
+  weight: -8

@@ -1,0 +1,14 @@
+# Add some local task links to facilitate navigation.
+
+config_entity_example.add_action:
+  route_name: entity.robot.add_form
+  title: 'Add robot'
+  appears_on:
+    - entity.robot.list
+
+config_entity_example.list_action:
+  route_name: entity.robot.list
+  title: 'List robots'
+  appears_on:
+    - entity.robot.add_form
+    - entity.robot.edit_form

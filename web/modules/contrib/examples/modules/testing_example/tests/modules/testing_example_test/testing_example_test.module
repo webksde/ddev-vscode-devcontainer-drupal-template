@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Implements testing_example_test module.
+ */
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * The mock module for SimpleTest Example.
+ *
+ * This module exists so that we can enable it and use it to
+ * test elements of testing_example.
+ *
+ * @ingroup testing_example
+ */
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ *
+ * We'll just add some content to nodes of the type we like.
+ *
+ * @ingroup testing_example
+ */
+function testing_example_test_node_view(
+  array &$build,
+  EntityInterface $node,
+  EntityViewDisplayInterface $display,
+  $view_mode) {
+  if ($node->getType() == 'testing_example') {
+    $build['simpletest_example_test_section'] = [
+      '#markup' => t('The test module did its thing.'),
+      '#weight' => -99,
+    ];
+  }
+}

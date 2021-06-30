@@ -1,0 +1,19 @@
+{
+    "name": "drupal/devel_debug_log",
+    "description": "Stores debug information for an easier AJAX debugging.",
+    "type": "drupal-module",
+    "homepage": "https://www.drupal.org/project/devel_debug_log",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/devel_debug_log",
+        "documentation": "https://www.drupal.org/project/devel_debug_log",
+        "source": "http://cgit.drupalcode.org/devel_debug_log"
+    },
+    "suggest": {
+        "drupal/devel": "Some modules will be able to pretty-print PHP with this module."
+    },
+    "license": "GPL-2.0+",
+    "require-dev": {
+        "drupal/devel": "^4.0",
+        "kint-php/kint": "^3.3"
+    }
+}

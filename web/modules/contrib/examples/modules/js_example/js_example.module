@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Examples showing how to use some of the new JavaScript features in Drupal 8.
+ */
+
+/**
+ * @defgroup js_example Example: JavaScript
+ * @ingroup examples
+ * @{
+ * Examples using Drupal 8's built-in JavaScript.
+ *
+ * We have two examples here.
+ *
+ * One 'weights' content and then sorts it by weight. This demonstrates
+ * attaching JavaScript through Drupal's render arrays.
+ *
+ * The other demonstrates adding an accordion effect to content, through
+ * Drupal's theme layer.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function js_example_theme() {
+  return [
+    'js_example_accordion' => [
+      'template' => 'accordion',
+      'variables' => ['title' => NULL],
+    ],
+  ];
+}
+
+/**
+ * @} End of "defgroup js_example".
+ */

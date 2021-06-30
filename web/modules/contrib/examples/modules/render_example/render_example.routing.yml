@@ -1,0 +1,21 @@
+render_example.description:
+  path: '/examples/render-example'
+  defaults:
+    _controller: '\Drupal\render_example\Controller\RenderExampleController::description'
+  requirements:
+    _permission: 'access content'
+
+render_example.altering:
+  path: '/examples/render-example/altering'
+  defaults:
+    _form: '\Drupal\render_example\Form\RenderExampleDemoForm'
+    _title: 'Alter pages and blocks'
+  requirements:
+    _permission: 'access content'
+
+render_example.arrays:
+  path: '/examples/render-example/arrays'
+  defaults:
+    _controller: '\Drupal\render_example\Controller\RenderExampleController::arrays'
+  requirements:
+    _permission: 'access content'

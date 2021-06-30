@@ -1,0 +1,4 @@
+devel_php.execute_php:
+  title: 'Execute PHP'
+  route_name: devel_php.execute_php
+  menu_name: devel

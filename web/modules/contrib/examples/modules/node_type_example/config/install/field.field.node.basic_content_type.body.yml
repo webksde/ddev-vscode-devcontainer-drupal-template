@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.basic_content_type
+  module:
+    - text
+  enforced:
+    module:
+      - node_type_example
+id: node.basic_content_type.body
+field_name: body
+entity_type: node
+bundle: basic_content_type
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+third_party_settings: {  }
+field_type: text_with_summary

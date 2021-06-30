@@ -1,0 +1,4 @@
+# Menu links for the "Tools" menu.
+stream_wrapper_example.description:
+  title: Stream Wrapper Example
+  route_name: stream_wrapper_example.description

@@ -1,0 +1,33 @@
+#toolbar-item-administration-search-tray {
+  padding-left: 1em;
+}
+
+#admin-toolbar-search-tab .toolbar-item:before {
+  background-image: url(../misc/icons/bebebe/loupe.svg);
+}
+
+#admin-toolbar-search-tab .toolbar-item:active:before,
+#admin-toolbar-search-tab .toolbar-item.is-active:before {
+  background-image: url(../misc/icons/ffffff/loupe.svg);
+}
+
+#toolbar-item-administration-search-tray label {
+  display: inline-block;
+  color: #000;
+  margin-right: .5em;
+  font-weight: bold;
+}
+
+#toolbar-item-administration-search-tray div.form-item {
+  margin: 0.75em 0;
+}
+
+#toolbar-item-administration-search-tray input {
+  display: inline-block;
+  padding: 0.3em 0.4em 0.3em 0.5em;
+  font-size: 1em;
+}
+
+.ui-autocomplete .ui-menu-item span.admin-toolbar-search-url {
+  color: rgba(0, 0, 0, 0.5);
+}

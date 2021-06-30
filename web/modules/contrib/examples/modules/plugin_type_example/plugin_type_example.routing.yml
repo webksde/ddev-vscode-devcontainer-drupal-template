@@ -1,0 +1,8 @@
+# This defines our example page's path to the routing system.
+plugin_type_example.description:
+  path: '/examples/plugin-type-example'
+  defaults:
+    _controller: '\Drupal\plugin_type_example\Controller\PluginTypeExampleController::description'
+    _title: 'Plugin Type Example'
+  requirements:
+    _permission: 'access content'

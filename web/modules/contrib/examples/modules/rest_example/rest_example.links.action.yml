@@ -1,0 +1,5 @@
+rest_example.create_node:
+  route_name: rest_example.client_actions_create
+  title: 'Create node'
+  appears_on:
+    - rest_example.client_actions_index

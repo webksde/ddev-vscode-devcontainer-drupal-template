@@ -1,0 +1,34 @@
+{#
+
+Description text for the Menu Example.
+
+#}
+
+{% set custom_access = path('examples.menu_example.custom_access') %}
+{% set permissioned = path('examples.menu_example.permissioned') %}
+{% set route_only = path('examples.menu_example.route_only') %}
+{% set tabs = path('examples.menu_example.tabs') %}
+{% set use_url_arguments = path('examples.menu_example.use_url_arguments') %}
+{% set title_callbacks = path('examples.menu_example.title_callbacks') %}
+{% set placeholder_argument = path('examples.menu_example.placeholder_argument') %}
+{% set path_override = path('example.menu_example.path_override') %}
+
+{% trans %}
+
+<p>This page is displayed by the simplest (and base) menu example. Note that
+the title of the page is the same as the link title. There are a number of
+examples here, from the most basic (like this one) to extravagant mappings of
+loaded placeholder arguments. Enjoy!</p>
+
+<ul>
+    <li><a href={{ custom_access }}>Custom Access Example</a></li>
+    <li><a href={{ permissioned }}>Permissioned Example</a></li>
+    <li><a href={{ route_only }}>Route only example</a></li>
+    <li><a href={{ tabs }}>Tabs</a></li>
+    <li><a href={{ use_url_arguments }}>URL Arguments</a></li>
+    <li><a href={{ title_callbacks }}>Dynamic title</a></li>
+    <li><a href={{ placeholder_argument }}>Placeholder Arguments</a></li>
+    <li><a href={{ path_override }}>Path Override</a></li>
+</ul>
+
+{% endtrans %}

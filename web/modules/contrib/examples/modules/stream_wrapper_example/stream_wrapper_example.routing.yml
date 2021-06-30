@@ -1,0 +1,51 @@
+# In order to view files created with our demo stream wrapper class,
+# we need to use hook_file_download to grant any access. This route
+# will make sure that we have an external URL for these files, and that
+# our hook is called.
+#
+# In our implementation, access to the files is actually managed by
+# permissions defined in file_example.permissions.yml. Since we also want our
+# URLs to be served similar to how private: and temporary: URI are served by
+# core, we also need to modify how the routing system handles the tail portion
+# of the URL. Unlike Drupal 7, Drupal 8 does not ordinarily allow a "menu tail";
+# URLs need to be of a definite length or the router will not process them. To
+# get around this, we also implement a "path processor", which we define as a
+# service in our services file. Our path processor will do the extra steps needed
+# to process our session file URLs.
+#
+# @see stream_wrapper_example.services.yml
+# @see file_example_file_download()
+#
+stream_wrapper_example.files:
+  path: '/examples/stream_wrapper_example/files/{scheme}'
+  defaults:
+    _controller: 'Drupal\system\FileDownloadController::download'
+    scheme: session
+  requirements:
+    _access: 'TRUE'
+
+# In addition to the stream_wrapper_example.files route, which is actually matched by the router,
+# we also need a route defintion to make our URLs.  This is never referenced by the
+# routing system, but is used by our stream wrapper class to create external URLs.
+#
+# @see SessionStreamWrapper::getExternalUrl()
+#
+stream_wrapper_example.files.session:
+  path: '/examples/stream_wrapper_example/files/{filepath}'
+  defaults:
+    _controller: '\Drupal\system\FileDownloadController::download'
+    scheme: session
+  requirements:
+    # Permissive regex to allow slashes in filepath see
+    # http://symfony.com/doc/current/cookbook/routing/slash_in_parameter.html
+    filepath: .+
+    _access: 'TRUE'
+
+# Finally, our controller class.
+stream_wrapper_example.description:
+  path: '/examples/stream_wrapper_example'
+  defaults:
+    _controller: '\Drupal\stream_wrapper_example\Controller\StreamWrapperExampleController::description'
+    _title: 'Stream Wrapper Example'
+  requirements:
+    _permission: 'access content'

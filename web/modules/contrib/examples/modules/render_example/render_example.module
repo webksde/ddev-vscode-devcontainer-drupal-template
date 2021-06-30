@@ -1,0 +1,193 @@
+<?php
+
+/**
+ * @file
+ * Demonstrates using Drupal's Render API.
+ */
+
+/**
+ * @defgroup render_example Example: Render API
+ * @ingroup examples
+ * @{
+ * The  @link https://www.drupal.org/docs/8/api/render-api Render API @endlink
+ * consists of two parts: one, structured arrays that provide data, and hints
+ * about how that data should be rendered, and two, a rendering pipeline that
+ * can be used to render these arrays into various output formats. This example
+ * module looks at how to define content using render arrays, as well as how to
+ * use alter hooks to manipulate render arrays created by other modules.
+ *
+ * For more on the rendering pipeline see @link
+ * https://www.drupal.org/docs/8/api/render-api/the-drupal-8-render-pipeline The
+ * Drupal 8 Render Pipeline @endlink.
+ *
+ * In order to ensure that a theme can completely customize the markup output
+ * by Drupal, module developers should avoid directly writing HTML markup for
+ * pages, blocks, and other user-visible output in their modules, and should
+ * instead return structured "render arrays". Checkout the example code in
+ * \Drupal\render_example\Controller\RenderExampleController::arrays() for an
+ * explanation of how to define new renderable arrays. The output from that
+ * code can be viewed at examples/render_example/arrays.
+ *
+ * One of the primary benefits of using arrays to define content instead of
+ * strings of HTML is that arrays are easier to manipulate. There are dozens of
+ * hooks, and other ways to gain access to and manipulate existing render arrays
+ * during the rendering process both from within a module, and via a theme. As
+ * a rule of thumb the process of rendering an array into HTML is delayed for as
+ * long as possible. In most cases it's not until the variable containing the
+ * content to be rendered is printed out in a Twig template file that it is
+ * finally rendered.
+ *
+ * For examples of altering render arrays checkout the code in
+ * render_example_preprocess_page() and render_example_preprocess_block(). There
+ * is a form at examples/render_example/altering that can be used to turn these
+ * features on and off if you would like to see the results of the array
+ * altering code on your site.
+ *
+ * This module contains code that can display the render array used to build
+ * each page, and/or block, as you navigate through a site as a way to show some
+ * examples of real render arrays being used. This functionality requires that
+ * the @link https://www.drupal.org/project/devel Devel module @endlink be
+ * installed in order to work.
+ *
+ * Modules can also provide new render element types. A powerful way to
+ * encapsulate complex display logic into a reusable widget. This can help to
+ * cut down on code repetition, and allow other module developers to build off
+ * of your work. See an example of a new render element definition by looking at
+ * \Drupal\render_example\Element\Marquee.
+ *
+ * Forms are generated using a superset of the Render API. You can see examples
+ * of how the Render API is used when creating forms in the fapi_example module.
+ *
+ * @see theme_render
+ * @see \Drupal\Core\Render\RendererInterface::render()
+ * @see \Drupal\Core\Template\TwigExtension::renderVar()
+ */
+
+use Drupal\Core\Render\Element;
+
+/**
+ * Implements hook_theme().
+ */
+function render_example_theme() {
+  return [
+    // These theme hooks are both used by examples in
+    // \Drupal\render_example\Controller\RenderExampleController::arrays().
+    'render_example_add_div' => ['render element' => 'element'],
+    'render_array' => ['render element' => 'element'],
+    // This is used in combination with \Drupal\render_example\Element\Marquee
+    // to define a new custom render element type that allows for the use of
+    // '#type' => 'marquee' elements in a render array.
+    'render_example_marquee' => [
+      'variables' => [
+        'content' => '',
+        'attributes' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Demonstrates using a preprocess function to alter the renderable array that
+ * represents the page currently being viewed.
+ */
+function render_example_preprocess_page(&$variables) {
+  // Only modify the 'altering' page.
+  if (\Drupal::routeMatch()->getRouteName() !== 'render_example.altering') {
+    return;
+  }
+
+  $config = \Drupal::config('render_example.settings');
+
+  // Preprocess hooks are invoked by the theme layer, and are used to give
+  // modules a chance to manipulate the variables that are going to be made
+  // available to a specific template file. Since content is still defined as
+  // renderable arrays at this point you can do quite a bit to manipulate the
+  // eventual output by altering these arrays.
+  //
+  // The $page variable in this case contains the complete content of the page
+  // including all regions, and the blocks placed within each region.
+  //
+  // The actual process of converting a renderable array to HTML is started when
+  // this variable is printed out within a Twig template. Drupal's Twig
+  // extension provides a wrapper around the Twig code that prints out variables
+  // which checks to see if the variable being printed is a renderable array and
+  // passes it through \Drupal\Core\Render\RendererInterface::render() before
+  // printing it to the screen.
+  $page = &$variables['page'];
+
+  // Move the breadcrumbs into the content area.
+  if ($config->get('move_breadcrumbs') && !empty($page['breadcrumb']) && !empty($page['content'])) {
+    $page['content']['breadcrumb'] = $page['breadcrumb'];
+    unset($page['breadcrumb']);
+    $page['content']['breadcrumb']['#weight'] = -99999;
+
+    // Force the content to be re-sorted.
+    $page['content']['#sorted'] = FALSE;
+  }
+
+  // Re-sort the contents of the sidebar in reverse order.
+  if ($config->get('reverse_sidebar') && !empty($page['sidebar_first'])) {
+    $page['sidebar_first'] = array_reverse($page['sidebar_first']);
+    foreach (Element::children($page['sidebar_first']) as $element) {
+      // Reverse the weights if they exist.
+      if (!empty($page['sidebar_first'][$element]['#weight'])) {
+        $page['sidebar_first'][$element]['#weight'] *= -1;
+      }
+    }
+    // This forces the sidebar to be re-sorted.
+    $page['sidebar_first']['#sorted'] = FALSE;
+  }
+
+  // Show the render array used to build the current page.
+  // This relies on the Devel module's variable dumper service.
+  // https://wwww.drupal.org/project/devel
+  if (Drupal::moduleHandler()->moduleExists('devel') && $config->get('show_page')) {
+    $page['content']['page_render_array'] = [
+      '#type' => 'markup',
+      '#prefix' => '<h2>' . t('The page render array') . '</h2>',
+      // The devel.dumper service is provided by the devel module and makes for
+      // and easier to read var_dump(). Especially if the companion Kint module
+      // is enabled.
+      'dump' => \Drupal::service('devel.dumper')->exportAsRenderable($page, '$page'),
+      '#weight' => -99999,
+    ];
+
+    $page['content']['#sorted'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function render_example_preprocess_block(&$variables) {
+  // Only modify the 'altering' page.
+  if (\Drupal::routeMatch()->getRouteName() !== 'render_example.altering') {
+    return;
+  }
+
+  $config = \Drupal::config('render_example.settings');
+
+  // This example shows how you can manipulate an existing renderable array. In
+  // this case by adding #prefix and #suffix properties to the block in order to
+  // wrap a <div> around it.
+  if ($config->get('wrap_blocks')) {
+    $variables['content']['#prefix'] = '<div class="block-prefix"><p>' . t('Prefixed') . '</p>';
+    $variables['content']['#suffix'] = '<span class="block-suffix">' . t('Block suffix') . '</span></div>';
+  }
+
+  // Show the render array used to build each block if the Devel module is
+  // installed and the feature is enabled.
+  if (Drupal::moduleHandler()->moduleExists('devel') && $config->get('show_block')) {
+    $variables['content']['block_render_array'] = [
+      '#type' => 'markup',
+      '#prefix' => '<h2>' . t('The block render array for @block_id.', ['@block_id' => $variables['plugin_id']]) . '</h2>',
+      'dump' => \Drupal::service('devel.dumper')->exportAsRenderable($variables, $variables['plugin_id']),
+    ];
+  }
+}
+
+/**
+ * @} End of "defgroup render_example".
+ */

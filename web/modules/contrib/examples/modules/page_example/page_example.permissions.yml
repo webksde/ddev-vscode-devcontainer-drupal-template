@@ -1,0 +1,11 @@
+# Since the access to our new custom pages will be granted based on special
+# permissions, we need to define what those permissions are here. This ensures
+# that they are available to enable on the permissions administration pages.
+
+'access simple page':
+  title: Access simple page
+  description: Allow users to access simple page
+
+'access arguments page':
+  title: Access page with arguments
+  description: Allow users to access page with arguments

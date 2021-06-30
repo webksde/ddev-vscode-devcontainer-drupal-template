@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Module file for tablesort_example.
+ */
+
+/**
+ * @defgroup tablesort_example Example: Tablesort
+ * @ingroup examples
+ * @{
+ * Example of a sortable table display.
+ * Three columns are sortable (Numbers, Letters and Mixture)
+ * We are using TableSort Extender
+ *  extend('Drupal\Core\Database\Query\TableSortExtender')
+ */
+
+/**
+ * @} End of "defgroup tablesort_example".
+ */

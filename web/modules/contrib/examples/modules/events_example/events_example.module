@@ -1,0 +1,75 @@
+<?php
+
+/**
+ * @file
+ * Demonstrates how to subscribe to and dispatch events.
+ */
+
+/**
+ * @defgroup events_example Example: Events
+ * @ingroup examples
+ * @{
+ * Demonstrates subscribing to, and dispatching, events.
+ *
+ * Events allow for different components of the system to interact and
+ * communicate with each other. Modules can either dispatch events, subscribe to
+ * events, or both.
+ *
+ * Subscribing to an event allows a module to declare that it would like to be
+ * notified anytime a specific event happens. A module can subscribe to any
+ * number of events, and can even subscribe to the same event more than once.
+ *
+ * Dispatching an event allows a module, or Drupal core subsystem, to notify any
+ * registered subscribers that a specific event has just taken place. When an
+ * event is dispatched the registered code for each subscriber is executed. For
+ * example, whenever a configuration entity is updated the Configuration API
+ * dispatches a new event allowing all subscribers to react to the change.
+ *
+ * This allows modules to extend other systems without the need to modify the
+ * original code.
+ *
+ * Each event has a unique string name. This string is often referred to as "the
+ * event", or "the event name". This string is how you identify which event(s)
+ * you are interested in. A complete list of events dispatched by core is
+ * available at
+ * https://api.drupal.org/api/drupal/core%21core.api.php/group/events/
+ *
+ * Drupal's event system is an extension of the
+ * @link http://symfony.com/doc/current/components/event_dispatcher.html Symfony
+ * EventDispatcher component @endlink, and implements the Mediator pattern.
+ *
+ * Subscribing to an event requires:
+ * - Defining a service in your module, tagged with 'event_subscriber'.
+ * - Defining a class for your subscriber service that implements
+ *   \Symfony\Component\EventDispatcher\EventSubscriberInterface
+ * - Using the getSubscribedEvents method to return a list of the events you
+ *   want to subscribe to, and which methods on the class should be called for
+ *   each one.
+ *
+ * For an example of subscribing to an event see the events_example.services.yml
+ * file. And the \Drupal\events_example\EventSubscriber\EventsExampleSubscriber
+ * class.
+ *
+ * Dispatching an event requires:
+ * - Defining a new static class with constants for unique event names and
+ *   documentation. Example: \Drupal\events_exampl\Event\IncidentEvents
+ * - Defining an event class that extends
+ *   \Symfony\Component\EventDispatcher\Event
+ *   Example: \Drupal\events_example\Event\IncidentReportEvent
+ * - Use the 'event_dispatcher' service in your code to dispatch an event and
+ *   provide an event object as an argument. Example:
+ *   \Drupal\events_example\Form\EventsExampleForm::submitForm()
+ *
+ * This example code is based off of the article @link
+ * https://drupalize.me/blog/201502/responding-events-drupal-8 Responding to
+ * Events in Drupal 8 @endlink.
+ *
+ * @see events
+ * @see \Symfony\Component\EventDispatcher\EventDispatcherInterface
+ * @see \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
+ * @see service_tag
+ */
+
+/**
+ * @} End of "defgroup events_example".
+ */

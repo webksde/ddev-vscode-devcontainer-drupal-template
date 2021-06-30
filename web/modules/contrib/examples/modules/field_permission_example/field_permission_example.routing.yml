@@ -1,0 +1,7 @@
+field_permission_example.description:
+  path: '/examples/field-permission-example'
+  defaults:
+    _title: 'Field Permission Example'
+    _controller: '\Drupal\field_permission_example\Controller\FieldPermissionExampleController::description'
+  requirements:
+    _permission: 'access content'

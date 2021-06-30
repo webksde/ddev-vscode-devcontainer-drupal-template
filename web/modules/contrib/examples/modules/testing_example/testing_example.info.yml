@@ -1,0 +1,20 @@
+name: Testing Example
+type: module
+description: Demonstrates Drupal core testing frameworks
+package: Example modules
+core_version_requirement: ^9
+# We have to be as explicit as possible about the dependencies for this module.
+# If you look at the config info in the config/install/ directory, you'll see
+# that they depend on some of these modules.
+dependencies:
+  - drupal:field
+  - drupal:node
+  - drupal:path
+  - drupal:simpletest
+  - drupal:text
+  - examples:examples
+
+# Information added by Drupal.org packaging script on 2020-11-18
+version: '3.0.2'
+project: 'examples'
+datestamp: 1605715872

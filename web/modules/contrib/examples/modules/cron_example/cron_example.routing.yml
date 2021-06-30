@@ -1,0 +1,7 @@
+cron_example.description:
+  path: '/examples/cron-example'
+  defaults:
+    _form: '\Drupal\cron_example\Form\CronExampleForm'
+    _title: 'Cron Example'
+  requirements:
+    _permission: 'access content'

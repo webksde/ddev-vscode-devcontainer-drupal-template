@@ -1,0 +1,5 @@
+# Define default links for this module.
+batch_example.form:
+  title: Batch API Examples
+  description: Batch examples using Drupal Batch API.
+  route_name: batch_example.form

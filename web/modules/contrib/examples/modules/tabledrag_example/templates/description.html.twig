@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * Contains the text of the tabledrag_example explanation page
+ */
+#}
+
+{% set simple_rows = path('tabledrag_example.simple_form') %}
+{% set nested = path('tabledrag_example.parent_form') %}
+{% set roots_and_leaves = path('tabledrag_example.rootleaf_form') %}
+{% set reset_form = path('tabledrag_example.reset_form') %}
+
+{% trans %}
+
+<p>Below are examples of Drupal 8's table element with 'tabledrag' functionality.</p>
+
+<ol>
+    <li><a href={{ simple_rows }}>Simple Rows</a></li>
+    <li><a href={{ nested }}>Nested</a></li>
+    <li><a href={{ roots_and_leaves }}>Roots and Leaves</a></li>
+</ol>
+
+<p><a href={{ reset_form }}>Reset Tablesort Sample Data</a></p>
+
+{% endtrans %}

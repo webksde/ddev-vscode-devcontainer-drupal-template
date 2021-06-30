@@ -1,0 +1,20 @@
+# Define default links for this module.
+js_example.info:
+  title: JavaScript Example
+  description: Some information about the JavaScript example.
+  route_name: js_example.info
+  expanded: TRUE
+
+js_example.weights:
+  title: JavaScript weighting in action
+  description: Show list weighting through JavaScript.
+  route_name: js_example.weights
+  parent: js_example.info
+  weight: 10
+
+js_example.accordion:
+  title: JavaScript accordion
+  description: A pure JavaScript accordion demo.
+  route_name: js_example.accordion
+  parent: js_example.info
+  weight: 1

@@ -1,0 +1,9 @@
+# The Edit and View tabs for the session example pages.
+session_example.form:
+  route_name: session_example.form
+  base_route: session_example.form
+  title: Edit
+session_example.view:
+  route_name: session_example.view
+  base_route: session_example.form
+  title: View

@@ -1,0 +1,37 @@
+{#
+
+Description text for the Rest Example.
+
+#}
+
+{% set rest_client_settings = path('rest_example.client_settings') %}
+{% set rest_client_actions = path('rest_example.client_actions_index') %}
+
+{% trans %}
+<p>This module will give you a brief demonstration of how the REST service works</p>
+<p>This example uses nodes, because they works out of the box. But any entity could be used.</p>
+<p>To complete a demo, we will need a server site, containing the nodes, and a client, that sends requests to the server. The same site can very well act as both client and server.</p>
+<p>First thing you want to do, is visit <a href="{{ rest_client_settings }}">examples/rest-client-settings</a> and setup what website you want to interact with. To avoid complications, and minimize the chance of failure, I will sugest that you start using the same site as both server and client, using the user 1 credentials. And when you have gotten the feel of how things works, try to use two seperate sites, and maybe another user. Please note that you need to install this module on both client and server site.</p>
+<p>Next thing you want is to go to <a href="{{ rest_client_actions }}">examples/rest-client-actions</a>. This page contains a table where all the remote nodes, of the type rest_example_test, will be displayed. At first there might not be any.</p>
+<p>From the same page you can create, edit and delete nodes on the remote site.</p>
+<p>The server site actually only uses the View (rest_service) and the node type (rest_example_test), imported upon installation of this module. The rest of the functionallity comes from Drupal Core modules, like "rest", "basic_auth" and "hal".</p>
+
+<h3>The client part of the site uses the following classes:</h3>
+<ul>
+    <li>
+        <p><code>\Drupal\rest_example\Controller\RestExampleClientController::indexAction()</code>: Builds the list of nodes on the remote server.</p>
+    </li>
+    <li>
+        <p><code>\Drupal\rest_example\Form\RestExampleClientSettings</code>: A form that can creates/edits nodes.</p>
+    </li>
+    <li>
+        <p><code>\Drupal\rest_example\Form\RestExampleClientSettings</code>: A form used to confirm the deletion of the node.</p>
+    </li>
+    <li>
+        <p><code>\Drupal\rest_example\Form\RestExampleClientSettings</code>: A form wher you setup what site you want to interact with.</p>
+    </li>
+    <li>
+        <p><code>\Drupal\rest_example\RestExampleClientCalls</code>: This class handles all the calls to the remote site, and returns the response back, to be processed by the requesting method.</p>
+    </li>
+</ul>
+{% endtrans %}

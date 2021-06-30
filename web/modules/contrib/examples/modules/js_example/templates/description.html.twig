@@ -1,0 +1,29 @@
+{#
+
+Description text for the JavaScript Example.
+
+#}
+
+{% set js_weights = path('js_example.weights') %}
+{% set js_accordion = path('js_example.accordion') %}
+
+{% trans %}
+
+<p>Drupal includes jQuery and jQuery UI.</p>
+
+<p>We have two examples of using these:</p>
+
+<ol>
+  <li>
+    <p><a href={{ js_accordion }}>An accordion-style section reveal effect</a>:
+        This demonstrates calling a JavaScript function using Drupal rendering
+        system.
+  </li>
+  <li>
+    <p><a href={{ js_weights }}>Sorting according to numeric weight</a>: This
+        demonstrates attaching your own JavaScript code to individual page
+        elements using Drupal rendering system.</p>
+  </li>
+</ol>
+
+{% endtrans %}

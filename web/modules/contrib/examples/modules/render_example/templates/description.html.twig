@@ -1,0 +1,23 @@
+{#
+
+Description text for the Render API Example.
+
+#}
+
+{% set arrays_url = path('render_example.arrays') %}
+{% set alter_url = path('render_example.altering') %}
+
+{% trans %}
+<h2>What are render arrays?</h2>
+
+<p>
+  These are examples of how to construct render arrays.</p>
+
+<p>
+  You use render arrays to specify to Drupal how to construct HTML content.</p>
+
+<ul>
+  <li><a href="{{ arrays_url }}">Demonstration of render array usage.</a></li>
+  <li><a href="{{ alter_url }}">Using alter hooks to modify existing render arrays.</a></li>
+</ul>
+{% endtrans %}

@@ -1,0 +1,13 @@
+name: Hooks Example
+type: module
+description: Provides examples of implementing, defining, and invoking hooks.
+package: Example modules
+core_version_requirement: ^9
+dependencies:
+  - drupal:help
+  - examples:examples
+
+# Information added by Drupal.org packaging script on 2020-11-18
+version: '3.0.2'
+project: 'examples'
+datestamp: 1605715872

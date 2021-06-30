@@ -1,0 +1,21 @@
+toolbar.tree:
+  css:
+    theme:
+      css/admin.toolbar.css: {}
+  js:
+    js/admin_toolbar.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+toolbar.tree.hoverintent:
+  js:
+    js/jquery.hoverIntent.js: {}
+    js/admin_toolbar.hoverintent.js: {}
+  dependencies:
+    - core/jquery
+
+toolbar.tree.hover:
+  js:
+    js/admin_toolbar.hover.js: {}
+  dependencies:
+    - core/jquery

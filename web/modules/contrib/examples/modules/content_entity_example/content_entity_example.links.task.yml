@@ -1,0 +1,22 @@
+# Define the 'local' links for the module
+
+contact.settings_tab:
+  route_name: content_entity_example.contact_settings
+  title: Settings
+  base_route: content_entity_example.contact_settings
+
+contact.view:
+  route_name: entity.content_entity_example_contact.canonical
+  base_route: entity.content_entity_example_contact.canonical
+  title: View
+
+contact.page_edit:
+  route_name: entity.content_entity_example_contact.edit_form
+  base_route: entity.content_entity_example_contact.canonical
+  title: Edit
+
+contact.delete_confirm:
+  route_name:  entity.content_entity_example_contact.delete_form
+  base_route:  entity.content_entity_example_contact.canonical
+  title: Delete
+  weight: 10

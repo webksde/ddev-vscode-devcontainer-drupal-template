@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ * Install file for node_type_example.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * We don't want users to be able to delete our locked_content_type content
+ * type. So therefore we have to tell Drupal that this is the case. This
+ * can't be done in the content type's configuration YAML file, so we have to
+ * do it in code, here.
+ *
+ * @ingroup node_type_example
+ */
+function node_type_example_install() {
+  // Do not allow the locked content type to be deleted.
+  $locked = Drupal::state()->get('node.type.locked');
+  $locked['locked_content_type'] = 'locked_content_type';
+  Drupal::state()->set('node.type.locked', $locked);
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Our content types will live on in the Drupal installation, even after this
+ * module is uninstalled. This is a good thing, since it allows the user to
+ * make decisions about their fate. Therefore we should give the user the
+ * option of deleting them.
+ *
+ * Since we told Drupal that our locked_content_type is locked, we now have
+ * to tell it to unlock.
+ *
+ * @ingroup node_type_example
+ */
+function node_type_example_uninstall() {
+  // Allow locked_content_type to be deleted.
+  $locked = Drupal::state()->get('node.type.locked');
+  unset($locked['locked_content_type']);
+  Drupal::state()->set('node.type.locked', $locked);
+}

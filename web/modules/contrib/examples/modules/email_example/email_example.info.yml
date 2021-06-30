@@ -1,0 +1,13 @@
+name: Email Example
+type: module
+description: Demonstrates how to send and alter Drupal-generated email messages.
+package: Example modules
+core_version_requirement: ^9
+dependencies:
+  - examples:examples
+  - drupal:node
+
+# Information added by Drupal.org packaging script on 2020-11-18
+version: '3.0.2'
+project: 'examples'
+datestamp: 1605715872

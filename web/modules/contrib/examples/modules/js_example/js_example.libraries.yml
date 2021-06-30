@@ -1,0 +1,28 @@
+# A pure JavaScript accordion modified form
+# https://codepen.io/sureshrkm/pen/ZbzBpr.
+js_example.accordion:
+  js:
+    js/accordion.js: {}
+  css:
+    component:
+      css/accordion.css: {}
+
+# Show how weights work.
+js_example.weights:
+  # Add css file.
+  css:
+    component:
+      css/jsweights.css: {}
+  # Add js files.
+  js:
+    # weight is used as example attribute, but please avoid it and instead use
+    # dependencies for order loading.
+    js/red.js: { weight: -4 }
+    js/blue.js: { weight: -2 }
+    js/green.js: { weight: -1 }
+    js/brown.js: { weight: -2 }
+    js/black.js: { weight: -1 }
+    js/purple.js: { weight: -5 }
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

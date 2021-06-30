@@ -1,0 +1,103 @@
+# This file defines the tour for our example page. There should be one tour
+# file for each tour that you create. These tour files should be placed in a
+# module's 'config' folder and named using the pattern
+# 'tour.tour.{tour-id}.yml'.
+#
+# Each tour file has two parts: 1) The tour properties, and 2) the tip
+# definitions.
+#
+#
+# TOUR PROPERTIES
+#
+# The tour properties define information that applies to the tour as a whole.
+# Properties that you can define for your tours include the following:
+#
+#   id:         Each tour should have a unique ID. This id is used in the
+#               filename and appears as an ID in the HTML.
+#   module:     The machine name of the module containing your tour.
+#   label:      A human readable name for the tour.
+#   status:     A boolean, defining whether the tour is enabled.
+#   langcode:   A two-letter language code defining the language of your tour.
+#   routes:     An array of routes for which the tour is active. Specify these
+#               as an array with route_name and optional route_params (also an
+#               array). Route names are found in each module's routing.yml file.
+#
+#
+# TIP DEFINITIONS
+#
+# Here, you define each tip that you want to appear in your tour. Each of
+# the tips have properties that must be defined, including the following:
+#
+#   id:         Each tip needs a unique ID. This appears as an ID in the HTML.
+#   plugin:     The Tour API uses plugins for defining different types of
+#               tips. The 'text' plugin (for making text tooltips) is provided
+#               in core, but developers can define additional plugins for tips
+#               containing images, video, or other interactions.
+#   label:      The lable for the tip. This will be rendered in an h3 element.
+#   body:       The body of the tip. HTML markup is allowed.
+#   weight:     Tips within a tour are ordered by weight, beginning with the
+#               lowest number. Negative values are acceptable.
+#   location:   Defines the location of the tip, relative to its target.
+#               Acceptable values include: top, bottom, left, & right. If the
+#               location is not defined, the default value (bottom) will be
+#               used.
+#   attributes: Attributes provdied to the tip for various purposes. Use the
+#               following attributes to control the placement of the tip:
+#
+#                 data-id:      Places this tip on the DOM element containing
+#                               this ID.
+#                 data-class:   Places this tip on the DOM element containing
+#                               this class.
+#
+#               If you omit both the .data-id and .data-class, the tip will be
+#               shown as modal instead of being targeted to an element.
+#
+id: tour-example
+module: tour_example
+label: 'Tour an example admin page'
+langcode: en
+routes:
+  - route_name: tour_example.description
+tips:
+  introduction:
+    id: introduction
+    plugin: text
+    label: 'Introduction'
+    body: 'This is an example tour. Click "next" to continue through the tour.'
+    weight: 1
+  first-item:
+    id: first-item
+    plugin: text
+    label: 'First Item'
+    body: 'Tours are helpful for walking users through an unfamiliar admin interface.'
+    weight: 2
+    location: bottom
+    attributes:
+      data-id: tour-target-1
+  second-item:
+    id: second-item
+    plugin: text
+    label: 'Second Item'
+    body: 'Individual tips can be positioned anywhere on the page.'
+    weight: 3
+    location: top
+    attributes:
+      data-id: tour-target-2
+  third-item:
+    id: third-item
+    plugin: text
+    label: 'Third Item'
+    body: 'You can click the X in the top right corner of this box to close the tour at any time.'
+    weight: 4
+    location: bottom
+    attributes:
+      data-id: tour-target-3
+  fourth-item:
+    id: fourth-item
+    plugin: text
+    label: 'Fourth Item'
+    body: 'When the tour is over, click "End Tour".'
+    weight: 5
+    location: left
+    attributes:
+      data-id: tour-target-4

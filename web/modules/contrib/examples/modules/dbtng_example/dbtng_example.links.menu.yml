@@ -1,0 +1,25 @@
+dbtng_example.description:
+  title: DBTNG Example
+  route_name: dbtng_example.generate_entry_list
+  expanded: TRUE
+
+dbtng_example.list:
+  title: List
+  route_name: dbtng_example.list
+  weight: 0
+  parent: dbtng_example.description
+dbtng_example.add:
+  title: Add entry
+  route_name: dbtng_example.add
+  weight: 1
+  parent: dbtng_example.description
+dbtng_example.update:
+  title: Update entry
+  route_name: dbtng_example.update
+  weight: 2
+  parent: dbtng_example.description
+dbtng_example.advanced:
+  title: Advanced list
+  route_name: dbtng_example.advanced
+  weight: 3
+  parent: dbtng_example.description

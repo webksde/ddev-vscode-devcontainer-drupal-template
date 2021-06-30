@@ -1,0 +1,92 @@
+# This file links a menu link with route_name.
+#
+# 'title' key is only key required.
+#
+# 'description' is  is shown either as a tooltip on the item or in the admin UI
+# as the description of the option on the page/
+#
+# 'weight' is used to order the items (higher weights get placed towards the
+# end of the menu among items on the same level).
+#
+# 'route_name' is used to link menu link to corresponding route.
+#
+# 'parent' is used to put item into the menu hierarchy by referring to the
+# parent menu link name.
+#
+examples.menu_example:
+  title: 'Menu Example'
+  description: 'Simplest possible menu type, and the parent menu entry for others'
+  expanded: 1
+  route_name: examples.menu_example
+
+examples.menu_example.alternate_menu:
+  title: 'Menu Example: Menu in alternate menu'
+   #If menu_name is omitted, the "Tools" menu will be used.
+  menu_name: 'main'
+  route_name: examples.menu_example.alternate_menu
+
+examples.menu_example.permissioned:
+  title: 'Permissioned Example'
+  parent: examples.menu_example
+  expanded: 1
+  route_name: examples.menu_example.permissioned
+  weight: 10
+
+examples.menu_example.permissioned_controlled:
+  title: 'Permissioned Menu Item'
+  parent: examples.menu_example.permissioned
+  route_name: examples.menu_example.permissioned_controlled
+  weight: 10
+
+examples.menu_example.custom_access:
+  title: 'Custom Access Example'
+  parent: examples.menu_example
+  expanded: 1
+  route_name: examples.menu_example.custom_access
+  weight: -5
+
+examples.menu_example.custom_access_page:
+  title: 'Custom Access Menu Item'
+  parent: examples.menu_example.custom_access
+  route_name: examples.menu_example.custom_access_page
+
+examples.menu_example.route_only:
+  title: 'Route only example'
+  parent: examples.menu_example
+  route_name: examples.menu_example.route_only
+  weight: 20
+
+examples.menu_example.tabs:
+  title: 'Tabs'
+  description: 'Shows how to create primary and secondary tabs'
+  parent: examples.menu_example
+  route_name: examples.menu_example.tabs
+  weight: 30
+
+examples.menu_example.use_url_arguments:
+  title: 'URL Arguments'
+  description: 'The page callback can use the arguments provided after the path used as key'
+  parent: examples.menu_example
+  route_name: examples.menu_example.use_url_arguments
+  weight: 40
+
+examples.menu_example.title_callbacks:
+  title: 'Dynamic title'
+  description: 'The title of this menu item is dynamically generated'
+  parent: examples.menu_example
+  route_name: examples.menu_example.title_callbacks
+  weight: 50
+
+examples.menu_example.placeholder_argument:
+  title: Placeholder Arguments
+  description: ''
+  parent: 'examples.menu_example'
+  route_name: examples.menu_example.placeholder_argument
+  weight: 60
+
+example.menu_example.path_override:
+  title: Path Override
+  description: ''
+  parent: 'examples.menu_example'
+  route_name: example.menu_example.path_override
+  weight: 70

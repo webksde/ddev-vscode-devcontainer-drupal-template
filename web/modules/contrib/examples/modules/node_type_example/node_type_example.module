@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * @file
+ * Module file for node_type_example.
+ */
+
+/**
+ * @defgroup node_type_example Example: Config Node Type
+ * @ingroup examples
+ * @{
+ * A basic example of defining a content type through configuration YAML files.
+ *
+ * In this example we create two content types for Drupal 8, using only YAML
+ * files. Well, mostly only YAML files... One of our content types is locked,
+ * so the user can't delete it while the module is installed. For this we need
+ * a very tiny amount of support code.
+ *
+ * The simplest way to author the per-type YAML files is to create the content
+ * types within Drupal and then take the YAML files from the configuration
+ * directory. Like this:
+ *
+ * - Install Drupal 8.
+ * - Create a new content type at admin/structure/types/add. Let's call it
+ *   'Nifty Content Type'.
+ * - Look in sites/default/files/config_[some hex codes]/active/. You'll see
+ *   a file called node.type.nifty_content_type.yml.
+ * - Copy or move that file to your module's config/ directory.
+ * - Make sure to remove the uuid information from the YAML files.
+ *
+ * You can see two of these YAML files in this module's config/ directory.
+ *
+ * If you want to lock a content type created in this way, you'll have to
+ * implement hook_install() and hook_uninstall(). In hook_install(), you'll
+ * set the content type to be locked. In hook_uninstall() you'll set the
+ * content type to be unlocked.
+ *
+ * Content types created in this way will remain available after the user has
+ * uninstalled the module. If you were to fail to set the content type as
+ * unlocked, the user would not be able to delete it.
+ *
+ * @see https://drupal.org/node/2029519
+ * @}
+ */

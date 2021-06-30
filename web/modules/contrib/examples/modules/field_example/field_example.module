@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * An example field using the Field Types API.
+ */
+
+/**
+ * @defgroup field_example Example: Field Types API
+ * @ingroup examples
+ * @{
+ * Examples using Field Types API.
+ *
+ * Providing a field requires:
+ * - Defining an entity field item. Entity field items are typed data objects
+ *   containing the field values.
+ *   - Drupal\field_example\Plugin\Field\FieldType\RgbItem
+ * - Defining a field type schema at config/schema/[module_name].schema.yml
+ *   - config/schema/field_example.schema.yml
+ * - One or more widgets specifying how the field appears in edit forms
+ *   - Drupal\field_example\Plugin\Field\TextWidget
+ *   - Drupal\field_example\Plugin\Field\Text3Widget
+ *   - Drupal\field_example\Plugin\Field\ColorPickerWidgetWidget
+ * - One or more formatters specifying how the field appears in displayed
+ *   entities
+ *   - Drupal\field_example\Plugin\FieldFormatter\SimpleTextFormatter
+ *   - Drupal\field_example\Plugin\FieldFormatter\ColorBackgroundFormatter
+ *
+ * @see field_types
+ * @see field
+ * @see schemaapi
+ *
+ * @} End of "defgroup field_example".
+ */

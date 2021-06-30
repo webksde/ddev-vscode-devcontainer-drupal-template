@@ -1,0 +1,14 @@
+name: Admin Toolbar Links Access Filter
+description: Provides a workaround for the common problem that users with 'Use the administration pages and help' permission see menu links they don't have access permission for. Once the issue <a href='https://www.drupal.org/node/296693'>https://www.drupal.org/node/296693</a> be solved, this module will be deprecated.
+package: Administration
+
+type: module
+core_version_requirement: ^8.8.0 || ^9.0
+
+dependencies:
+  - admin_toolbar:admin_toolbar
+
+# Information added by Drupal.org packaging script on 2021-06-02
+version: '3.0.1'
+project: 'admin_toolbar'
+datestamp: 1622644079

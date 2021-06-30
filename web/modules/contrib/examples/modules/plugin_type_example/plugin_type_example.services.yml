@@ -1,0 +1,11 @@
+# This declares the plugin manager to the service container. For background
+# information on the service container, see https://www.drupal.org/node/2133171.
+# Changes here require that the cache be cleared in order to have Drupal notice
+# them.
+services:
+  # The machine name of the service. This is the string that must be passed to
+  # Drupal::service() to get the instantiated plugin manager.
+  plugin.manager.sandwich:
+    # This tells the service container the name of our plugin manager class.
+    class: Drupal\plugin_type_example\SandwichPluginManager
+    parent: default_plugin_manager

@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * AJAX Examples module file with basic examples.
+ */
+
+/**
+ * @defgroup ajax_example Example: AJAX
+ * @ingroup examples
+ * @{
+ * These examples show basic AJAX concepts.
+ *
+ * General documentation is available at
+ * @link ajax AJAX Framework documentation @endlink and at the
+ * @link http://drupal.org/node/752056 AJAX Forms handbook page @endlink.
+ *
+ * The several examples here demonstrate basic AJAX usage.
+ */
+
+/**
+ * @} End of "defgroup ajax_example".
+ */

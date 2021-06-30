@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * @file
+ * Contains the module file for the Stream Wrapper Example.
+ */
+
+/**
+ * @defgroup stream_wrapper_example Example: Stream Wrappers
+ * @group stream_wrapper_example
+ * @ingroup examples
+ * @{
+ * Example demonstrating how to implement stream wrappers in Drupal.
+ *
+ * The Stream Wrapper Example module is part of the Examples for Developers
+ * Project and provides a variety of examples for the Developers project page.
+ * We demonstrate how to create a "pseudo file system" using PHP's stream
+ * wrapper features, similar to what Drupal does to support the public://
+ * private:// and temporary:// schemes.
+ *
+ * When we write a stream URI like "public://README.md", we can divide that URI
+ * into two parts:
+ *
+ *   - The "scheme" name ("public" in this case).
+ *   - The "target", in this case "README.md".
+ *
+ * Many PHP and Drupal file functions can take a stream URI and treat it almost
+ * exactly like a file path.  Because they behave so much like files, if you
+ * want to know how to use a stream URI, you should also look at the File
+ * Example.  The Stream Wrapper Example is designed to work together with
+ * that example, and if you enable both examples, the two will work seamlessly
+ * together.  This is all most developers need to know about stream wrappers.
+ *
+ * This example shows how to actually implement a new scheme. We demonstrate
+ * a rather unpractical scheme, but one that covers most of what you can do
+ * with a stream type in Drupal 8. We take the session object that is put up
+ * in each web request, and we treat one of the session variables as if it were
+ * a file system with directories and files. This code is for demonstration
+ * purposes only, since this not something you would ever want to do on a
+ * production web site. But the example is simple enough that we don't need
+ * any external libraries, as one might need to create a stream over
+ * Amazon Web Services S3 service, or other services you might use to store
+ * files on a web site. Yet most of what you need to do in order to make a
+ * stream implementation like that we will do in our "session" scheme.
+ *
+ * To implement a stream wrapper in Drupal, you should do the following:
+ *
+ *  1. Create a class that implements the StreamWrapperInterface
+ *     (Drupal\Core\StreamWrapper\StreamWrapperInterface).
+ *
+ *  2. Register the class with Drupal.  The best way to do this is to
+ *     define a service in your MY_MODULE.services.yml file.  The
+ *     service needs to be "tagged" with the scheme you want to implement,
+ *     and, as so:
+ *
+ * @code
+ *         tags:
+ *           - { name: stream_wrapper, scheme: session }
+ * @endcode
+ *      See stream_wrapper_example.services.yml for an example.
+ *
+ *  3. (Optional) If you want to be able to access your files over the web,
+ *     you need to add a route that handles, and implement hook_file_download().
+ *     See stream_wrapper_example.routing.yml for an example of this, and
+ *     file_example.module for the hook implementation.
+ *
+ * In our example, the key files to look at are:
+ *
+ *  - src/StreamWrapper/SessionStreamWrapper.php (the stream wrapper class).
+ *  - src/PathProcessorSessions.php, which implements something called a "path
+ *    processor".
+ *    A path processor is a class that lets us hook the "files" in a scheme's
+ *    file system into Drupal 8's routing system. This allows us to assign
+ *    external URLs to the files served out of the stream wrapper class. Like a
+ *    stream wrapper class, Drupal 8 implements this as a "tagged service".
+ *  - stream_wrapper_example.services.yml, which defines the services we need to
+ *    do all this magic. You should read the comments in that file to see how
+ *    this fits together.
+ *
+ * We also include two PHPUnit tests. Because stream wrappers require quite a
+ * bit of code that gets called "behind our back" by PHP itself, good test
+ * coverage is essential for writing usable stream wrapper implementations. The
+ * tests should help get you started on that.
+ *
+ * @see http://php.net/manual/en/intro.stream.php.
+ * @see core/lib/Drupal/Core/StreamWrapper/StreamWrapperInterface.php
+ */
+
+/**
+ * @} End of "defgroup stream_wrapper_example".
+ */
+
+/**
+ * Implements hook_theme().
+ *
+ * Since we have a lot to explain, we're going to use Twig to do it.
+ */
+function stream_wrapper_example_theme() {
+  return [
+    'example_description' => [
+      'template' => 'description',
+      'variables' => [
+        'admin_link' => NULL,
+      ],
+    ],
+  ];
+}

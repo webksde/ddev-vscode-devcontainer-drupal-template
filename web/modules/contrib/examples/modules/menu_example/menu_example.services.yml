@@ -1,0 +1,13 @@
+services:
+  menu_example.access_check.role:
+    class: Drupal\menu_example\Access\RoleAccessCheck
+    arguments: ['@current_user']
+    tags:
+      - { name: access_check, applies_to: _menu_example_role }
+      # _menu_example_role flaf is added to requirements section in
+      # menu_example.routing.yml to apply custom check routes.
+
+  menu_example.route_subscriber:
+    class: Drupal\menu_example\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

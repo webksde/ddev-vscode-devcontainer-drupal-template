@@ -1,0 +1,9 @@
+devel_php.execute_php:
+  path: '/devel/php'
+  defaults:
+    _form: '\Drupal\devel_php\Form\ExecutePHP'
+    _title: 'Execute PHP code'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'execute php code'

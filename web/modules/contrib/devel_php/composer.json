@@ -1,0 +1,27 @@
+{
+    "name": "drupal/devel_php",
+    "description": "Re-add Execute PHP feature to Devel.",
+    "type": "drupal-module",
+    "homepage": "https://drupal.org/project/devel_php",
+    "authors": [
+        {
+            "name": "Luca Lusso (lussoluca)",
+            "homepage": "https://www.drupal.org/user/138068",
+            "role": "Maintainer"
+        },
+        {
+            "name": "Florent Torregrosa (Grimreaper)",
+            "homepage": "https://www.drupal.org/user/2388214",
+            "role": "Co-maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://drupal.org/project/issues/devel_php",
+        "source": "https://git.drupalcode.org/project/devel_php"
+    },
+    "license": "GPL-2.0-or-later",
+    "minimum-stability": "dev",
+    "require": {
+        "drupal/devel": ">=2.1"
+    }
+}

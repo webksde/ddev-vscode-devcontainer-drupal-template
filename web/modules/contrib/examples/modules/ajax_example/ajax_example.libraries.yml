@@ -1,0 +1,7 @@
+ajax_example.library:
+  version: 1.x
+  css:
+    base:
+      css/ajax-example-base.css: {}
+  js:
+    js/ajax-example.js: {}

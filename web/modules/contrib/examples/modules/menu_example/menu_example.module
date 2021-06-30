@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ * Module file for menu_example_module.
+ */
+
+/**
+ * Drupal 7's hook_menu() is now Routing system in Drupal 8.
+ *
+ * Drupal 8's routing system is based on Symfony's routing system.
+ *
+ * A route is an entry Drupal 8's router table which contains a path attached
+ * to it. In drupal, a route is a path which is returns some response.
+ *
+ * When a path is requested, Drupal matches the request to a route
+ * and if route is match the content is returned else 404 is returned.
+ *
+ * The association of a path with a controller, coupled with parameter
+ * upcasting and access checking is now handled in the routing system.
+ *
+ * @link menu_example.routing.yml @endlink
+ * Drupal loads the routing file that is of the form module_name.routing.yml
+ * that it will use to define how Drupal will behave when a specific path
+ * is encountered. If you want to expose content or functionality on your own
+ * URIs on a site, routing file is an important part of your module.
+ * This can help provide functionality at specific URIs of a website or just
+ * modify or augment existing functionality.
+ * @see https://www.drupal.org/docs/8/api/routing-system/structure-of-routes
+ *
+ * @link menu_example.links.menu.yml @endlink
+ * In Drupal 8, menu links are specified in a static file named as
+ * module_name.links.menu.yml. This file uses a route_name to tie a route name
+ * to a menu link. These are the links which appear on tools block in UI.
+ * @see https://www.drupal.org/docs/8/api/menu-api/providing-module-defined-menu-links
+ *
+ * @link menu_example.links.task.yml @endlink
+ * To create menu tab entries (only up to 2 level), we make entries in a file
+ * named as module_name.links.task.yml. These are mostly used on administrative
+ * pages but frontend pages like user pages or the registration/login/new
+ * password pages also use local tasks.
+ * @see https://www.drupal.org/docs/8/api/menu-api/providing-module-defined-local-tasks @endlink
+ */

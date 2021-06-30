@@ -1,0 +1,7 @@
+pager_example.page:
+  path: '/examples/pager-example'
+  defaults:
+    _title: 'Pager Example'
+    _controller: '\Drupal\pager_example\Controller\PagerExamplePage::getContent'
+  requirements:
+    _permission: 'access content'

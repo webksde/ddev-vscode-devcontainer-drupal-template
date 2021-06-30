@@ -1,0 +1,4 @@
+# Default form values for \Drupal\cron_example\Form\CronExampleForm.
+# @see examples/cron_example/config/schema/cron_example.schema.yml
+# @see \Drupal\cron_example\Form\CronExampleForm::getEditableConfigNames()
+interval: 300

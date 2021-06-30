@@ -1,0 +1,4 @@
+cache_example.description:
+  title: 'Cache Example'
+  description: 'Example of Drupal Cache API'
+  route_name: cache_example.description

@@ -1,0 +1,3 @@
+pager_example.page:
+  title: Pager Example
+  route_name: pager_example.page

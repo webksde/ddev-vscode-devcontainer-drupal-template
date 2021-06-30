@@ -1,0 +1,32 @@
+{#
+/**
+ * @file
+ * Contains the text of the field_permission_example explanation/description page
+ *
+ * Available variables:
+ * - admin_link: The translated link pointing to the administer permissions page.
+ */
+#}
+
+{% set edit_content_types = path('entity.node_type.collection')  %}
+
+{% trans %}
+
+<p>The Field Permission Example module shows how you can restrict view and edit
+permissions within your field implementation. It adds a new field type called
+Fieldnote. Fieldnotes appear as simple text boxes on the create/edit form, and
+as sticky notes when viewed. By 'sticky note' we mean 'Post-It Note' but that's
+a trademarked term.</p>
+
+<p>To see this field in action, <a href={{ edit_content_types }}>add it to a
+content type</a> or user profile. Go to the permissions page ({{admin_link}})
+and look at the 'Field Permission Example' section. This allows you to change
+which roles can see and edit Fieldnote fields.</p>
+
+<p>Creating different users with different capabilities will let you see these
+behaviors in action. Fieldnote helpfully displays a message telling you which
+permissions it is trying to resolve for the current field/user combination.</p>
+
+<p>Definitely look through the code to see various implementation details.</p>
+
+{% endtrans %}

@@ -1,0 +1,8 @@
+{{ delete_form }}
+{% for key,value in content %}
+    {% if value.title is not empty %}
+        {{ value.title }} |
+    {% endif %}
+    {{ value.time }}
+    {{ value.message|raw }}
+{% endfor %}

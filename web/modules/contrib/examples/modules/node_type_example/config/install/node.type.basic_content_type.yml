@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - node_type_example
+name: 'Example: Basic Content Type'
+type: basic_content_type
+description: 'This is a very basic content type.'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: true
+third_party_settings: {  }

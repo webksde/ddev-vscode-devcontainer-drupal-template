@@ -1,0 +1,4 @@
+services:
+  rest_example_client_calls:
+    class: Drupal\rest_example\RestExampleClientCalls
+    arguments: ['@http_client', '@config.factory']

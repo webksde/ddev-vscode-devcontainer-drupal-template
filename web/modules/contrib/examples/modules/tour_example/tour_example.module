@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Module file for tour_example.
+ */
+
+/**
+ * @defgroup tour_example Example: Tour
+ * @ingroup examples
+ * @{
+ * The Tour module allows you you make instructional tours of user interfaces.
+ *
+ * The Tour module comes with Drupal 8 and makes it easy for developers to add
+ * "Tours" for guiding users through unfamiliar user interfaces.
+ *
+ * Each tour is comprised of a series of tooltips that provide contextual
+ * information about an interface. The user can start a tour by clicking the
+ * "Tour" icon on the right side of the Drupal 8 toolbar. The tour icon is only
+ * visible when there is a tour available on the current page.
+ *
+ * The Tour module provides the Tour API, which makes it easy for developers to
+ * add tours to their modules. In most cases, adding a tour is as simple as
+ * creating a YAML file in the config directory in their module, containing the
+ * expected data. For a detailed example of such a file, see
+ * config/install/tour.tour.tour-example.yml.
+ *
+ * If you are interested in building tours through a user interface, you may
+ * want to look at the Tour UI module: https://drupal.org/project/tour_ui
+ *
+ * The Tour module uses the Joyride jQuery plugin for its underlying
+ * functionality. You can find more information about Joyride at
+ * https://github.com/zurb/joyride
+ */
+
+/**
+ * @} End of "defgroup tour_example".
+ */

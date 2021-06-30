@@ -1,0 +1,144 @@
+# This file contains routing entries which is then read by Drupal to match
+# a particular request which a corresponding path.  A particular route entry
+# is bound to the URI defined using 'path' key, the 'access content' permission
+# is checked on the accessing user and, if access is granted, the
+# MenuExampleController::{methodName} method is invoked and a page is displayed
+# with defined response.
+# '_controller' defines the controller class and it's method which Drupal's
+# autoload mechanism looks for, creating the response from.
+#
+examples.menu_example: # This is a route name.
+  path: '/examples/menu-example'
+  defaults:
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::description'
+    _title: 'Menu Example'
+  requirements:
+    _permission: 'access content'
+
+# This menu entry will appear as main menu tab instead of tools menu.
+# In menu_example.links.menu.yml we have used 'menu_name' as 'main' which links
+# the menu entry to main navigation menu.
+examples.menu_example.alternate_menu:
+  path: '/examples/menu-example-alternate-menu'
+  defaults:
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::alternateMenu'
+    _title: 'Menu Example: Menu in alternate menu'
+  requirements:
+    _permission: 'access content'
+
+# The menu entry demonstrates the use of permissions to restrict access
+# to a particular path until and unless the requirement is met.
+examples.menu_example.permissioned:
+  path: '/examples/menu-example/permissioned'
+  defaults:
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::permissioned'
+    _title: 'Permissioned Route Example'
+  requirements:
+    _permission: 'access content'
+
+# Only the user with the required permission will be able to access this route.
+examples.menu_example.permissioned_controlled:
+  path: '/examples/menu-example/permissioned/controlled'
+  defaults:
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::permissionedControlled'
+    _title: 'Permissioned Route'
+  requirements:
+    _permission: 'access protected menu example'
+
+# Sometimes just relying on permissions and/or roles is not sufficient
+# and you need to do custom access checking on routes.
+examples.menu_example.custom_access:
+  path: '/examples/menu-example/custom-access'
+  defaults:
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::customAccess'
+    _title: 'Custom Access Example'
+  requirements:
+    _permission: 'access content'
+
+# Custom access is called once this route is requested.
+# Check src/Access/RoleAccessCheck.php
+examples.menu_example.custom_access_page:
+  path: '/examples/menu-example/custom-access/page'
+  defaults:
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::customAccessPage'
+    _title: 'Custom Access Menu Item'
+  requirements:
+    _menu_example_role: 'TRUE'
+
+# This route has a corresponding menu entry, so the user can click on it in the
+# UI. This gives them a link to a route with no menu entry.
+examples.menu_example.route_only:
+  path: '/examples/menu-example/route-only'
+  defaults:
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::routeOnly'
+    _title: 'Route only example'
+  requirements:
+    _permission: 'access content'
+
+# These type of routes can be used to create webservices.
+examples.menu_example.route_only.callback:
+  path: '/examples/menu-example/route-only/callback'
+  defaults:
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::routeOnlyCallback'
+    _title: 'Callback only'
+  requirements:
+    _permission: 'access content'
+
+# Drupal 8's routes may include placeholder elements which designate places
+# where the URL contains dynamic values. In the controller method, this value
+# is available when a variable with the same name is used in the controller
+# method. Matching the variable name is must. The {arg} element in the URL is
+# called a slug and is available as a $arg in the controller method.
+examples.menu_example.use_url_arguments:
+  path: '/examples/menu-example/use-url-arguments/{arg1}/{arg2}'
+  defaults:
+    _title: 'URL Arguments'
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::urlArgument'
+    # We provide default value to both arguments.
+    arg1: ''
+    arg2: ''
+  requirements:
+    _permission: 'access content'
+
+# Title of this menu entry will be altered by controller method defined by
+# key '_title_callback'.
+examples.menu_example.title_callbacks:
+  path: '/examples/menu-example/title-callbacks'
+  defaults:
+    _title_callback: 'Drupal\menu_example\Controller\MenuExampleController::titleCallback'
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::titleCallbackContent'
+  requirements:
+    _permission: 'access content'
+
+# A menu item entry to demonstrate use of parameters in routes.
+examples.menu_example.placeholder_argument:
+  path: '/examples/menu-example/placeholder-argument'
+  defaults:
+    _title: 'Placeholder Arguments'
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::placeholderArgs'
+  requirements:
+    _permission: 'access content'
+
+# Parameters in routes can be used as placeholders arguments too.
+examples.menu_example.placeholder_argument.display:
+  path: '/examples/menu-example/placeholder-argument/{arg}/display'
+  defaults:
+    _title: 'Placeholder Arguments'
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::placeholderArgsDisplay'
+  requirements:
+    arg: \d+
+    _permission: 'access content'
+
+# Any route defined here can be altered. We can do so by defining a RouteSubscriber!
+example.menu_example.path_override:
+  path: '/examples/menu-example/menu-original-path'
+  defaults:
+    _title: 'Menu path that will be altered'
+    _controller: '\Drupal\menu_example\Controller\MenuExampleController::pathOverride'
+  requirements:
+    _permission: 'access content'
+
+# Dynamic routes are implemented in a method. This method is added as a
+# 'route_callbacks'
+route_callbacks:
+  - '\Drupal\menu_example\Routing\MenuExampleDynamicRoutes::routes'

@@ -1,0 +1,55 @@
+# These routes are tells Drupal where to find the content/actions for each URL.
+
+# Description and help text.
+rest_example.getting_started:
+  path: '/examples/rest-getting-started'
+  defaults:
+    _title: 'REST Example: Getting started'
+    _controller: '\Drupal\rest_example\Controller\RestExampleHelpController::description'
+  requirements:
+    _permission: 'access content'
+
+# The client setup page.
+rest_example.client_settings:
+  path: '/examples/rest-client-settings'
+  defaults:
+    _title: 'Connect to a remote Drupal site'
+    _form: '\Drupal\rest_example\Form\RestExampleClientSettings'
+  requirements:
+    _permission: 'access content'
+
+# Listing of all the remote nodes, of the type rest_example_test.
+rest_example.client_actions_index:
+  path: '/examples/rest-client-actions'
+  defaults:
+    _title: 'Nodes on the remote Drupal server'
+    _controller: '\Drupal\rest_example\Controller\RestExampleClientController::indexAction'
+  requirements:
+    _permission: 'access content'
+
+# Create a new node on the remote server.
+rest_example.client_actions_create:
+  path: '/examples/rest-client-actions/create'
+  defaults:
+    _title: 'Create node on remote Drupal server'
+    _form: '\Drupal\rest_example\Form\RestExampleClientEdit'
+  requirements:
+    _permission: 'access content'
+
+# Edit a node on the remote server.
+rest_example.client_actions_edit:
+  path: '/examples/rest-client-actions/edit/{id}'
+  defaults:
+    _title: 'Edit node on remote Drupal server'
+    _form: '\Drupal\rest_example\Form\RestExampleClientEdit'
+  requirements:
+    _permission: 'access content'
+
+# Delete a node on the remote server.
+rest_example.client_actions_delete:
+  path: '/examples/rest-client-actions/delete/{id}'
+  defaults:
+    _title: 'Delete node on remote Drupal server'
+    _form: '\Drupal\rest_example\Form\RestExampleClientDelete'
+  requirements:
+    _permission: 'access content'

@@ -1,0 +1,10 @@
+'delete contact entity':
+  title: Delete entity content.
+'add contact entity':
+  title: Add entity content
+'view contact entity':
+  title: View entity content
+'edit contact entity':
+  title: Edit entity content
+'administer contact entity':
+  title: Administer settings

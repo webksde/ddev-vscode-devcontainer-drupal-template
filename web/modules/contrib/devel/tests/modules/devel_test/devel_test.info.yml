@@ -1,0 +1,10 @@
+name: 'Devel test module'
+type: module
+description: 'Support module for Devel testing.'
+package: Testing
+core_version_requirement: ^8.8 || ^9
+
+# Information added by Drupal.org packaging script on 2020-12-31
+version: '4.1.1'
+project: 'devel'
+datestamp: 1609419530

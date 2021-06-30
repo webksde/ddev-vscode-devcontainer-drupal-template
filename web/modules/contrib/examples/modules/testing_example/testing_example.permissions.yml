@@ -1,0 +1,6 @@
+# In this case we're adding an addition permission that does the same
+# as the one the node module offers, just to demonstrate this error.
+'extra special edit any testing_example':
+  title: Extra special edit any Testing Example
+  description: Allow user to edit any Testing Example content authored by any user.
+  'restrict access': TRUE

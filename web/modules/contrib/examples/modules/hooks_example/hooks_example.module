@@ -1,0 +1,226 @@
+<?php
+
+/**
+ * @file
+ * Examples demonstrating how to implement and invoke hooks.
+ */
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * @defgroup hooks_example Example: Hooks
+ * @ingroup examples
+ * @{
+ * Demonstrates implementing, defining, and invoking hooks.
+ *
+ * Knowing how to implement, define, and invoke hooks is a critical concept for
+ * any Drupal developer.
+ *
+ * Hooks are specially named functions called at key points in order to allow
+ * other code to alter, extend, and enhance the behavior of Drupal core, or
+ * another module. Without requiring changes to the original code.
+ *
+ * Every hook has three parts; a name, an implementation, and a definition.
+ *
+ * Hooks are implemented by following the function naming convention and
+ * reviewing the documentation associated with a hook to discover parameters and
+ * their expected values. Learn how to implement hooks by reviewing
+ * hooks_example_help(), hooks_example_node_view(), and
+ * hooks_example_form_alter() below.
+ *
+ * Because the list of hook implementations is cached you'll need to clear the
+ * cache when first adding a new hook implementation.
+ *
+ * Hooks are defined by creating a new, unique, hook name, providing
+ * documentation for the hook in an {MODULE_NAME}.api.php file, and using either
+ * \Drupal\Core\Extension\ModuleHandlerInterface::invokeAll(),
+ * \Drupal\Core\Extension\ModuleHandlerInterface::invoke(), or
+ * \Drupal\Core\Extension\ModuleHandlerInterface::alter() via the
+ * 'module_handler' service to call implementations of a hook in all enabled
+ * modules. Learn how to define, and invoke a new hook by reviewing
+ * hooks_example_node_view().
+ *
+ * Learn how to document a hook by reviewing hooks_example.api.php.
+ *
+ * @link https://www.drupal.org/docs/8/creating-custom-modules/understanding-hooks
+ * Understanding hooks @endlink
+ *
+ * In order to see this example module in action you should create one or more
+ * nodes on your site. Then visit those nodes and look for the view counter
+ * added by this module. In addition, look for the special message displayed at
+ * the top of a node the first time you view it.
+ *
+ * @see hooks
+ * @see \Drupal\Core\Extension\ModuleHandlerInterface
+ */
+
+/**
+ * Implements hook_help().
+ *
+ * When implementing a hook you should use the standard text "Implements
+ * HOOK_NAME." as the docblock for the function. This is an indicator that
+ * further documentation for the function parameters can be found in the
+ * docblock for hook being implemented and reduces duplication.
+ *
+ * This function is an implementation of hook_help(). Following the naming
+ * convention for hooks, the "hook_" in hook_help() has been replaced with the
+ * short name of our module, "hooks_example_" resulting in a final function name
+ * of hooks_example_help().
+ */
+function hooks_example_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // For help overview pages we use the route help.page.$moduleName.
+    case 'help.page.hooks_example':
+      return '<p>' . t('This text is provided by the function <code>hooks_example_help()</code>, which is an implementation of <code>hook hook_help()</code>. To learn more about how this works checkout the code in <code>hooks_example.module</code>.') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ *
+ * Some hook names include additional tokens that need to be replaced when
+ * implementing the hook. These hooks are dynamic in that when they are being
+ * invoked a portion of their name is replaced with a dynamic value. This is
+ * indicated by placing the token words in all caps. This pattern is often used
+ * in situations where you want to allow modules to generically act on all
+ * instances of a thing, or to act on only a specific subset.
+ *
+ * There are lots of different entity types in Drupal. Node, user, file, etc.
+ * Using hook_entity_view() a module can act on a any entity that is being
+ * viewed, regardless of type. If we wanted to count views of all entities,
+ * regardless of type this would be a good choice. This variant is also useful
+ * if you want to provide administrators with a form where they can choose from
+ * a list of entity types which ones they want to count views for. The logic in
+ * the generic hook implementation could then take that into account and act on
+ * only a select set of entity types.
+ *
+ * If however, you know you only ever want to act on viewing of a node entity
+ * you can instead implement hook_ENTITY_TYPE_view(). Where ENTITY_TYPE is a
+ * token that can be replaced with any valid entity type name.
+ *
+ * @see hook_entity_view()
+ * @see hook_ENTITY_TYPE_view()
+ */
+function hooks_example_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  // This example hook implementation keeps track of the number of times a user
+  // has viewed a specific node during their current session. Then displays that
+  // information for them when they view a node.
+  //
+  // In addition, a hook is invoked that allows other modules to react when the
+  // page view count is updated.
+  //
+  // Retrieve the active session from the current request object.
+  $session = \Drupal::request()->getSession();
+  $current_counts = $session->get('hooks_example.view_counts', []);
+  if (!isset($current_counts[$entity->id()])) {
+    // If this is the first time they've viewed the page we need to start the
+    // counter.
+    $current_counts[$entity->id()] = 1;
+  }
+  else {
+    // If they have already viewed this page just increment the existing
+    // counter.
+    $current_counts[$entity->id()]++;
+  }
+
+  // Save the updated values.
+  $session->set('hooks_example.view_counts', $current_counts);
+
+  // Invoke a hook to alert other modules that the count was updated.
+  //
+  // Hooks are invoked via the `module_handler` service. Which is an instance of
+  // \Drupal\Core\Extension\ModuleHandlerInterface.
+  //
+  // Hooks can be invoked in a few different ways:
+  // - All at once using ModuleHandlerInterface::invokeAll() to call all
+  //   implementations of the specified hook provided by any enabled module.
+  // - One at a time using ModuleHandlerInterface::invoke() to call only the
+  //   the specified module's implementation of a hook.
+  // - Using ModuleHandlerInterface::alter() to pass alterable variables to
+  //   hook_TYPE_alter() implementations for all enabled modules. This method
+  //   should be used for instances where the calling module has assembled data
+  //   and would like to give other modules an opportunity to alter that data
+  //   before it's used. A common pattern is to use invokeAll() to first gather
+  //   input from other modules, the immediately afterwards call alter() to give
+  //   modules the opportunity to alter the aggregate data.
+  $module_handler = \Drupal::moduleHandler();
+
+  // Calling \Drupal\Core\Extension\ModuleHandlerInterface::invokeAll() will
+  // call implementations of the hook in question for all enabled modules. The
+  // method takes two arguments. The name of the hook to invoke, and an optional
+  // array of arguments to pass to any functions implementing the hook.
+  //
+  // Hook names need to be unique. So when defining a new hook in your module it
+  // is customary to prefix the hook name with the short name of your module
+  // followed by the descriptive name of the hook itself. Because hooks names
+  // are also PHP function names they should contain only lowercase alphanumeric
+  // characters and underscores.
+  //
+  // The hook name parameter should have the "hook_" prefix removed. So if you
+  // want to invoke hook_mymodule_do_something() the value used here would be
+  // 'mymodule_do_something'.
+  //
+  // Hook implementations can optionally return a value, depending on the hook
+  // definition. If they do, the invokeAll() method aggregates the responses
+  // from all hooks in an array and returns the array.
+  //
+  // In this example we're invoking hook_hooks_example_count_incremented() and
+  // passing all implementations the current view count for the node, and the
+  // node object itself.
+  $module_handler->invokeAll('hooks_example_count_incremented', [$current_counts[$entity->id()], $entity]);
+
+  // Display the current number of pages the user has viewed along with the
+  // node's content.
+  $build['view_count'] = [
+    '#markup' => '<p>' . t('You have viewed this node @total times this session.', ['@total' => $current_counts[$entity->id()]]) . '</p>',
+    // In order for this example to work we disable caching for the content of
+    // this node completely. This ensures that our hook is called every time the
+    // node is viewed instead of using a cached version of the page for
+    // subsequent requests.
+    '#cache' => [
+      'max-age' => 0,
+    ],
+  ];
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function hooks_example_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // This is an example of what is known as an alter hook. The $form parameter
+  // in this case represents an already complete Form API array and our hook
+  // implementation is being given the opportunity to make changes to the
+  // existing data structure before it's used. Inovking and alter hooks is a
+  // common pattern anytime lists or complex data structures are assembled.
+  // hook_form_alter(), which allows you to manipulate any form, is one of the
+  // most commonly implemented hooks.
+  //
+  // @see hook_form_alter()
+  // @see hook_form_FORM_ID_alter()
+  //
+  // If this is the user login form, change the description text of the username
+  // field.
+  if ($form_id === 'user_login_form') {
+    $form['name']['#description'] = t('This text has been altered by hooks_example_form_alter().');
+  }
+}
+
+/**
+ * Implements hook_hooks_example_count_incremented().
+ *
+ * Hooks can be implemented by both the module that invokes them like we are
+ * doing here, as well as by any other enabled module.
+ */
+function hooks_example_hooks_example_count_incremented($current_count, NodeInterface $node) {
+  if ($current_count === 1) {
+    \Drupal::messenger()->addMessage(t('This is the first time you have viewed the node %title.', ['%title' => $node->label()]));
+  }
+}
+
+/**
+ * @} End of "defgroup hooks_example".
+ */

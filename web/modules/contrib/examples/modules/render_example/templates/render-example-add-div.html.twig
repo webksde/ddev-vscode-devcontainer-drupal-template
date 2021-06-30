@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ * Default theme implementation for render_example_add_div.
+ *
+ * Wraps a div around the already-rendered #children.
+ *
+ * Available variables:
+ * - element: Element that will be rendered.
+ *
+ * @ingroup themeable
+ */
+#}
+<div class="render-example-wrapper-div">
+  {{ element['#children'] }}
+</div>

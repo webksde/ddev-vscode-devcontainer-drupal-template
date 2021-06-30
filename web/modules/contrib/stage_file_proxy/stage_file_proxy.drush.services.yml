@@ -1,0 +1,11 @@
+services:
+  stage_file_proxy.command:
+    class: Drupal\stage_file_proxy\Commands\StageFileProxyCommands
+    arguments:
+      - '@config.factory'
+      - '@database'
+      - '@stage_file_proxy.fetch_manager'
+      - '@logger.channel.stage_file_proxy'
+      - '@app.root'
+    tags:
+      -  { name: drush.command }

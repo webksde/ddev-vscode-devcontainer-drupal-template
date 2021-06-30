@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Example forms using the Forms API.
+ */
+
+/**
+ * @defgroup form_api_example Example: Forms API
+ * @ingroup examples
+ * @{
+ * Examples using Forms API.
+ *
+ * Creating A Drupal Form requires:
+ * - Creating a class that extends \Drupal\Core\Form\FormBase or
+ *   \Drupal\Core\Form\ConfigFormBase
+ *   - \Drupal\form_api_example\Form\SimpleForm
+ * - Register the route to the form or invoke using
+ *   \Drupal::formBuilder()->getForm()
+ *   - form_api_example.routing.yml
+ *
+ * In addition to the simple example described above this module provides
+ * examples that demonstrate:
+ * - Elements used for data input
+ *   -\Drupal\form_api_example\Form\InputDemo
+ * - The order of execution of form controller methods
+ *   - \Drupal\form_api_example\Form\BuildDemo
+ * - Container elements used to group items
+ *   - \Drupal\form_api_example\Form\ContainerDemo
+ * - Hiding elements based on the state of other elements
+ *   - \Drupal\form_api_example\Form\StateDemo
+ * - Vertical Tabs elements in forms
+ *   - \Drupal\form_api_example\Form\VerticalTabsDemo
+ * - Populating a portion on a form with Ajax callbacks
+ *   - \Drupal\form_api_example\Form\AjaxColorForm
+ * - Adding additional fields to a form with Ajax callbacks
+ *   - \Drupal\form_api_example\Form\AjaxAddMore
+ * - Modal form creation
+ *   - \Drupal\form_api_example\Controller\Page
+ *   - \Drupal\form_api_example\Form\ModalForm
+ * - Displaying a form in a block
+ *   - \Drupal\form_api_example\Plugin\Block\SimpleFormBlock
+ *
+ * @} End of "defgroup field_example".
+ */

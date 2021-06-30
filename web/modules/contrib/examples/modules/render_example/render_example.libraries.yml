@@ -1,0 +1,9 @@
+# Define a new asset library which includes the CSS used to style the page
+# at examples/render_example/arrays. See how asset libraries are attached to
+# render arrays by reading the example code in
+# Drupal\render_example\Controller\RenderExampleController::arrays().
+render-example.library:
+  version: 1.x
+  css:
+    theme:
+      css/render_example.css: {}

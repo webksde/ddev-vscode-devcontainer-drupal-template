@@ -1,0 +1,24 @@
+# This is the drupalci.yml file for the Examples project.
+
+# Learn how to make your own:
+# https://www.drupal.org/drupalorg/docs/drupal-ci/customizing-drupalci-testing-for-projects
+
+# This drupalci.yml build file should almost exactly mirror the default contrib
+# build used by the testbot. We are only adding the
+# 'suppress-deprecations: false' config to the run_tests tasks. This is so we
+# can catch Drupal core deprecations early.
+build:
+  assessment:
+    validate_codebase:
+      phplint:
+      csslint:
+      eslint:
+      phpcs:
+    testing:
+      run_tests.standard:
+        types: 'Simpletest,PHPUnit-Unit,PHPUnit-Kernel,PHPUnit-Functional'
+        suppress-deprecations: false
+      run_tests.js:
+        concurrency: 1
+        types: 'PHPUnit-FunctionalJavascript'
+        suppress-deprecations: false

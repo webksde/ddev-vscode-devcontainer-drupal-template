@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.locked_content_type.body
+    - node.type.locked_content_type
+  module:
+    - text
+    - user
+  enforced:
+    module:
+      - node_type_example
+id: node.locked_content_type.default
+targetEntityType: node
+bundle: locked_content_type
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+  links:
+    weight: 100
+hidden: {  }

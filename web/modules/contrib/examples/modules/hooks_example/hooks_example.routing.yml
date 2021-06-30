@@ -1,0 +1,8 @@
+# hooks_example only has one route. It is to a page explaining the module.
+hooks_example.description:
+  path: '/examples/hooks-example'
+  defaults:
+    _controller: '\Drupal\hooks_example\Controller\HooksExampleController::description'
+    _title: 'Hooks Example'
+  requirements:
+    _permission: 'access content'

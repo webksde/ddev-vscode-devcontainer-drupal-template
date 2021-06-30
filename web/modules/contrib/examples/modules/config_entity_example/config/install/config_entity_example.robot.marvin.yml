@@ -1,0 +1,20 @@
+# This file defines a default config entity. This allows the module to include
+# config entities that are present 'out of the box'. Default config entities
+# are created in Drupal when the module is enabled. They are removed when the
+# module is uninstalled.
+
+# Default config entities can be edited by the user within Drupal. This edited
+# entity wil become exportable through the configuration system. This file,
+# however, will remain untouched.
+
+# For our config entity to be added at installation time, we have to place it in
+# the config/install directory of our module. Thus our file is located at:
+# config/install/config_entity_example.robot.marvin.yml.
+
+# You can see where these properties are defined in the annotation of
+# Drupal\config_entity_example\Entity\Robot.
+
+# The id of the config entity.
+id: marvin
+# Our properties follow.
+label: 'Marvin, the paranoid android'

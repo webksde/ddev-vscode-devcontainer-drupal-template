@@ -1,0 +1,44 @@
+{#
+/**
+ * @file
+ * Contains the description text of an Example explanation/description page
+ *
+ * Available variables:
+ * - admin_link: The translated link pointing to a configuration page for the example.
+ */
+#}
+
+<div class='examples-description'>
+
+  {% trans %}
+  <p>The Stream Wrapper Example module demonstrates a PHP stream wrapper implementation.
+  A stream wrapper is a class that implements something that looks and behaves like a
+  file system. A particular implementation of a stream wrapper is called a <em>scheme</em>.
+  Drupal 8 supports public, private, and temporary wrapper schemes. For example, you
+  access a file in your public uploads directory via a "public" file URI such as
+  <code>public://images/big-logo.png</code>. When you read, write, delete or move that
+  file, the <code>public</code> scheme's stream wrapper class
+  (<code>\Drupal\Core\StreamWrapper\PublicStream</code>) is invoked to do the reading,
+  writing, deletion or moving. PHP does this automatically for you, creating the wrapper
+  whenever some file operation needs to get done on a <code>public://</code> file.
+  </p>
+
+  <p>To demonstrate how to implement a stream wrapper, this example module creates a
+  <code>session</code> wrapper scheme. It uses your session data (created when you
+  log into Drupal) to create a nested array where the arrays represent directories,
+  and scalar values represent files.  This is completely impractical, and frankly,
+  not terribly secure, so you should never enable this module on any site that's
+  open to the Internet.  But without using any special libraries, our stream wrapper
+  class is able to create and delete directories, and read and write files.
+  </p>
+
+  <p>If you want to play with <code>session</code> file URIs, we recommend also enabling
+  the File Example (file_example.module), which will let you do the same things with
+  the "session" scheme that you can do with public, private or temporary files.</p>
+
+  <p>A longer description of what code is where can be found in
+  <code>stream_wrapper_example.module</code>.  Definitely look through the code to see
+  various implementation details.</p>
+  {% endtrans %}
+
+</div>

@@ -1,0 +1,38 @@
+{#
+
+Description text for the Form API Example.
+
+#}
+
+{{ attach_library('core/drupal.dialog.ajax') }}
+{% set simple_form = path('form_api_example.simple_form') %}
+{% set multistep_form = path('form_api_example.multistep_form') %}
+{% set input_demo = path('form_api_example.input_demo') %}
+{% set build_demo = path('form_api_example.build_demo') %}
+{% set container_demo = path('form_api_example.container_demo') %}
+{% set state_demo = path('form_api_example.state_demo') %}
+{% set vertical_tabs_demo = path('form_api_example.vertical_tabs_demo') %}
+{% set ajax_demo = path('form_api_example.ajax_color_demo') %}
+{% set ajax_addmore = path('form_api_example.ajax_addmore') %}
+{% set modal_form = path('form_api_example.modal_form', {'nojs': 'nojs'}) %}
+{% set block_admin = path('block.admin_display') %}
+
+{% trans %}
+<p>Form examples to demonstrate common UI solutions using the Drupal Form API</p>
+<p><a href={{ simple_form }}>Simple form</a></p>
+<p><a href={{ multistep_form }}>Multistep form</a></p>
+<p><a href={{ input_demo }}>Common input elements</a></p>
+<p><a href={{ build_demo }}>Build form demo</a></p>
+<p><a href={{ container_demo }}>Container elements</a></p>
+<p><a href={{ state_demo }}>Form state binding</a></p>
+<p><a href={{ vertical_tabs_demo }}>Vertical tab elements</a></p>
+<p><a href={{ ajax_demo }}>Ajax form</a></p>
+<p><a href={{ ajax_addmore }}>Add-more button</a></p>
+<p><a href={{ modal_form }}>Modal form</a></p>
+
+<p>This module also provides a block, "Example: Display a form" that
+    demonstrates how to display a form in a block. This same technique can be
+    used whenever you need to display a form that is not the primary content of
+    a page. You can enable it on your site <a href={{ block_admin }}>using the
+    block admin page</a>.</p>
+{% endtrans %}

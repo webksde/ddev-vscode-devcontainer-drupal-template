@@ -1,0 +1,134 @@
+<?php
+
+/**
+ * @file
+ * Outlines how a module can use the Batch API.
+ */
+
+/**
+ * @defgroup batch_example Example: Batch API
+ * @ingroup examples
+ * @{
+ * Outlines how a module can use the Batch API.
+ *
+ * Batches allow heavy processing to be spread out over several page
+ * requests, ensuring that the processing does not get interrupted
+ * because of a PHP timeout, while allowing the user to receive feedback
+ * on the progress of the ongoing operations. It also can reduce out of memory
+ * situations.
+ *
+ * The @link batch_example.install .install file @endlink also shows how the
+ * Batch API can be used to handle long-running hook_update_N() functions.
+ *
+ * Two harmless batches are defined:
+ * - batch 1: Load the node with the lowest nid 100 times.
+ * - batch 2: Load all nodes, 20 times and uses a progressive op, loading nodes
+ *   by groups of 5.
+ *
+ * @see batch
+ */
+
+/**
+ * Batch operation for batch 1: one at a time.
+ *
+ * This is the function that is called on each operation in batch 1.
+ */
+function batch_example_op_1($id, $operation_details, &$context) {
+  // Simulate long process by waiting 1/50th of a second.
+  usleep(20000);
+
+  // Store some results for post-processing in the 'finished' callback.
+  // The contents of 'results' will be available as $results in the
+  // 'finished' function (in this example, batch_example_finished()).
+  $context['results'][] = $id;
+
+  // Optional message displayed under the progressbar.
+  $context['message'] = t('Running Batch "@id" @details',
+    ['@id' => $id, '@details' => $operation_details]
+  );
+}
+
+/**
+ * Batch operation for batch 2: five at a time.
+ *
+ * This is the function that is called on each operation in batch 2.
+ *
+ * After each group of 5 control is returned to the batch API for later
+ * continuation.
+ */
+function batch_example_op_2($operation_details, &$context) {
+  // Use the $context['sandbox'] at your convenience to store the
+  // information needed to track progression between successive calls.
+  if (empty($context['sandbox'])) {
+    $context['sandbox'] = [];
+    $context['sandbox']['progress'] = 0;
+    $context['sandbox']['current_node'] = 0;
+
+    // Save node count for the termination message.
+    $context['sandbox']['max'] = 30;
+  }
+
+  // Process in groups of 5 (arbitrary value).
+  // When a group of five is processed, the batch update engine determines
+  // whether it should continue processing in the same request or provide
+  // progress feedback to the user and wait for the next request.
+  // That way even though we're already processing at the operation level
+  // the operation itself is interruptible.
+  $limit = 5;
+
+  // Retrieve the next group.
+  $result = range($context['sandbox']['current_node'] + 1, $context['sandbox']['current_node'] + 1 + $limit);
+
+  foreach ($result as $row) {
+    // Here we actually perform our dummy 'processing' on the current node.
+    usleep(20000);
+
+    // Store some results for post-processing in the 'finished' callback.
+    // The contents of 'results' will be available as $results in the
+    // 'finished' function (in this example, batch_example_finished()).
+    $context['results'][] = $row . ' ' . $operation_details;
+
+    // Update our progress information.
+    $context['sandbox']['progress']++;
+    $context['sandbox']['current_node'] = $row;
+    $context['message'] = t('Running Batch "@id" @details',
+      ['@id' => $row, '@details' => $operation_details]
+    );
+  }
+
+  // Inform the batch engine that we are not finished,
+  // and provide an estimation of the completion level we reached.
+  if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+    $context['finished'] = ($context['sandbox']['progress'] >= $context['sandbox']['max']);
+  }
+}
+
+/**
+ * Batch 'finished' callback used by both batch 1 and batch 2.
+ */
+function batch_example_finished($success, $results, $operations) {
+  $messenger = \Drupal::messenger();
+  if ($success) {
+    // Here we could do something meaningful with the results.
+    // We just display the number of nodes we processed...
+    $messenger->addMessage(t('@count results processed.', ['@count' => count($results)]));
+    $messenger->addMessage(t('The final result was "%final"', ['%final' => end($results)]));
+  }
+  else {
+    // An error occurred.
+    // $operations contains the operations that remained unprocessed.
+    $error_operation = reset($operations);
+    $messenger->addMessage(
+      t('An error occurred while processing @operation with arguments : @args',
+        [
+          '@operation' => $error_operation[0],
+          '@args' => print_r($error_operation[0], TRUE),
+        ]
+      )
+    );
+  }
+}
+
+/**
+ * @} End of "defgroup batch_example".
+ */

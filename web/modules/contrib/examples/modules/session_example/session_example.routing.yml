@@ -1,0 +1,14 @@
+session_example.form:
+  path: '/examples/session_example'
+  defaults:
+    _form: '\Drupal\session_example\Form\SessionExampleForm'
+    _title: 'Session Example'
+  requirements:
+    _permission: 'access content'
+session_example.view:
+  path: '/examples/session_example/view'
+  defaults:
+    _controller: '\Drupal\session_example\Controller\SessionExampleController::showSession'
+    _title: 'Session Example: Current Values'
+  requirements:
+    _permission: 'access content'

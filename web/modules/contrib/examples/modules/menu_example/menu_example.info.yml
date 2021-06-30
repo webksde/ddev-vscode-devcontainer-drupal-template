@@ -1,0 +1,12 @@
+name: Menu Example
+type: module
+description: 'An example module showing the main steps to define and handling menu links'
+package: 'Example modules'
+core_version_requirement: ^9
+dependencies:
+  - drupal:examples
+
+# Information added by Drupal.org packaging script on 2020-11-18
+version: '3.0.2'
+project: 'examples'
+datestamp: 1605715872

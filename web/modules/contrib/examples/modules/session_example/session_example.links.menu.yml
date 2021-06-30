@@ -1,0 +1,6 @@
+# Define the menu links for this module
+
+session_example.form:
+  title: 'Session Example'
+  route_name: session_example.form
+  description: 'Setting Form'

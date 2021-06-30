@@ -1,0 +1,5 @@
+services:
+  devel_debug_log.twig.devel_debug_log_extension:
+    class: Drupal\devel_debug_log\Twig\DevelDebugLogExtension
+    tags:
+      - name: twig.extension

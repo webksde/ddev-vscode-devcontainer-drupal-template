@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * Default theme implementation for render_array_help.
+ *
+ * Themes the render array help portion (from the demonstration page).
+ *
+ * Available variables:
+ * - element: Element that will be rendered.
+ * - element['rendered'] : rendered element
+ * - element['unrendered'] : unrendered element
+ * - element['description'] : the description of this example
+ *
+ * @ingroup themeable
+ */
+#}
+<div class="render_example--array">
+  <h2>{{ element['description'] }}</h2>
+  <h3>Rendered Element</h3>
+  <div class="render_example--rendered">
+    {{ element['rendered'] }}
+  </div>
+  <h3>Unrendered Element</h3>
+  <pre><code class="render_example--code">{{ element['unrendered'] }}</code></pre>
+</div>

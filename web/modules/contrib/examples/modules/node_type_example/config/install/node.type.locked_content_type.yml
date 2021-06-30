@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - node_type_example
+name: 'Example: Locked Content Type'
+type: locked_content_type
+description: 'Demo of a locked content type. Locking must be done in code. You must uninstall this module before you can delete the content type.'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: true
+third_party_settings: {  }

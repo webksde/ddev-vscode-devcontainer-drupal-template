@@ -1,0 +1,4 @@
+execute php code:
+  title: 'Execute PHP code'
+  description: 'Run arbitrary PHP from a block.'
+  restrict access: TRUE

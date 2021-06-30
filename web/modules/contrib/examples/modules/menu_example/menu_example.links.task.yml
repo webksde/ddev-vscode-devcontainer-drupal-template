@@ -1,0 +1,53 @@
+# This file creates static local tasks (Tabs).
+# This file will be needed to place in module root.
+#
+# 'title' of the tab will show up on the user interface and tab.
+#
+# 'base_route' is the same as the name of the route where the "default" tab
+# appears. The base_route is used to group together related tabs.
+#
+# 'weight' is used to provide weights for the tabs if needed.
+# The tab whose route is the same as the base_route will by default
+# get a negative weight and appear on the left.
+#
+# 'parent_id' is used to create multi level of tabs.
+# To relate a tab to its parent use same name as parent_id as shown below in
+# examples.menu_example.tabs.secondary.
+#
+examples.menu_example.tabs:
+  route_name: examples.menu_example.tabs
+  title: Default primary tab
+  base_route: examples.menu_example.tabs
+
+examples.menu_example.tabs_second:
+  route_name: examples.menu_example.tabs_second
+  title: Second
+  base_route: examples.menu_example.tabs
+  weight: 2
+
+examples.menu_example.tabs_third:
+  route_name: examples.menu_example.tabs_third
+  title: Third
+  base_route: examples.menu_example.tabs
+  weight: 3
+
+examples.menu_example.tabs_fourth:
+  route_name: examples.menu_example.tabs_fourth
+  title: Fourth
+  base_route: examples.menu_example.tabs
+  weight: 4
+
+examples.menu_example.tabs.secondary:
+  route_name: examples.menu_example.tabs
+  title: Default secondary tab
+  parent_id: examples.menu_example.tabs
+
+examples.menu_example.tabs_default_second:
+  route_name: examples.menu_example.tabs_default_second
+  title: Second
+  parent_id: examples.menu_example.tabs
+
+examples.menu_example.tabs_default_third:
+  route_name: examples.menu_example.tabs_default_third
+  title: Third
+  parent_id: examples.menu_example.tabs

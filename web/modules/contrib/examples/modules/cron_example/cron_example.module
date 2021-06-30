@@ -1,0 +1,55 @@
+<?php
+
+/**
+ * @file
+ * Demonstrates use of the Cron API in Drupal - hook_cron().
+ */
+
+/**
+ * @defgroup cron_example Example: Cron
+ * @ingroup examples
+ * @{
+ * Example using Cron API, including hook_cron() and @QueueWorker plugins
+ *
+ * This example is part of the Examples for Developers Project
+ * which you can download and experiment with at
+ * http://drupal.org/project/examples
+ */
+
+/**
+ * Implements hook_cron().
+ *
+ * We implement hook_cron() to do "background" processing. It gets called every
+ * time the Drupal cron runs. We then decide what has to happen in response.
+ *
+ * In this example, we log a message after the time given in the state value
+ * 'cron_example.next_execution'. Then we update that variable to a time in the
+ * future.
+ */
+function cron_example_cron() {
+  // We access our configuration.
+  $cron_config = \Drupal::config('cron_example.settings');
+  // Default to an hourly interval. Of course, cron has to be running at least
+  // hourly for this to work.
+  $interval = $cron_config->get('interval');
+  $interval = !empty($interval) ? $interval : 3600;
+
+  // We usually don't want to act every time cron runs (which could be every
+  // minute) so keep a time for the next run in the site state.
+  $next_execution = \Drupal::state()->get('cron_example.next_execution', 0);
+  if (REQUEST_TIME >= $next_execution) {
+    // This is a silly example of a cron job.
+    // It just makes it obvious that the job has run without
+    // making any changes to your database.
+    \Drupal::logger('cron_example')->notice('cron_example ran');
+    if (\Drupal::state()->get('cron_example_show_status_message')) {
+      \Drupal::messenger()->addMessage(t('cron_example executed at %time', ['%time' => date('c')]));
+      \Drupal::state()->set('cron_example_show_status_message', FALSE);
+    }
+    \Drupal::state()->set('cron_example.next_execution', REQUEST_TIME + $interval);
+  }
+}
+
+/**
+ * @} End of "defgroup cron_example".
+ */

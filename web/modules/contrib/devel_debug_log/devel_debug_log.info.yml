@@ -1,0 +1,14 @@
+name: 'Devel Debug Log'
+type: module
+description: 'Stores debug information for an easier AJAX debugging.'
+package: Development
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - drupal:serialization
+  - devel:devel (>=4.0.0)
+
+# Information added by Drupal.org packaging script on 2020-10-22
+version: '8.x-1.0'
+project: 'devel_debug_log'
+datestamp: 1603346302

@@ -1,0 +1,16 @@
+name: REST Example
+type: module
+description: An example outlining how a module can use the RESTful Web Services to communicate with another Drupal instance.
+package: Example modules
+core_version_requirement: ^8.7.7 || ^9
+dependencies:
+  - drupal:rest
+  - drupal:basic_auth
+  - drupal:hal
+  - drupal:views
+  - examples:examples
+
+# Information added by Drupal.org packaging script on 2020-11-18
+version: '3.0.2'
+project: 'examples'
+datestamp: 1605715872

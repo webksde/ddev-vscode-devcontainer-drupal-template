@@ -1,0 +1,29 @@
+{#
+
+Description text for the Ajax Example.
+
+#}
+
+{% set simple_ajax_example = path('ajax_example.simplest') %}
+{% set ajax_generate_textfields = path('ajax_example.autotextfields') %}
+{% set ajax_submit = path('ajax_example.submit_driven_ajax') %}
+{% set ajax_dependent_dropdown = path('ajax_example.dependent_dropdown') %}
+{% set ajax_dependent_dropdown_nojs = path('ajax_example.dependent_dropdown', {'nojs': 'nojs'}) %}
+{% set ajax_dynamic_form = path('ajax_example.dynamic_form_sections') %}
+{% set ajax_dynamic_form_nojs = path('ajax_example.dynamic_form_sections', {'nojs': 'nojs'}) %}
+{% set ajax_wizard_example = path('ajax_example.wizard') %}
+{% set ajax_wizard_example_nojs = path('ajax_example.wizardnojs') %}
+
+{% trans %}
+
+<p>The AJAX example module provides many examples of AJAX including forms, links, and AJAX commands.</p>
+<p><a href={{ simple_ajax_example }}>Simplest AJAX Example</a></p>
+<p><a href={{ ajax_generate_textfields }}>Generate textfields</a></p>
+<p><a href={{ ajax_submit }}>Submit-driven AJAX</a></p>
+<p><a href={{ ajax_dependent_dropdown }}>Dependent dropdown</a></p>
+<p><a href={{ ajax_dependent_dropdown_nojs }}>Dependent dropdown w/ no JS</a></p>
+<p><a href={{ ajax_dynamic_form }}>Dynamic form sections</a></p>
+<p><a href={{ ajax_dynamic_form_nojs }}>Dynamic form sections w/ no JS</a></p>
+<p><a href={{ ajax_wizard_example }}>AJAX Wizard Example</a></p>
+<p><a href={{ ajax_wizard_example_nojs }}>AJAX Wizard Example w/JS turned off</a></p>
+{% endtrans %}

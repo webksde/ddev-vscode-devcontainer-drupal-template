@@ -1,0 +1,2 @@
+* For a full list of fixes in the latest release, visit:
+ https://www.drupal.org/project/admin_toolbar/releases

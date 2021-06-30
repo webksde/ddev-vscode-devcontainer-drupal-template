@@ -1,0 +1,4 @@
+events_example.description:
+  title: 'Events Example'
+  description: 'Example of dispatching and subscribing to events.'
+  route_name: events_example.description

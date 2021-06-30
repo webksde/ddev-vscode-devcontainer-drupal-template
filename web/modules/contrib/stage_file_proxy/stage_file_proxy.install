@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Install file for stage_file_proxy module.
+ */
+
+/**
+ * Set verify option.
+ */
+function stage_file_proxy_update_8001() {
+  \Drupal::configFactory()->getEditable('stage_file_proxy.settings')->set('verify', TRUE)->save();
+}
+
+/**
+ * Fix an incorrect default value for the Origin dir setting.
+ */
+function stage_file_proxy_update_8002() {
+  $config = \Drupal::configFactory()->getEditable('stage_file_proxy.settings');
+  if (FALSE === $config->get('origin_dir')) {
+    $config->set('origin_dir', '')->save();
+  }
+}

@@ -1,0 +1,10 @@
+fieldnote_sticky:
+  version: 1.x
+  css:
+    theme:
+      css/field_permission_example.css: {}
+field_permissions_description:
+  version: 1.x
+  css:
+    theme:
+      css/field-permission-description.css: {}

@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Session example module demonstrates manipulating user sessions.
+ */
+
+/**
+ * @defgroup session_example Example: Session
+ * @ingroup examples
+ * @{
+ * Demonstrating how to manipulate sessions in Drupal 8.
+ *
+ * You can read the API documentation here:
+ * https://api.drupal.org/api/drupal/core%21core.api.php/group/session/
+ *
+ * Drupal's session management is inherited from Symfony. We use the
+ * Symfony\Component\HttpFoundation\Session\SessionInterface object which we can
+ * get from the Request object.
+ *
+ * This object allows us to get and set values from the user session.
+ *
+ * We can use the session to store information per visitor.
+ *
+ * In this example, we will have the user fill out a form with some personal
+ * information, and then be able to display that information on another page.
+ *
+ * To learn more, one could examine the Stream Wrapper Example. It uses the
+ * session API to implement a session: file scheme.
+ *
+ * @see stream_wrapper_example
+ * @see https://api.drupal.org/api/drupal/core%21core.api.php/group/session/
+ */
+
+/**
+ * @} End of "defgroup session_example".
+ */

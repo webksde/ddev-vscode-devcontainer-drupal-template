@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ * Theme a simple content array.
+ *
+ * This template uses the newer recommended format where a single
+ * render array is provided to the theme function.
+*/
+#}
+{% for item in element['#items'] %}
+  {% if not loop.index %}
+  {# The first paragraph is bolded. #}
+    <p><strong>{{ item }}</strong></p>
+  {% else %}
+  {# Following paragraphs are just output as routine paragraphs. #}
+    <p>{{ item }}</p>
+  {% endif %}
+{% endfor %}

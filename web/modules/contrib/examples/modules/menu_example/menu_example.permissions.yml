@@ -1,0 +1,5 @@
+# File contains permissions for the menu_example module.
+access protected menu example:
+  title: 'Access protected menu example'
+  description: 'Bypass access control when accessing menu example.'
+  restrict access: TRUE

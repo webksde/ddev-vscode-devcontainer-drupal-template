@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Adds a solution to get production files on a development server on demand.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function stage_file_proxy_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.stage_file_proxy':
+      $output = '';
+      $output .= '<p>' . t("Stage File Proxy is a general solution for getting production files on a development server on demand. It saves you time and disk space by sending requests to your development environment's files directory to the production environment and making a copy of the production file in your development site. You should not need to enable this module in production.") . '</p>';
+      $output .= '<p>' . t('See the <a href=":project_page">project page on Drupal.org</a> for more details.', [
+        ':project_page' => 'https://www.drupal.org/project/stage_file_proxy',
+      ]) . '</p>';
+      return $output;
+  }
+}

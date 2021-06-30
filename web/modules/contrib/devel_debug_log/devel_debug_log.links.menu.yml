@@ -1,0 +1,5 @@
+devel_debug_log.list:
+  title: Debug messages
+  description: 'List debug messages.'
+  route_name: devel_debug_log.list
+  parent: system.admin_reports

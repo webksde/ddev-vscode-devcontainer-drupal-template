@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * @file
+ * Demonstrates how a module can use the Cache API.
+ */
+
+/**
+ * @defgroup cache_example Example: Cache API
+ * @ingroup examples
+ * @{
+ * Demonstrates how a module can use the Cache API.
+ *
+ * Cache API allows us to cache data that is heavy to calculate. As this can
+ * significantly speed up the Drupal site, it is recommended to use cache
+ * mechanism when it is appropriate.
+ *
+ * Cache in Drupal is very easy to use. This example will search entire Drupal
+ * folder and display all files. Since this operation includes filesystem it can
+ * take a while. This list will not change much on production
+ * websites, so we decide to cache it.
+ *
+ * @see \Drupal\Core\Cache\CacheBackendInterface
+ */
+
+/**
+ * @} End of "defgroup cache_example".
+ */

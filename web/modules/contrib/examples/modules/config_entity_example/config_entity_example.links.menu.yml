@@ -1,0 +1,3 @@
+config_entity_example.menu:
+  title: Config Entity Example
+  route_name: entity.robot.list

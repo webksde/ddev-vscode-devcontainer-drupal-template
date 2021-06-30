@@ -1,0 +1,30 @@
+#admin-toolbar-search-tab .js-form-item.form-item {
+  margin-top: 0.3rem;
+  margin-bottom: 0;
+}
+
+#admin-toolbar-search-input {
+  min-height: 30px;
+  height: 100%;
+  padding: 0 0.4rem;
+  line-height: 1.75rem;
+  margin: 0;
+  color: #3b3b3b;
+  background: #fcfcfa;
+  border: 1px solid #ccc;
+  border-radius: unset;
+  font-size: 1em;
+}
+
+.ui-autocomplete .ui-menu-item span.admin-toolbar-search-url {
+  color: rgba(0, 0, 0, 0.50);
+}
+
+.admin-toolbar-search-autocomplete-list {
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.admin-toolbar-search-autocomplete-list .ui-menu-item .ui-state-active {
+  margin: 0;
+}

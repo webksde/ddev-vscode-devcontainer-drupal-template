@@ -1,0 +1,10 @@
+admin_toolbar_tools.settings:
+  type: config_object
+  label: 'Admin Toolbar Tools settings'
+  mapping:
+    max_bundle_number:
+      type: integer
+      label: 'Number of bundles per entity type to display'
+    hoverintent_functionality:
+      type: boolean
+      label: 'Enable or disable hoverintent functionality'

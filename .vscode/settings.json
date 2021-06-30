@@ -1,0 +1,90 @@
+	{
+		/*--------------------------------------------------PHP Specific Settings--------------------------------------------------*/
+
+		"emmet.showAbbreviationSuggestions": false,
+		"emmet.showExpandedAbbreviation": "never",
+		"intelephense.files.exclude": [ //more specific excludes so Tests should be recognized
+			"**/.git/**",
+			"**/.svn/**",
+			"**/.hg/**",
+			"**/CVS/**",
+			"**/.DS_Store/**",
+			"**/node_modules/**",
+			"**/bower_components/**",
+			"**/vendor/**/{Test,test,Tests,tests}/**/*Test.php"
+		],
+		"intelephense.environment.shortOpenTag": true,
+		"editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
+		"php-docblocker.gap": true,
+		"php-docblocker.useShortNames": true,
+		"editor.quickSuggestions": {
+			"comments": true
+		},
+		"javascript.validate.enable": false,
+		"javascript.format.enable": false,
+		"php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
+		"terminal.integrated.shell.linux": "/bin/bash",
+		//"php-cs-fixer.rules": "@PhpCsFixer", needs cs!
+		"editor.formatOnSaveTimeout": 5000, //Anti Linting Save Refuse
+		"emptyIndent.removeIndent": true, //Automatically remove indentation in empty lines on save
+		"emptyIndent.highlightIndent": false, //Highlight indent on empty lines
+		"emptyIndent.highlightColor": "rgba(246,36,89,0.6)", //Highlight indent color
+		"emptyIndent.exclude": [
+			".md"
+		], //Excluded file types
+		//"phpcs.enable": true,	//activate with phpcs
+		//"phpcs.standard": "Drupal,DrupalPractice",	//phpcs standard
+		//"composer.enabled": true,
+		//"composer.executablePath": "C:\\ProgramData\\ComposerSetup\\bin\\composer.bat",	//not necessary, composer in Docker/Lando
+
+		/*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
+
+		"intelephense.environment.includePaths": [
+			"web/core/includes"
+		],
+		"intelephense.files.associations": [
+			"*.inc",
+			"*.theme",
+			"*.install",
+			"*.module",
+			"*.profile",
+			"*.php",
+			"*.phtml"
+		],
+		"breadcrumbs.enabled": true,
+		"diffEditor.ignoreTrimWhitespace": false,
+		"editor.tabSize": 2,
+		"editor.insertSpaces": true,
+		"editor.formatOnPaste": true,
+		"editor.formatOnSave": false,
+		"editor.renderWhitespace": "boundary",
+		"editor.wordWrapColumn": 80,
+		"editor.wordWrap": "off",
+		"editor.detectIndentation": true,
+		"html.suggest.html5": true,
+		"css.validate": true,
+		"editor.rulers": [
+			80
+		],
+		"files.associations": {
+			"*.inc": "php",
+			"*.module": "php",
+			"*.install": "php",
+			"*.theme": "php",
+			"*.tpl.php": "php",
+			"*.test": "php",
+			"*.php": "php",
+			"*.info": "ini",
+			"*.html": "twig",
+		},
+		"files.trimTrailingWhitespace": true,
+		"files.insertFinalNewline": true,
+		"html.format.enable": true,
+		"html.format.wrapLineLength": 80,
+		"telemetry.enableTelemetry": false,
+		"emmet.includeLanguages": {
+			"twig": "html"
+		},
+		"html.validate.scripts": false,
+		"html.validate.styles": false,
+	}

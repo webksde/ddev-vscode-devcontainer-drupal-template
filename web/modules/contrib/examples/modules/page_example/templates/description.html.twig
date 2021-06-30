@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Contains the text of the page_example explanation page
+ */
+#}
+
+{% set page_example_simple = path('page_example.simple') %}
+{% set page_example_arguments = path('page_example.arguments', {'first': 23, 'second': 56}) %}
+
+{% trans %}
+<p>The Page example module provides two pages, "simple" and "arguments".</p>
+<p>The <a href={{ page_example_simple }}>simple page</a> just returns a renderable array for display.</p>
+<p>The <a href={{ page_example_arguments }}>arguments page</a> takes two arguments and displays them, as in {{ page_example_arguments }}</p>
+{% endtrans %}

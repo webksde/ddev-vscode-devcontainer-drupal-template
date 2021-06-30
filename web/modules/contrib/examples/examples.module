@@ -1,0 +1,156 @@
+<?php
+
+/**
+ * @file
+ * Module file for Examples for Developers.
+ *
+ * This file serves as a stub file for the many Examples modules in the
+ * @link http://drupal.org/project/examples Examples for Developers Project @endlink
+ * which you can download and experiment with.
+ *
+ * One might say that examples.module is an example of documentation. However,
+ * note that the example submodules define many doxygen groups, which may or
+ * may not be a good strategy for other modules.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Url;
+
+/**
+ * @defgroup examples Examples
+ * @{
+ * Well-documented API examples for a broad range of Drupal core functionality.
+ *
+ * Developers can learn how to use a particular API quickly by experimenting
+ * with the examples, and adapt them for their own use.
+ *
+ * Download the Examples for Developers Project (and participate with
+ * submissions, bug reports, patches, and documentation) at
+ * http://drupal.org/project/examples
+ */
+
+/**
+ * Implements hook_toolbar().
+ */
+function examples_toolbar() {
+  // First, build an array of all example modules and their routes.
+  // We resort to this hard-coded way so as not to muck up each example.
+  $examples = _examples_toolbar_routes();
+
+  // Build a list of links for the menu.
+  $links = [];
+  foreach ($examples as $module => $route) {
+
+    // Check if module is installed or not.
+    if (\Drupal::moduleHandler()->moduleExists($module)) {
+
+      // Get the module info (title, description) from Drupal.
+      $info = \Drupal::service('extension.list.module')->getExtensionInfo($module);
+
+      // If there's no info, the example isn't enabled, so don't display it.
+      if (!empty($info)) {
+        $links[$module] = [
+          'title' => Html::escape($info['name']),
+          'url' => Url::fromRoute($route),
+          'attributes' => [
+            'class' => [Html::getClass($module)],
+            'title' => Html::escape($info['description']),
+          ],
+        ];
+      }
+    }
+  }
+
+  // Add a link to enable all examples.
+  $links['enable_examples'] = [
+    'title' => t('Enable Examples'),
+    'url' => Url::fromRoute('system.modules_list'),
+    'options' => [
+      'title' => t('Enable more examples in on the Extend page.'),
+    ],
+    'fragment' => 'edit-modules-example-modules',
+  ];
+
+  // Create the examples toolbar render array.
+  $items['examples'] = [
+    '#type' => 'toolbar_item',
+    'tab' => [
+      '#type' => 'link',
+      '#title' => t('Examples'),
+      '#url' => Url::fromRoute('<front>'),
+      '#attributes' => [
+        'title' => t('Developer Examples'),
+        'class' => ['toolbar-icon', 'toolbar-icon-examples'],
+      ],
+    ],
+    'tray' => [
+      '#heading' => t('Developer Examples'),
+      'shortcuts' => [
+        '#theme' => 'links__toolbar_example',
+        '#links' => $links,
+        '#attributes' => [
+          'class' => ['toolbar-menu'],
+        ],
+      ],
+    ],
+    '#weight' => 99,
+    '#attached' => [
+      'library' => [
+        'examples/examples.icons',
+      ],
+    ],
+  ];
+
+  return $items;
+}
+
+/**
+ * Get a list of toolbar links to provide.
+ *
+ * We've factored this list into a function so that we can use it to test
+ * toolbar routes.
+ *
+ * This function is for internal use.
+ *
+ * @return string[]
+ *   Keyed array of toolbar routes. Keys are the module name which supplies the
+ *   route.
+ */
+function _examples_toolbar_routes() {
+  return [
+    'ajax_example' => 'ajax_example.description',
+    'batch_example' => 'batch_example.form',
+    'block_example' => 'block_example.description',
+    'cache_example' => 'cache_example.description',
+    'config_entity_example' => 'entity.robot.list',
+    'content_entity_example' => 'entity.content_entity_example_contact.collection',
+    'cron_example' => 'cron_example.description',
+    'dbtng_example' => 'dbtng_example.generate_entry_list',
+    'email_example' => 'email_example.description',
+    'events_example' => 'events_example.description',
+    'field_example' => 'field_example.description',
+    'field_permission_example' => 'field_permission_example.description',
+    'file_example' => 'file_example.fileapi',
+    'form_api_example' => 'form_api_example.description',
+    'hooks_example' => 'hooks_example.description',
+    'js_example' => 'js_example.info',
+    'menu_example' => 'examples.menu_example',
+    'node_type_example' => 'config_node_type_example.description',
+    'page_example' => 'page_example.description',
+    'pager_example' => 'pager_example.page',
+    'phpunit_example' => 'phpunit_example.description',
+    'plugin_type_example' => 'plugin_type_example.description',
+    'queue_example' => 'queue_example.form',
+    'render_example' => 'render_example.description',
+    'session_example' => 'session_example.form',
+    'stream_wrapper_example' => 'stream_wrapper_example.description',
+    'tabledrag_example' => 'tabledrag_example.description',
+    'tablesort_example' => 'tablesort_example.description',
+    'testing_example' => 'testing_example.description',
+    'tour_example' => 'tour_example.description',
+  ];
+}
+
+/**
+ * @} End of 'defgroup examples'.
+ */

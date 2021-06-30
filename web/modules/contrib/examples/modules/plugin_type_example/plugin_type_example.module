@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * @file
+ * Demonstrates how to define a new plugin type.
+ */
+
+/**
+ * @defgroup plugin_type_example Example: Plugin Types
+ * @ingroup examples
+ * @{
+ * Example of how to define a plugin type.
+ *
+ * Our example defines a Sandwich plugin type. Sandwich's come in many flavors,
+ * each having their unique qualities, but also sharing things in common. Our
+ * Sandwich plugins will be very simple, each providing a unique description
+ * of themselves. In addition to the id property required by all plugin types,
+ * sandwich plugins have description, and calories properties.
+ *
+ * Defining a new plugin type requires the following steps:
+ * - Define an annotation class for your plugin type used to provide
+ *   documentation about the meta-data needed by your plugin type.
+ * - Define an interface for plugins of your new type to implement.
+ * - Define a new plugin manager.
+ * - Provide an optional base class that implements your plugin type's interface
+ *   as a starting point for other plugin implementations.
+ *
+ * Start at the class \Drupal\plugin_type_example\SandwichPluginManager, which
+ * defines our plugin manager. Our plugin manager is exposed to Drupal as a
+ * service in the plugin_type_example.services.yml file, and is used to glue
+ * our Drupal\plugin_type_example\SandwichInterface, and
+ * \Drupal\plugin_type_example\Annotation\Sandwich annotation definition
+ * together into a new plugin type.
+ *
+ * We've also defined two implementations of our plugin type,
+ * \Drupal\plugin_type_example\Plugin\Sandwich\ExampleHamSandwich and
+ * \Drupal\plugin_type_example\Plugin\Sandwich\ExampleMeatballSandwich. Take a
+ * look at each. These plugins use annotated plugin discovery, and as such have
+ * an annotation block in the doc block for the class. Other than that, they
+ * implement the \Drupal\plugin_type_example\SandwichInterface, which is
+ * required, since we've set that interface for the plugin type in
+ * \Drupal\plugin_type_example\SandwichPluginManager::__construct.
+ *
+ * In plugin_type_example_sandwich_info_alter() we'll demonstrate how you can
+ * alter a plugin definition using an alter hook.
+ *
+ * To see the plugins in action visit /examples/plugin_type_example. The output
+ * is rendered in
+ * Drupal\plugin_type_example\Controller\PluginTypeExampleController::description().
+ * Read through that method to see how to make use of plugins using the
+ * plugin.manager.sandwich service.
+ */
+
+/**
+ * Implements hook_sandwich_info_alter().
+ *
+ * Any module can implement hook_sandwich_info_alter() and alter the definitions
+ * of all plugins discovered by the plugin manager.
+ *
+ * Note: Plugin definitions are cached after initially being discovered, and
+ * altered. Any changes you make here will require a cache clear to take effect.
+ *
+ * @see \Drupal\plugin_type_example\SandwichPluginManager
+ */
+function plugin_type_example_sandwich_info_alter(&$sandwich_plugin_info) {
+  // Let's change the 'description' property for all sandwiches.
+  foreach ($sandwich_plugin_info as $plugin_id => $plugin_definition) {
+    // Always uppercase the word rocket in sandwich descriptions.
+    $sandwich_plugin_info[$plugin_id]['description'] = str_replace(t('rocket'), t('ROCKET'), $sandwich_plugin_info[$plugin_id]['description']);
+  }
+}
