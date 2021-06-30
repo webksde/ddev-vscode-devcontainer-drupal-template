@@ -49,7 +49,7 @@ services:
       - HOST_DOCKER_INTERNAL_IP=
       - IS_DDEV_PROJECT=true
       - LINES
-      - TZ=
+      - TZ=Europe/Berlin
     command: "$DDEV_MARIADB_LOCAL_COMMAND"
     healthcheck:
       interval: 1s
@@ -130,7 +130,7 @@ services:
       - IS_DDEV_PROJECT=true
       - LINES
       - SSH_AUTH_SOCK=/home/.ssh-agent/socket
-      - TZ=
+      - TZ=Europe/Berlin
       - VIRTUAL_HOST=${DDEV_HOSTNAME}
       
     labels:
@@ -168,7 +168,7 @@ services:
       - PMA_PASSWORD=root
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       - UPLOAD_LIMIT=1024M
-      - TZ=
+      - TZ=Europe/Berlin
       # HTTP_EXPOSE allows for ports accepting HTTP traffic to be accessible from <site>.ddev.site:<port>
       - HTTP_EXPOSE=${DDEV_PHPMYADMIN_PORT}:8036
       - HTTPS_EXPOSE=${DDEV_PHPMYADMIN_HTTPS_PORT}:8036

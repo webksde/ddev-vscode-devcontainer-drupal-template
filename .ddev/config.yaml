@@ -9,20 +9,26 @@ xdebug_enabled: false
 additional_hostnames: []
 additional_fqdns: []
 mariadb_version: "10.3"
-mysql_version: ""
+mysql_version: "" # Keep empty, we use MariaDB.
 use_dns_when_possible: true
-composer_version: ""
+composer_version: "2"
+#phpmyadmin_port: "http://127.0.0.1:8036" #funktioniert nicht docker compose error
+#mailhog_port: "http://127.0.0.1:8025"  #funktioniert nicht docker compose error
 web_environment: []
+timezone: "Europe/Berlin"
 hooks:
   post-import-db:
     - exec: "drush cr"
   post-start:
-    - exec-host: "ddev composer install"
     - composer: "require drush/drush"
   post-config:
     #All drush site:install (si) commands: https://drushcommands.com/drush-9x/site/site:install/ NOTE: WE WANT TO EXECUTE THIS ONCE BECAUSE USING IT AGAIN DELETES DATABASE!! MAYBE DELEGATE SOMEWHERE ELSE
     #- exec: "drush si --account-name 'admin' --account-pass 'admin' --account-mail 'test@test.de' --site-mail 'site@mail.de' "
 
+#Decide whether ddev start should be interrupted by a failing hook:
+#fail_on_hook_fail: true
+
+#disable_settings_management #If true, ddev will not create or update CMS-specific settings files
 
 # This config.yaml was created with ddev version v1.17.6
 # webimage: drud/ddev-webserver:v1.17.6
@@ -71,12 +77,6 @@ hooks:
 # as leaving xhprof enabled all the time is a big performance hit.
 
 # webserver_type: nginx-fpm  # or apache-fpm
-
-# timezone: Europe/Berlin
-# This is the timezone used in the containers and by PHP;
-# it can be set to any valid timezone,
-# see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-# For example Europe/Dublin or MST7MDT
 
 # composer_version: ""
 # if composer_version:"" it will use the current ddev default composer release.

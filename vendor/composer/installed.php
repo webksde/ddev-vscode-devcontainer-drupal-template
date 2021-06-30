@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '75b9aadc5ccbade2100ff1aa5f6f8cad408d4246',
+        'reference' => '4ec5951524dfc1aa1a188d819690e545d82fc22a',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -847,7 +847,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '75b9aadc5ccbade2100ff1aa5f6f8cad408d4246',
+            'reference' => '4ec5951524dfc1aa1a188d819690e545d82fc22a',
             'dev_requirement' => false,
         ),
         'drupal/responsive_image' => array(
@@ -1300,6 +1300,15 @@
             'replaced' => array(
                 0 => '*',
             ),
+        ),
+        'squizlabs/php_codesniffer' => array(
+            'pretty_version' => '3.6.0',
+            'version' => '3.6.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../squizlabs/php_codesniffer',
+            'aliases' => array(),
+            'reference' => 'ffced0d2c8fa8e6cdc4d695a743271fab6c38625',
+            'dev_requirement' => true,
         ),
         'stack/builder' => array(
             'pretty_version' => 'v1.0.6',

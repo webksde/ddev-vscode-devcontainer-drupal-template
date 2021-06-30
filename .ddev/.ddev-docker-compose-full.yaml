@@ -29,7 +29,7 @@ services:
       HOST_DOCKER_INTERNAL_IP: ''
       IS_DDEV_PROJECT: "true"
       LINES: '46'
-      TZ: ''
+      TZ: Europe/Berlin
     healthcheck:
       interval: 1s
       retries: 120
@@ -64,7 +64,7 @@ services:
       HTTP_EXPOSE: 8036:8036
       PMA_PASSWORD: root
       PMA_USER: root
-      TZ: ''
+      TZ: Europe/Berlin
       UPLOAD_LIMIT: 1024M
       VIRTUAL_HOST: ddev-vscode-devcontainer-drupal9-template.ddev.site
     healthcheck:
@@ -121,7 +121,7 @@ services:
       IS_DDEV_PROJECT: "true"
       LINES: '46'
       SSH_AUTH_SOCK: /home/.ssh-agent/socket
-      TZ: ''
+      TZ: Europe/Berlin
       VIRTUAL_HOST: ddev-vscode-devcontainer-drupal9-template.ddev.site
     external_links:
     - ddev-router:ddev-vscode-devcontainer-drupal9-template.ddev.site
