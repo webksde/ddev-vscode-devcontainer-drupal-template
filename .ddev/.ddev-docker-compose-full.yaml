@@ -10,20 +10,20 @@ services:
         gid: '1000'
         uid: '1000'
         username: josh
-      context: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/db-build
-      dockerfile: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/.dbimageBuild/Dockerfile
+      context: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/db-build
+      dockerfile: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/.dbimageBuild/Dockerfile
     command: ''
-    container_name: ddev-ddev-vscode-devcontainer-drupal9-template-db
+    container_name: ddev-ddev-vscode-devcontainer-drupal9-template-attach-db
     environment:
       COLUMNS: '188'
-      DDEV_HOSTNAME: ddev-vscode-devcontainer-drupal9-template.ddev.site
+      DDEV_HOSTNAME: ddev-vscode-devcontainer-drupal9-template-attach.ddev.site
       DDEV_PHP_VERSION: '7.4'
-      DDEV_PRIMARY_URL: https://ddev-vscode-devcontainer-drupal9-template.ddev.site
-      DDEV_PROJECT: ddev-vscode-devcontainer-drupal9-template
+      DDEV_PRIMARY_URL: https://ddev-vscode-devcontainer-drupal9-template-attach.ddev.site
+      DDEV_PROJECT: ddev-vscode-devcontainer-drupal9-template-attach
       DDEV_PROJECT_TYPE: drupal9
       DDEV_ROUTER_HTTPS_PORT: '443'
       DDEV_ROUTER_HTTP_PORT: '80'
-      DDEV_SITENAME: ddev-vscode-devcontainer-drupal9-template
+      DDEV_SITENAME: ddev-vscode-devcontainer-drupal9-template-attach
       DDEV_TLD: ddev.site
       DOCKER_IP: 127.0.0.1
       HOST_DOCKER_INTERNAL_IP: ''
@@ -35,13 +35,13 @@ services:
       retries: 120
       start_period: 2m
       timeout: 2m
-    hostname: ddev-vscode-devcontainer-drupal9-template-db
-    image: drud/ddev-dbserver-mariadb-10.3:v1.17.3-ddev-vscode-devcontainer-drupal9-template-built
+    hostname: ddev-vscode-devcontainer-drupal9-template-attach-db
+    image: drud/ddev-dbserver-mariadb-10.3:v1.17.3-ddev-vscode-devcontainer-drupal9-template-attach-built
     labels:
       com.ddev.app-type: drupal9
-      com.ddev.approot: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template
+      com.ddev.approot: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach
       com.ddev.platform: ddev
-      com.ddev.site-name: ddev-vscode-devcontainer-drupal9-template
+      com.ddev.site-name: ddev-vscode-devcontainer-drupal9-template-attach
     ports:
     - 127.0.0.1::3306/tcp
     restart: "no"
@@ -53,12 +53,12 @@ services:
       type: volume
       volume:
         nocopy: true
-    - source: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev
+    - source: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev
       target: /mnt/ddev_config
       type: bind
     - ddev-global-cache:/mnt/ddev-global-cache:rw
   dba:
-    container_name: ddev-ddev-vscode-devcontainer-drupal9-template-dba
+    container_name: ddev-ddev-vscode-devcontainer-drupal9-template-attach-dba
     environment:
       HTTPS_EXPOSE: 8037:8036
       HTTP_EXPOSE: 8036:8036
@@ -66,18 +66,18 @@ services:
       PMA_USER: root
       TZ: Europe/Berlin
       UPLOAD_LIMIT: 1024M
-      VIRTUAL_HOST: ddev-vscode-devcontainer-drupal9-template.ddev.site
+      VIRTUAL_HOST: ddev-vscode-devcontainer-drupal9-template-attach.ddev.site
     healthcheck:
       interval: 2m
       retries: 1
       timeout: 2s
-    hostname: ddev-vscode-devcontainer-drupal9-template-dba
+    hostname: ddev-vscode-devcontainer-drupal9-template-attach-dba
     image: phpmyadmin:5
     labels:
       com.ddev.app-type: drupal9
-      com.ddev.approot: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template
+      com.ddev.approot: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach
       com.ddev.platform: ddev
-      com.ddev.site-name: ddev-vscode-devcontainer-drupal9-template
+      com.ddev.site-name: ddev-vscode-devcontainer-drupal9-template-attach
     links:
     - db:db
     ports:
@@ -90,23 +90,23 @@ services:
         gid: '1000'
         uid: '1000'
         username: josh
-      context: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/web-build
-      dockerfile: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/.webimageBuild/Dockerfile
+      context: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/web-build
+      dockerfile: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/.webimageBuild/Dockerfile
     cap_add:
     - SYS_PTRACE
-    container_name: ddev-ddev-vscode-devcontainer-drupal9-template-web
+    container_name: ddev-ddev-vscode-devcontainer-drupal9-template-attach-web
     environment:
       COLUMNS: '188'
       DDEV_DOCROOT: web
       DDEV_FILES_DIR: /var/www/html/web/sites/default/files
-      DDEV_HOSTNAME: ddev-vscode-devcontainer-drupal9-template.ddev.site
+      DDEV_HOSTNAME: ddev-vscode-devcontainer-drupal9-template-attach.ddev.site
       DDEV_PHP_VERSION: '7.4'
-      DDEV_PRIMARY_URL: https://ddev-vscode-devcontainer-drupal9-template.ddev.site
-      DDEV_PROJECT: ddev-vscode-devcontainer-drupal9-template
+      DDEV_PRIMARY_URL: https://ddev-vscode-devcontainer-drupal9-template-attach.ddev.site
+      DDEV_PROJECT: ddev-vscode-devcontainer-drupal9-template-attach
       DDEV_PROJECT_TYPE: drupal9
       DDEV_ROUTER_HTTPS_PORT: '443'
       DDEV_ROUTER_HTTP_PORT: '80'
-      DDEV_SITENAME: ddev-vscode-devcontainer-drupal9-template
+      DDEV_SITENAME: ddev-vscode-devcontainer-drupal9-template-attach
       DDEV_TLD: ddev.site
       DDEV_WEBSERVER_TYPE: apache-fpm
       DDEV_XDEBUG_ENABLED: "false"
@@ -114,7 +114,7 @@ services:
       DOCKER_IP: 127.0.0.1
       DOCROOT: web
       DRUSH_ALLOW_XDEBUG: '1'
-      DRUSH_OPTIONS_URI: https://ddev-vscode-devcontainer-drupal9-template.ddev.site
+      DRUSH_OPTIONS_URI: https://ddev-vscode-devcontainer-drupal9-template-attach.ddev.site
       HOST_DOCKER_INTERNAL_IP: ''
       HTTPS_EXPOSE: 443:80,8026:8025
       HTTP_EXPOSE: 80:80,8025:8025
@@ -122,21 +122,21 @@ services:
       LINES: '46'
       SSH_AUTH_SOCK: /home/.ssh-agent/socket
       TZ: Europe/Berlin
-      VIRTUAL_HOST: ddev-vscode-devcontainer-drupal9-template.ddev.site
+      VIRTUAL_HOST: ddev-vscode-devcontainer-drupal9-template-attach.ddev.site
     external_links:
-    - ddev-router:ddev-vscode-devcontainer-drupal9-template.ddev.site
+    - ddev-router:ddev-vscode-devcontainer-drupal9-template-attach.ddev.site
     healthcheck:
       interval: 1s
       retries: 120
       start_period: 2m
       timeout: 2m
-    hostname: ddev-vscode-devcontainer-drupal9-template-web
-    image: drud/ddev-webserver:v1.17.6-ddev-vscode-devcontainer-drupal9-template-built
+    hostname: ddev-vscode-devcontainer-drupal9-template-attach-web
+    image: drud/ddev-webserver:v1.17.6-ddev-vscode-devcontainer-drupal9-template-attach-built
     labels:
       com.ddev.app-type: drupal9
-      com.ddev.approot: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template
+      com.ddev.approot: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach
       com.ddev.platform: ddev
-      com.ddev.site-name: ddev-vscode-devcontainer-drupal9-template
+      com.ddev.site-name: ddev-vscode-devcontainer-drupal9-template-attach
     links:
     - db:db
     ports:
@@ -146,12 +146,12 @@ services:
     user: 1000:1000
     volumes:
     - consistency: cached
-      source: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template
+      source: /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach
       target: /var/www/html
       type: bind
-    - /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev:/mnt/ddev_config:ro
-    - /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/nginx_full:/etc/nginx/sites-enabled:ro
-    - /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/apache:/etc/apache2/sites-enabled:ro
+    - /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev:/mnt/ddev_config:ro
+    - /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/nginx_full:/etc/nginx/sites-enabled:ro
+    - /home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/apache:/etc/apache2/sites-enabled:ro
     - ddev-global-cache:/mnt/ddev-global-cache:rw
     - ddev-ssh-agent_socket_dir:/home/.ssh-agent:rw
 version: '3.6'
@@ -162,5 +162,5 @@ volumes:
     external: true
     name: ddev-ssh-agent_socket_dir
   mariadb-database:
-    name: ddev-vscode-devcontainer-drupal9-template-mariadb
+    name: ddev-vscode-devcontainer-drupal9-template-attach-mariadb
 

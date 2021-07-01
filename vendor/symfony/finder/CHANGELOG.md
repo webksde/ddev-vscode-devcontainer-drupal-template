@@ -1,11 +1,6 @@
 CHANGELOG
 =========
 
-5.0.0
------
-
- * added `$useNaturalSort` argument to `Finder::sortByName()`
-
 4.3.0
 -----
 
