@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '468cb316564e0bf930ee9913e091af6ed838e076',
+        'reference' => 'dd64666aa5f3c212ee4d474ae01d22a587d4939f',
         'name' => 'drupal/recommended-project',
         'dev' => true,
     ),
@@ -952,7 +952,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '468cb316564e0bf930ee9913e091af6ed838e076',
+            'reference' => 'dd64666aa5f3c212ee4d474ae01d22a587d4939f',
             'dev_requirement' => false,
         ),
         'drupal/responsive_image' => array(
@@ -1412,6 +1412,15 @@
             'install_path' => __DIR__ . '/../phpspec/prophecy',
             'aliases' => array(),
             'reference' => 'be1996ed8adc35c3fd795488a653f4b518be70ea',
+            'dev_requirement' => true,
+        ),
+        'phpspec/prophecy-phpunit' => array(
+            'pretty_version' => 'v2.0.1',
+            'version' => '2.0.1.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpspec/prophecy-phpunit',
+            'aliases' => array(),
+            'reference' => '2d7a9df55f257d2cba9b1d0c0963a54960657177',
             'dev_requirement' => true,
         ),
         'phpunit/php-code-coverage' => array(

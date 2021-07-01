@@ -120,6 +120,7 @@ class ComposerStaticInit64f2810784d98d0e08ab9ea52aded2bc
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
+            'Prophecy\\PhpUnit\\' => 17,
             'Prophecy\\' => 9,
             'PhpParser\\' => 10,
         ),
@@ -421,6 +422,10 @@ class ComposerStaticInit64f2810784d98d0e08ab9ea52aded2bc
         'Psr\\Cache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
+        ),
+        'Prophecy\\PhpUnit\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpspec/prophecy-phpunit/src',
         ),
         'Prophecy\\' => 
         array (
