@@ -5,8 +5,8 @@ services:
   db:
     container_name: ddev-${DDEV_SITENAME}-db
     build:
-      context: '/home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/db-build'
-      dockerfile: '/home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/.dbimageBuild/Dockerfile'
+      context: '/home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/db-build'
+      dockerfile: '/home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/.dbimageBuild/Dockerfile'
       args:
         BASE_IMAGE: $DDEV_DBIMAGE
         username: 'josh'
@@ -26,7 +26,7 @@ services:
       - ddev-global-cache:/mnt/ddev-global-cache
     restart: "no"
     user: "$DDEV_UID:$DDEV_GID"
-    hostname: ddev-vscode-devcontainer-drupal9-template-attach-db
+    hostname: ddev-vscode-devcontainer-drupal9-template-db
     ports:
       - "127.0.0.1:$DDEV_HOST_DB_PORT:3306"
     labels:
@@ -60,8 +60,8 @@ services:
   web:
     container_name: ddev-${DDEV_SITENAME}-web
     build:
-      context: '/home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/web-build'
-      dockerfile: '/home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template-attach/.ddev/.webimageBuild/Dockerfile'
+      context: '/home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/web-build'
+      dockerfile: '/home/josh/myprojects/ddev-vscode-devcontainer-drupal9-template/.ddev/.webimageBuild/Dockerfile'
       args:
         BASE_IMAGE: $DDEV_WEBIMAGE
         username: 'josh'
@@ -89,7 +89,7 @@ services:
 
     restart: "no"
     user: "$DDEV_UID:$DDEV_GID"
-    hostname: ddev-vscode-devcontainer-drupal9-template-attach-web
+    hostname: ddev-vscode-devcontainer-drupal9-template-web
     
     links:
       - db:db
@@ -116,8 +116,6 @@ services:
       - DDEV_XDEBUG_ENABLED
       - DEPLOY_NAME=local
 
-      - DRUSH_OPTIONS_URI=$DDEV_PRIMARY_URL
-
       - DRUSH_ALLOW_XDEBUG=1
       - DOCKER_IP=127.0.0.1
       - HOST_DOCKER_INTERNAL_IP=
@@ -140,7 +138,7 @@ services:
       com.ddev.approot: $DDEV_APPROOT
 
     external_links:
-    - "ddev-router:ddev-vscode-devcontainer-drupal9-template-attach.ddev.site"
+    - "ddev-router:ddev-vscode-devcontainer-drupal9-template.ddev.site"
     
     healthcheck:
       interval: 1s
@@ -162,7 +160,7 @@ services:
       - db:db
     ports:
       - "80"
-    hostname: ddev-vscode-devcontainer-drupal9-template-attach-dba
+    hostname: ddev-vscode-devcontainer-drupal9-template-dba
     environment:
       - PMA_USER=root
       - PMA_PASSWORD=root

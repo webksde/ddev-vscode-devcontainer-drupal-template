@@ -1,0 +1,34 @@
+# Ignore IDE specific files
+/.history/
+/.idea/
+*.iml
+*.code-workspace
+
+# Ignore all log files
+*.log
+
+# Ignore node modules
+node_modules
+
+# Ignore css maps
+*.css.map
+
+# Ignore local db-dumps
+*.sql
+*.sql*
+
+# Ignore Packages
+*.7z
+*.dmg
+*.gz
+*.bz2
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.tgz
+
+#ignore ddev composer files
+.ddev/.ddev-docker-compose-base.yaml
+.ddev/.ddev-docker-compose-full.yaml

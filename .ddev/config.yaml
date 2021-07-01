@@ -1,4 +1,4 @@
-name: ddev-vscode-devcontainer-drupal9-template-attach
+name: ddev-vscode-devcontainer-drupal9-template
 type: drupal9
 docroot: web
 php_version: "7.4"
@@ -12,10 +12,9 @@ mariadb_version: "10.3"
 mysql_version: "" # Keep empty, we use MariaDB.
 use_dns_when_possible: true
 composer_version: "2"
-#phpmyadmin_port: "http://127.0.0.1:8036" #funktioniert nicht docker compose error
-#mailhog_port: "http://127.0.0.1:8025"  #funktioniert nicht docker compose error
 web_environment: []
 timezone: "Europe/Berlin"
+disable_settings_management: true #This will disable .gitignore Creation in ddev
 hooks:
   post-import-db:
     - exec: "drush cr"
@@ -29,6 +28,9 @@ hooks:
 #fail_on_hook_fail: true
 
 #disable_settings_management #If true, ddev will not create or update CMS-specific settings files
+
+#phpmyadmin_port: "http://127.0.0.1:8036" #funktioniert nicht docker compose error
+#mailhog_port: "http://127.0.0.1:8025"  #funktioniert nicht docker compose error
 
 # This config.yaml was created with ddev version v1.17.6
 # webimage: drud/ddev-webserver:v1.17.6
