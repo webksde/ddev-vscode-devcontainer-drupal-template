@@ -43,7 +43,7 @@ services:
       com.ddev.platform: ddev
       com.ddev.site-name: ddev-vscode-devcontainer-drupal9-template
     ports:
-    - 127.0.0.1::3306/tcp
+    - 127.0.0.1:57337:3306/tcp
     restart: "no"
     stop_grace_period: 60s
     user: 1000:1000
