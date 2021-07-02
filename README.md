@@ -7,7 +7,17 @@ Provides a plug and play DDEV (Docker) based development environment for VSCode 
 - Launch configuration (Run & Debug)
 beautifully packaged for easy project and environment switching.
 
-**TODO - This is work in progress to provide best-practice from our previous setups**
+##Prerequisites
+  1. Up to date Version of Ddev, Docker, Chrome/Firefox
+  2. VSCode installed on your machine locally
+  3. The "Remote Development" Extension in VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)
+
+## How to Use it:
+ 1. Download the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git`
+ 2. Change into the directory: `cd ddev-vscode-devcontainer-drupal9-template`
+ 3. Use `ddev start` to start up the environment
+ 4. Use `./code.sh` to attach VSCode to your running Container
+ 5. You are ready to go! Use `ddev describe` to check the status of your Project!
 
 ## Typical Use-Cases:
 - Create a simple Drupal 9 Sandbox for offline / local
