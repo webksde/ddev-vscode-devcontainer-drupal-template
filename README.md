@@ -7,7 +7,7 @@ Provides a plug and play DDEV (Docker) based development environment for VSCode 
 - Launch configuration (Run & Debug)
 beautifully packaged for easy project and environment switching.
 
-##Prerequisites
+## Prerequisites:
   1. Up to date Version of Ddev, Docker, Chrome/Firefox
   2. VSCode installed on your machine locally
   3. The "Remote Development" Extension in VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)
