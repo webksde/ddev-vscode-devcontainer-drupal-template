@@ -16,8 +16,10 @@ beautifully packaged for easy project and environment switching.
  1. Download the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git`
  2. Change into the directory: `cd ddev-vscode-devcontainer-drupal9-template`
  3. Use `ddev start` to start up the environment
- 4. Use `./code.sh` to attach VSCode to your running Container
+ 4. Use `ddev code` to attach VSCode to your running Container
  5. You are ready to go! Use `ddev describe` to check the status of your Project!
+ 6. Use `ddev phpunit path/to/tests` to Test Stuff using PHPUnit
+ 7. Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards 
 
 ## Typical Use-Cases:
 - Create a simple Drupal 9 Sandbox for offline / local
