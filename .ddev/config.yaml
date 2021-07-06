@@ -19,7 +19,7 @@ hooks:
   post-import-db:
     - exec: "drush cr"
   post-start:
-  #  - exec: TODO: we want to execute code.sh here but the Docker CLI doesn't know VSCode's "code"
+    - exec: ".ddev/ddev-init.sh"
   post-config:
     #All drush site:install (si) commands: https://drushcommands.com/drush-9x/site/site:install/ NOTE: WE WANT TO EXECUTE THIS ONCE BECAUSE USING IT AGAIN DELETES DATABASE!! MAYBE DELEGATE SOMEWHERE ELSE
     #- exec: "drush si --account-name 'admin' --account-pass 'admin' --account-mail 'test@test.de' --site-mail 'site@mail.de' "

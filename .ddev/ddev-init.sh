@@ -1,3 +1,7 @@
+
+
+composer require drupal/coder
+
 chmod +x vendor/bin/phpcs
 chmod +x vendor/bin/phpcbf
 
