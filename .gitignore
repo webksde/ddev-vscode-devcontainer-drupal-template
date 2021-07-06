@@ -1,3 +1,6 @@
+# Ignore coder for phpcs
+/vendor/drupal/coder/
+
 # Ignore Drupal directories
 /web/modules/custom/
 /web/themes/contrib/
