@@ -61,6 +61,10 @@ beautifully packaged for easy project and environment switching.
 
 ## Documentation
 ### Functionality
+
+#### 0. Create an empty DDev Environment
+- use ddev start
+
 #### 1. Create an "empty" best-practice working Drupal 9 CMS Development instance
 - Sets up best-practice development Server
 - Sets up ready to log in latest Drupal 9 Copy
