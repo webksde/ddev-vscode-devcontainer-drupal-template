@@ -1,12 +1,15 @@
 #!/bin/bash
 
-ddev composer require drupal/coder
+# TODO: Move to drowl-init!
+ddev composer require --dev drupal/coder
 
-ddev exec chmod +x ../vendor/bin/phpcs
-ddev exec chmod +x ../vendor/bin/phpcbf
-
+# TODO: Move to drowl-init!
 # Register Drupal's code sniffer rules.
 ddev exec phpcs --config-set installed_paths ../vendor/drupal/coder/coder_sniffer --verbose
 
-# Make Codesniffer config file writable for ordinary users in container.
+# Initialize development environment tools:
+ddev exec chmod +x ../vendor/bin/phpcs
+ddev exec chmod +x ../vendor/bin/phpcbf
+
+# Make Codesniffer config file writable for ordinary users in container:
 ddev exec chmod 666 ../vendor/squizlabs/php_codesniffer/CodeSniffer.conf
