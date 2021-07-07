@@ -70,16 +70,18 @@ beautifully packaged for easy project and environment switching.
 - Sets up ready to log in latest Drupal 9 Copy
 - Installs best-practice Drupal 9 Modules & Configuration
 
-#### 2a. Fetch a 1:1 copy of an existing Drupal 9 CMS Project
+
+#### TODO: 2a. Fetch a 1:1 copy of an existing Drupal 9 CMS Project
+- drowl-init --project "github Link"
 - Sets up best-practice development Server
 - Fetches existing database
 - Fetches existing file structure
 
-#### 2b. Fetch a development copy of an existing Drupal 9 CMS Project with additional development and debugging tools / modules
+#### TODO:  2b. Fetch a development copy of an existing Drupal 9 CMS Project with additional development and debugging tools / modules
 (2a.) PLUS
 - Optionally installs development modules: TODO
 
-#### 3. Extract and push database & configuration changes back to the origin
+#### TODO: 3. Extract and push database & configuration changes back to the origin
 2 a / b PLUS:
 - Log database changes to put into update hook
 - Log configuration changes to export
