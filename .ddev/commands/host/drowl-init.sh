@@ -27,5 +27,15 @@ ddev exec chmod 666 vendor/squizlabs/php_codesniffer/CodeSniffer.conf
 #Drush and Site initialisation:
 ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db'
 
+#Copy VSCode Settings
+cp -R .ddev/initiation-additions/.vscode/ .
+
+#Create PHPUnit.xml
+cp .ddev/initiation-additions/phpunit.xml web/core
+
+#Get Readme.md and .gitignore
+#cp .ddev/initiation-additions/README.md .
+#cp .ddev/initiation-additions/.gitignore .
+
 #Give all Project informations:
 ddev describe
