@@ -34,8 +34,8 @@ cp -R .ddev/initiation-additions/.vscode/ .
 cp .ddev/initiation-additions/phpunit.xml web/core
 
 #Get Readme.md and .gitignore
-#cp .ddev/initiation-additions/README.md .
-#cp .ddev/initiation-additions/.gitignore .
+cp .ddev/initiation-additions/README.md .
+cp .ddev/initiation-additions/.gitignore .
 
 #Give all Project informations:
 ddev describe
