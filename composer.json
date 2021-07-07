@@ -17,7 +17,6 @@
     "require": {
         "composer/installers": "^1.9",
         "drupal/admin_toolbar": "^3.0",
-        "drupal/coder": "^8.3",
         "drupal/core-composer-scaffold": "^9.1",
         "drupal/core-project-message": "^9.1",
         "drupal/core-recommended": "^9.1",
@@ -30,6 +29,7 @@
         "squizlabs/php_codesniffer": "^3.6"
     },
     "require-dev": {
+        "drupal/coder": "^8.3",
         "drupal/core-dev": "^9.2",
         "phpspec/prophecy-phpunit": "^2",
         "phpunit/phpunit": "^9.5"
