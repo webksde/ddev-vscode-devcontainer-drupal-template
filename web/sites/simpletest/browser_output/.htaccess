@@ -1,3 +1,0 @@
-<IfModule mod_expires.c>
-ExpiresActive Off
-</IfModule>

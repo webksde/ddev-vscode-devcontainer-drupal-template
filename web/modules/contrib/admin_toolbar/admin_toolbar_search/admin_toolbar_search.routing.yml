@@ -1,6 +1,0 @@
-admin_toolbar.search:
-  path: '/admin/admin-toolbar-search'
-  defaults:
-    _controller: '\Drupal\admin_toolbar_search\Controller\AdminToolbarSearchController::search'
-  requirements:
-    _permission: 'use admin toolbar search'

@@ -1,6 +1,0 @@
-.idea/
-*.phar
-build
-tools
-vendor/
-.phpunit.result.cache

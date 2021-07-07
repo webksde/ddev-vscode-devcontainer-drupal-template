@@ -1,7 +1,0 @@
-# Provides a simple user interface that tells the developer where to go.
-field_example.description:
-  path: '/examples/field-example'
-  defaults:
-    _controller: '\Drupal\field_example\Controller\FieldExampleController::description'
-  requirements:
-    _permission: 'access content'

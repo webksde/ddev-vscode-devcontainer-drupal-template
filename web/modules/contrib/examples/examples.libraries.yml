@@ -1,5 +1,0 @@
-examples.icons:
-  version: VERSION
-  css:
-    theme:
-      css/examples.icons.css: {}

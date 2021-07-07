@@ -1,5 +1,6 @@
-# Ignore coder for phpcs
-/vendor/drupal/coder/
+# Ignore vendor and web
+/vendor/
+/web/
 
 # Ignore Drupal directories
 /web/modules/custom/

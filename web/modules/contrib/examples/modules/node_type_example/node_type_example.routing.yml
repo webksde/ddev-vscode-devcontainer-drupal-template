@@ -1,6 +1,0 @@
-config_node_type_example.description:
-  path: '/examples/node-type-example'
-  defaults:
-    _controller: '\Drupal\node_type_example\Controller\NodeTypeExampleController::description'
-  requirements:
-    _permission: 'access content'
