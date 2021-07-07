@@ -39,3 +39,8 @@ cp .ddev/initiation-additions/.gitignore .
 
 #Give all Project informations:
 ddev describe
+
+#Helper Messages
+echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit"
+echo "Use 'ddev phpcs path/to/sniff' to check if your Code is using Drupal Coding Standards"
+echo "Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Standards"
