@@ -18,8 +18,12 @@ beautifully packaged for easy project and environment switching.
  3. Use `ddev drowl-init` to start up the environment
  4. Use `ddev code` to attach VSCode to your running Container
  5. You are ready to go! Use `ddev describe` to check the status of your Project!
- 6. Use `ddev phpunit path/to/tests` to Test Classes using PHPUnit
- 7. Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards 
+ 
+## Tooling
+ - Use `ddev phpunit path/to/tests` to Test Classes using PHPUnit.
+ - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
+ - Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Standards.
+ - Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
 
 ## Typical Use-Cases:
 - Create a simple Drupal 9 Sandbox for offline / local
