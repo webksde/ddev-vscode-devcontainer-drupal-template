@@ -24,6 +24,7 @@ beautifully packaged for easy project and environment switching.
  - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
  - Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Standards.
  - Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
+ (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!!)
 
 ## Typical Use-Cases:
 - Create a simple Drupal 9 Sandbox for offline / local
@@ -35,28 +36,7 @@ beautifully packaged for easy project and environment switching.
  - Local development / testing / evaluation
 
 ## Future Integrations
-**Project Services and Configurations:**
- - Drupal 9 CMS Support & Template
- - Apache Webserver
- - PHP-Support
- - Maria DB
- - Drush
- - Mailhog
- - Phpmyadmin
- - Composer
- 
-**VS-Code Support**
- - Dev-Container Support
- - Preexisting "Best Practice" Extensions and Settings
- - XDebug, PHPCS, PHP-CS-Fixer, PHP-Unit 
 
-**Drupal "Best Practice" Development Template**
- - stage_file_proxy  
- - examples  
- - devel_php  
- - devel_debug_log  
- - devel  
- - admin_toolbar
  
 **Additional Settings and Files**
  - init.sh and custom_init.sh
