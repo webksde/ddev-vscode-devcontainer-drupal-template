@@ -18,7 +18,7 @@ beautifully packaged for easy project and environment switching.
  3. Use `ddev drowl-init` to start up the environment
  4. Use `ddev code` to attach VSCode to your running Container
  5. You are ready to go! Use `ddev describe` to check the status of your Project!
- 
+
 ## Tooling
  - Use `ddev phpunit path/to/tests` to Test Classes using PHPUnit.
  - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
@@ -34,14 +34,6 @@ beautifully packaged for easy project and environment switching.
  - Full project creation
 - Fetch an online project copy for
  - Local development / testing / evaluation
-
-## Future Integrations
-
- 
-**Additional Settings and Files**
- - init.sh and custom_init.sh
- - ddev.yml and custom_ddev.yml
- 
 
 ## Documentation
 ### Functionality
