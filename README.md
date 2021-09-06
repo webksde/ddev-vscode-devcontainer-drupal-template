@@ -26,7 +26,7 @@ beautifully packaged for easy project and environment switching.
  - Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
  - Use 'ddev import-db --src=path/to/src' to import a database file
  
- (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!!)
+ (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!! documentation tag)
 
 ## Typical Use-Cases:
 - Create a simple Drupal 9 Sandbox for offline / local
