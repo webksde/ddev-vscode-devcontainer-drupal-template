@@ -24,6 +24,8 @@ beautifully packaged for easy project and environment switching.
  - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
  - Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Standards.
  - Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
+ - Use 'ddev import-db --src=path/to/src' to import a database file
+ 
  (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!!)
 
 ## Typical Use-Cases:
