@@ -16,15 +16,16 @@ beautifully packaged for easy project and environment switching.
  1. Download the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git`
  2. Change into the directory: `cd ddev-vscode-devcontainer-drupal9-template`
  3. Use `ddev drowl-init` to start up the environment
- 4. Use `ddev code` to attach VSCode to your running Container
- 5. You are ready to go! Use `ddev describe` to check the status of your Project!
+ 4. You are ready to go! Use `ddev describe` to check the status of your Project!
 
 ## Tooling
+ - Use `ddev code` to attach VSCode to your running Container.
  - Use `ddev phpunit path/to/tests` to Test Classes using PHPUnit.
  - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
  - Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Standards.
  - Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
- - Use 'ddev import-db --src=path/to/src' to import a database file
+ - Use 'ddev import-db --src=path/to/src' to import a database file.
+ - Use 'ddev rename' to rename your project.
  
  (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!! documentation tag)
 
