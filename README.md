@@ -22,10 +22,10 @@ beautifully packaged for easy project and environment switching.
  - Use `ddev code` to attach VSCode to your running Container.
  - Use `ddev phpunit path/to/tests` to Test Classes using PHPUnit.
  - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
- - Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Standards.
- - Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
- - Use 'ddev import-db --src=path/to/src' to import a database file.
- - Use 'ddev rename' to rename your project.
+ - Use `ddev phpcbf path/to/execute` format your Code using Drupal Coding Standards.
+ - Use `ddev xdebug on` to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
+ - Use `ddev import-db --src=path/to/src` to import a database file.
+ - Use `ddev rename` to rename your project.
  
  (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!! documentation tag)
 
