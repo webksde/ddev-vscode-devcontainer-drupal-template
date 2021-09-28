@@ -13,6 +13,8 @@
     "**/vendor/**/{Test,test,Tests,tests}/**/*Test.php"
   ],
   "intelephense.environment.shortOpenTag": true,
+  "intelephense.telemetry.enabled": false,
+  "telemetry.enableCrashReporter": false,
   "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
   "php-docblocker.gap": true,
   "php-docblocker.useShortNames": true,
@@ -24,14 +26,13 @@
   "php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
   "terminal.integrated.defaultProfile.linux": "bash",
   "php-cs-fixer.rules": "@PhpCsFixer",
-  "editor.formatOnSaveTimeout": 5000, //Anti Linting Save Refuse
   "emptyIndent.removeIndent": true, //Automatically remove indentation in empty lines on save
   "emptyIndent.highlightIndent": false, //Highlight indent on empty lines
   "emptyIndent.highlightColor": "rgba(246,36,89,0.6)", //Highlight indent color
   "emptyIndent.exclude": [
     ".md"
   ], //Excluded file types
-  "phpcs.enable": true, //activate with phpcs
+  "phpcs.enable": false, //Deactivated, because it is annoying
   "phpcs.standard": "Drupal,DrupalPractice", //phpcs standard
   /*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
   "intelephense.environment.includePaths": [
@@ -76,10 +77,10 @@
   "files.insertFinalNewline": true,
   "html.format.enable": true,
   "html.format.wrapLineLength": 80,
-  "telemetry.enableTelemetry": false,
   "emmet.includeLanguages": {
     "twig": "html"
   },
   "html.validate.scripts": false,
   "html.validate.styles": false,
 }
+
