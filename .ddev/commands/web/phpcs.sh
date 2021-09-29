@@ -4,4 +4,4 @@
 ## Usage: phpcs [path]
 ## Example: "ddev phpcs web/modules/contrib/devel"
 
-phpcs --standard=Drupal,DrupalPractice $*
+phpcs -p --standard=Drupal,DrupalPractice $*
