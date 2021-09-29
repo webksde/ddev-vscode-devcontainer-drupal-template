@@ -4,4 +4,4 @@
 ## Usage: phpunit [path]
 ## Example: "ddev phpunit path/to/tests"
 
-phpunit -c web/core/phpunit.xml $*
+phpunit -c /var/www/html/${DDEV_DOCROOT}/core/phpunit.xml $*
