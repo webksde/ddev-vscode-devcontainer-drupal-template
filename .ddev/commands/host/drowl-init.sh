@@ -37,6 +37,9 @@ cp .ddev/initiation-additions/phpunit.xml web/core
 cp .ddev/initiation-additions/README.md .
 cp .ddev/initiation-additions/.gitignore .
 
+#Acitvate required dev-modules:
+ddev drush en admin_toolbar examples stage_file_proxy devel devel_debug_log devel_php -y
+
 #Give all Project informations:
 ddev describe
 
