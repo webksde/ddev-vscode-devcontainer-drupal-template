@@ -32,9 +32,13 @@
   "emptyIndent.exclude": [
     ".md"
   ], //Excluded file types
+  /*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
+  "intelephense.format.braces": "k&r",
   "phpcs.enable": false, //Deactivated, because it is annoying
   "phpcs.standard": "Drupal,DrupalPractice", //phpcs standard
-  /*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
+    "[php]": {
+      "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+    },
   "intelephense.environment.includePaths": [
     "web/core/includes"
   ],
@@ -83,4 +87,6 @@
   "html.validate.scripts": false,
   "html.validate.styles": false,
 }
+
+
 
