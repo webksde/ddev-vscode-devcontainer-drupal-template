@@ -25,7 +25,7 @@ beautifully packaged for easy project and environment switching.
  - Use `ddev phpcbf path/to/execute` format your Code using Drupal Coding Standards.
  - Use `ddev xdebug on` to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
  - Use `ddev import-db --src=path/to/src` to import a database file.
- - Use `ddev rename` to rename your project.
+ - Use `ddev rename` to rename your project. !THIS COMMAND IS BUGGY, PLEASE DO NOT USE IT YET!
  
  (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!! documentation tag)
 
