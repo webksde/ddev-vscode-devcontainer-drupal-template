@@ -27,7 +27,7 @@ beautifully packaged for easy project and environment switching.
  - Use `ddev import-db --src=path/to/src` to import a database file.
  - Use `ddev rename` to rename your project. !THIS COMMAND IS BUGGY, PLEASE DO NOT USE IT YET!
  
- (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!! documentation tag)
+ (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!!)
 
 ## Typical Use-Cases:
 - Create a simple Drupal 9 Sandbox for offline / local
