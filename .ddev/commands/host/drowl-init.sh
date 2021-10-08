@@ -12,7 +12,7 @@ ddev start
 
 ddev composer require --dev drush/drush drupal/core-dev phpunit/phpunit phpspec/prophecy-phpunit drupal/coder drupal/devel drupal/devel_debug_log drupal/devel_php
 
-ddev composer require composer/installers drupal/admin_toolbar drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/examples drupal/stage_file_proxy
+ddev composer require composer/installers drupal/admin_toolbar drupal/backup_migrate drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/examples drupal/stage_file_proxy
 
 #PHP Codesniffer Setup:
 ddev composer require squizlabs/php_codesniffer
@@ -38,7 +38,7 @@ cp .ddev/initiation-additions/README.md .
 cp .ddev/initiation-additions/.gitignore .
 
 #Acitvate required dev-modules:
-ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php -y
+ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
 
 #Give all Project informations:
 ddev describe
