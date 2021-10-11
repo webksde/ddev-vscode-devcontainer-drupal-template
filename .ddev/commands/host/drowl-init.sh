@@ -5,7 +5,7 @@
 ## Example: "drowl-init"
 
 #Get newest Drupal Version:
-ddev composer create -y 'drupal/recommended-project'
+ddev composer create -y 'drupal/recommended-project' --stability 'dev'
 
 #Starting Drupal DDEV Containers
 ddev start
