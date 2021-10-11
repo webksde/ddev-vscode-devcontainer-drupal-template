@@ -5,12 +5,12 @@
 ## Example: "drowl-init"
 
 #Get newest Drupal Version:
-ddev composer create -y 'drupal/recommended-project' --stability 'dev'
+ddev composer create -y 'drupal/recommended-project'
 
 #Starting Drupal DDEV Containers
 ddev start
 
-ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit:^9.5 drupal/coder drupal/devel drupal/devel_debug_log drupal/devel_php
+ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder drupal/devel drupal/devel_debug_log drupal/devel_php
 
 ddev composer require composer/installers drupal/admin_toolbar drupal/backup_migrate drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/examples drupal/stage_file_proxy
 
