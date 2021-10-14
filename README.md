@@ -37,7 +37,9 @@ beautifully packaged for easy project and environment switching.
  - Full project creation
 - Fetch an online project copy for
  - Local development / testing / evaluation
-
+##  Helpful Links
+- Einrichten von DrupalCI ChromeDriver:
+  - https://github.com/drud/ddev-contrib/tree/master/docker-compose-services/drupalci-chromedriver
 ## Documentation
 ### Functionality
 
