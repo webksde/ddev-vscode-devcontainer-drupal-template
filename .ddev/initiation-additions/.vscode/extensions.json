@@ -20,6 +20,5 @@
     //"juniormucciolo.drupal-7-snippets",
     //"pauloamgomes.drupal7-hooks-snippets",
     /*--------------------------------------------------Other Extensions--------------------------------------------------*/
-    "ms-azuretools.vscode-docker",
   ]
 }
