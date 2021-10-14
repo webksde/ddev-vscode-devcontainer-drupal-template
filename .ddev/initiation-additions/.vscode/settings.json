@@ -34,7 +34,7 @@
   ], //Excluded file types
   /*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
   "intelephense.format.braces": "k&r",
-  "phpcs.enable": false, //Deactivated, because it is annoying
+  "phpcs.enable": true, //Deactivated, because it is annoying
   "phpcs.standard": "Drupal,DrupalPractice", //phpcs standard
     "[php]": {
       "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
