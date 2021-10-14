@@ -18,6 +18,7 @@
   "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
   "php-docblocker.gap": true,
   "php-docblocker.useShortNames": true,
+  "php-docblocker.returnVoid": false,
   "editor.quickSuggestions": {
     "comments": true
   },
@@ -34,7 +35,6 @@
   ], //Excluded file types
   /*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
   "intelephense.format.braces": "k&r",
-  "php-docblocker.returnVoid": false
   "phpcs.enable": true,
   "phpcs.standard": "Drupal,DrupalPractice",
     "[php]": {
