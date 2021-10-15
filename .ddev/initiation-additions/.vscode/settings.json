@@ -64,6 +64,7 @@
   "editor.detectIndentation": true,
   "html.suggest.html5": true,
   "css.validate": true,
+  "editor.formatOnPaste": false,
   "editor.rulers": [
     80
   ],
