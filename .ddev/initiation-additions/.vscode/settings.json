@@ -56,7 +56,6 @@
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  "editor.formatOnPaste": true,
   "editor.formatOnSave": false,
   "editor.renderWhitespace": "boundary",
   "editor.wordWrapColumn": 80,
