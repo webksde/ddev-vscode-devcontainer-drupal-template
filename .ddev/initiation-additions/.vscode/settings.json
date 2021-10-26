@@ -33,6 +33,15 @@
   "emptyIndent.exclude": [
     ".md"
   ], //Excluded file types
+  "todohighlight.keywords": [
+      "@todo",
+      {
+          "text": "@todo",
+          "color": "grey",
+          "backgroundColor": "yellow",
+          "overviewRulerColor": "grey"
+      },
+  ],
   /*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
   "intelephense.format.braces": "k&r",
   "phpcs.enable": true,
