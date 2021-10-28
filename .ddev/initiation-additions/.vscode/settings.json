@@ -61,6 +61,7 @@
     "*.php",
     "*.phtml"
   ],
+  "intelephense.phpdoc.returnVoid": false,
   "breadcrumbs.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.tabSize": 2,
