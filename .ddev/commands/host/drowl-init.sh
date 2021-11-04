@@ -41,7 +41,9 @@ cp .ddev/initiation-additions/.gitignore .
 ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
 
 #Add "patches" and "minimum-stability" section in composer.json:
-ddev composer config extra.patches.bar patches
+ddev composer config extra.composer-exit-on-patch-failure true
+ddev composer config extra.enable-patching true
+ddev composer config extra.patches.drupal/core ""
 ddev composer config minimum-stability dev
 
 #Give all Project informations:
