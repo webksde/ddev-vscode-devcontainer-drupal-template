@@ -43,7 +43,6 @@ ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples st
 #Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
 ddev composer config extra.enable-patching true
-ddev composer config extra.patches '"drupal/core": {}'
 ddev composer config minimum-stability dev
 
 #Give all Project informations:
