@@ -43,10 +43,7 @@ ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples st
 #Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
 ddev composer config extra.enable-patching true
-ddev composer config --json extra.patches '{
-            "package-mantainer/package": {
-                "INSERT WHAT THE PATCH DOES": "PATH-TO-PATCH"
-            }'
+ddev composer config --json extra.patches '{"package-mantainer/package": {"INSERT WHAT THE PATCH DOES": "PATH-TO-PATCH"}'
 ddev composer config minimum-stability dev
 
 #Create custom module folder:
