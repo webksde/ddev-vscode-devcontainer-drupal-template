@@ -46,6 +46,9 @@ ddev composer config extra.enable-patching true
 ddev composer config extra.patches.DELETEME.THIS_IS_A_PLACEHOLDER "PLACEHOLDER"
 ddev composer config minimum-stability dev
 
+#Create custom module folder:
+mkdir web/modules/custom
+
 #Give all Project informations:
 ddev describe
 
