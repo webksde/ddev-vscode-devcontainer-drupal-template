@@ -1,0 +1,8 @@
+[mysqld]
+wait_timeout = 31536000
+net_read_timeout = 9999
+net_write_timeout = 9999
+interactive_timeout = 9999
+connect_timeout = 9999
+max_allowed_packet = 512M
+innodb_lock_wait_timeout = 9999
