@@ -21,6 +21,7 @@ beautifully packaged for easy project and environment switching.
 ## Tooling
  - Use `ddev code` to attach VSCode to your running Container.
  - Use `ddev phpunit path/to/tests` to Test Classes using PHPUnit.
+ - Use `ddev phpunit-coverage path/to/cover` to create a test coverage of the given file-system 
  - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
  - Use `ddev phpcbf path/to/execute` format your Code using Drupal Coding Standards.
  - Use `ddev xdebug on` to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
