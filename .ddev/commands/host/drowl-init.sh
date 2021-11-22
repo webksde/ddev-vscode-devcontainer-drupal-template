@@ -4,17 +4,17 @@
 ## Usage: drowl-init
 ## Example: "drowl-init"
 
-#Get newest Drupal Version:
+# Get newest Drupal Version:
 ddev composer create -y 'drupal/recommended-project'
 
-#Starting Drupal DDEV Containers
+# Starting Drupal DDEV Containers
 ddev start
 
 ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit drupal/devel drupal/devel_debug_log drupal/devel_php
 
 ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/examples drupal/stage_file_proxy
 
-#PHP Codesniffer Setup:
+# PHP Codesniffer Setup:
 ddev composer require squizlabs/php_codesniffer
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
@@ -24,35 +24,39 @@ ddev exec phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer -
 # Make Codesniffer config file writable for ordinary users in container:
 ddev exec chmod 666 vendor/squizlabs/php_codesniffer/CodeSniffer.conf
 
-#Drush and Site initialisation:
+# Drush and Site initialisation:
 ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
 
-#Copy VSCode Settings
+# Get VSCode Settings:
 cp -R .ddev/initiation-additions/.vscode/ .
 
-#Create PHPUnit.xml
+# get PHPUnit.xml:
 cp .ddev/initiation-additions/phpunit.xml web/core
 
-#Get Readme.md and .gitignore
+# Get local.settings and services:
+cp .ddev/initiation-additions/settings.local.yml web/sites/default
+cp .ddev/initiation-additions/services.local.yml web/sites/default
+
+# Get Readme.md and .gitignore
 cp .ddev/initiation-additions/README.md .
 cp .ddev/initiation-additions/.gitignore .
 
-#Acitvate required dev-modules:
+# Acitvate required dev-modules:
 ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
 
-#Add "patches" and "minimum-stability" section in composer.json:
+# Add "patches" and "minimum-stability" section in composer.json:
 composer config extra.composer-exit-on-patch-failure true
 composer config extra.enable-patching true
 composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
 composer config minimum-stability dev
 
-#Create custom module folder:
+# Create custom module folder:
 mkdir web/modules/custom
 
-#Give all Project informations:
+# Give all Project informations:
 ddev describe
 
-#Helper Messages
+# Helper Messages
 echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit"
 echo "Use 'ddev phpcs path/to/sniff' to check if your Code is using Drupal Coding Standards"
 echo "Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Standards"
