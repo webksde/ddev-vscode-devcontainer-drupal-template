@@ -57,9 +57,10 @@ composer config minimum-stability dev
 # Create custom module folder:
 mkdir -p web/modules/custom
 
-# Export DB-Dump to data/sql/complete:
+# Export DB-Dump to data/sql:
 mkdir -p ./data/sql
 mysqldump -u db -p db --password=db > ./data/sql/db-complete-dump.sql
+echo "Created full database dump under data/sql/db-complete-dump.sql"
 
 # Give all Project informations:
 ddev describe
