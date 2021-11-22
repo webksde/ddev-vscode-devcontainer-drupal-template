@@ -34,7 +34,7 @@ cp -R .ddev/initiation-additions/.vscode/ .
 cp .ddev/initiation-additions/phpunit.xml web/core
 
 # Set the permission for the default folder:
-chmod 754 ./web/sites/default
+chmod 755 ./web/sites/default
 
 # Get settings.php, settings.local.php and services.local.yml:
 cp .ddev/initiation-additions/settings.php web/sites/default
