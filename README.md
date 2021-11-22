@@ -27,7 +27,9 @@ beautifully packaged for easy project and environment switching.
  - Use `ddev xdebug on` to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
  - Use `ddev import-db --src=path/to/src` to import a database file.
  - Use `ddev rename` to rename your project. !THIS COMMAND IS BUGGY, PLEASE DO NOT USE IT YET!
- 
+ - Use `ddev dump-db ddev` to dump your main db tablewise.
+ - Use `ddev deploy-db ddev` to import your tablewise dump.
+  - Note: You can additionally add remote SSH projects under .ddev/commands/web/db-targets
  (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!!)
 
 ## Typical Use-Cases:
