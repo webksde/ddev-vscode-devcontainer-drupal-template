@@ -48,6 +48,9 @@ cp .ddev/initiation-additions/.gitignore .
 # Acitvate required dev-modules:
 ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
 
+# Activate Error Logging:
+ddev drush config-set system.logging error_level verbose -y
+
 # Add "patches" and "minimum-stability" section in composer.json:
 composer config extra.composer-exit-on-patch-failure true
 composer config extra.enable-patching true
