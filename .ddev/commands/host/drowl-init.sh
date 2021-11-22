@@ -51,7 +51,11 @@ composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT
 composer config minimum-stability dev
 
 # Create custom module folder:
-mkdir web/modules/custom
+mkdir -p web/modules/custom
+
+# Export DB-Dump to data/sql/complete:
+mkdir -p ./data/sql
+mysqldump -u db -p db --password=db > ./data/sql/db-complete-dump.sql
 
 # Give all Project informations:
 ddev describe

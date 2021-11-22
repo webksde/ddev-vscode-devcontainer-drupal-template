@@ -5,5 +5,4 @@
 ## Example: "ddev phpunit path/to/tests"
 
 enable_xdebug
-phpunit -c /var/www/html/${DDEV_DOCROOT}/core/phpunit.xml --coverage-html=${DDEV_DOCROOT}/coverage $*
-
+phpunit -c /var/www/html/${DDEV_DOCROOT}/core/phpunit.xml --coverage-html=./coverage $*
