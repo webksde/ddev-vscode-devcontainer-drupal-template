@@ -18,7 +18,8 @@ if [ $# -eq 0 ] ; then
   case ${answer:0:1} in
     y|Y|yes|Yes|YES )
       echo "Great! Initialising your project with your composer file..."
-      ddev composer install
+      # Use composer require instead of install here for existing projects to run the expected hooks:
+      ddev composer require
     ;;
     * )
       echo "I don't understand :( Exiting the script..."
