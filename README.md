@@ -13,8 +13,8 @@ beautifully packaged for easy project and environment switching.
   3. The "Remote Development" Extension in VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)
 
 ## How to Use it:
- 1. Download the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git`
- 2. Change into the directory: `cd ddev-vscode-devcontainer-drupal9-template`
+ 1. Download the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git my-ddev-project`
+ 2. Change into the directory: `cd my-ddev-project`
  3. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
  4. You are ready to go! Use `ddev describe` to check the status of your Project!
 
