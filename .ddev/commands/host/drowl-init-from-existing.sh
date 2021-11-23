@@ -78,7 +78,6 @@ if [ $# -eq 0 ] ; then
   ddev import-db --target-db=db --src=$src
   # Acitvate required dev-modules:
   ddev describe
-  exit
 fi
 
 # If there is an -r flag do this:
