@@ -31,10 +31,12 @@ if [ $# -eq 0 ] ; then
   # Drush and Site initialisation:
   ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
 
-  read -p "Would you like to have development tools enabled?" answer
+  read -p "Would you like to have development tools enabled? (WARNING: This changes your composer.json and Drupal configuration! You should NOT push changes back to production afterwards!)" answer
   case ${answer:0:1} in
     y|Y|yes|Yes|YES )
       echo "Ok! requiring development tools..."
+      echo "Development tools were added to composer.json and Drupal Config of this project! Do NOT push back to production!" > WARNING-DO-NOT-PUSH-BACK-TO-PRODUCTION.txt
+      echo "Created a WARNING-DO-NOT-PUSH-BACK-TO-PRODUCTION.txt"
       ddev composer require cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/devel drupal/devel_debug_log drupal/devel_php drupal/coder
       ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit phpspec/prophecy-phpunit
       # PHP Codesniffer Setup:
