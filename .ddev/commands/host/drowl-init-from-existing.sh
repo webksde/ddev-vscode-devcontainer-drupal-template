@@ -5,6 +5,13 @@
 ## Example: "drowl-init-from-existing"
 ## TODO: Create a --remote tag to initiate a project via remote ssh.
 
+# exit when any command fails
+set -e
+# keep track of the last executed command
+trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
+# echo an error message before exiting
+trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
+
 # If there are no flags do this:
 if [ $# -eq 0 ] ; then
   read -p "Please put your composer.json in the root-directory of the project and type (y|Y|yes|Yes) to continue..." answer
