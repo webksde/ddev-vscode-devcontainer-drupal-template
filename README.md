@@ -18,6 +18,11 @@ beautifully packaged for easy project and environment switching.
  3. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
  4. You are ready to go! Use `ddev describe` to check the status of your Project!
 
+## Delete the environment:
+ 1. `ddev delete -y` deletes the container and unlists the project.
+ 2. `cd ..` go back.
+ 3. `sudo rm -r ddev-vscode-devcontainer-drupal9-template/` deletes the repo.
+
 ## Tooling
  - Use `ddev code` to attach VSCode to your running Container.
  - Use `ddev phpunit path/to/tests` to Test Classes using PHPUnit.
