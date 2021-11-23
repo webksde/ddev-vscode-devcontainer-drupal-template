@@ -14,7 +14,7 @@ trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 
 # If there are no flags do this:
 if [ $# -eq 0 ] ; then
-  read -p "Please put your composer.json in the root-directory of the project and type (y|Y|yes|Yes) to continue..." answer
+  read -p "Please put your composer.json in the root-directory of the project and type 'yes' to continue..." answer
   case ${answer:0:1} in
     y|Y|yes|Yes|YES )
       echo "Great! Initialising your project with your composer file..."
