@@ -77,7 +77,7 @@ if [ $# -eq 0 ] ; then
   cp .ddev/initiation-additions/.gitignore .
 
   #Import database:
-  read -p "Please type in the relative path to your Database dump:" -r src
+  read -p "Please type in the project-root relative path to your Database dump (e.g. dump.mysql.gz). Supports several file formats, including: .sql, .sql.gz, .mysql, .mysql.gz, .tar, .tar.gz, and .zip:" -r src
   echo "Alright! Importing your database...."
   ddev import-db --target-db=db --src=$src
   # Acitvate required dev-modules:
