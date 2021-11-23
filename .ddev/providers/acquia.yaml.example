@@ -21,7 +21,7 @@
 # 9. Use `ddev pull acquia` to pull the project database and files.
 # 10. Optionally use `ddev push acquia` to push local files and database to Aquia. Note that `ddev push` is a command that can potentially damage your production site, so this is not recommended.
 
-# Debugging: Use `ddev exec acli command` and `ddev exec acli auth:info`
+# Debugging: Use `ddev exec acli command` and `ddev exec acli auth:login`
 # Make sure you remembered to `ddev auth ssh`
 
 environment_variables:
@@ -29,6 +29,7 @@ environment_variables:
 
 auth_command:
   command: |
+    set -eu -o pipefail
     if [ -z "${ACQUIA_API_KEY:-}" ] || [ -z "${ACQUIA_API_SECRET:-}" ]; then echo "Please make sure you have set ACQUIA_API_KEY and ACQUIA_API_SECRET in ~/.ddev/global_config.yaml" && exit 1; fi
     if ! command -v drush >/dev/null ; then echo "Please make sure your project contains drush, ddev composer require drush/drush" && exit 1; fi
     ssh-add -l >/dev/null || ( echo "Please 'ddev auth ssh' before running this command." && exit 1 )
@@ -38,22 +39,24 @@ auth_command:
 db_pull_command:
   command: |
     # set -x   # You can enable bash debugging output by uncommenting
+    set -eu -o pipefail
     ls /var/www/html/.ddev >/dev/null # This just refreshes stale NFS if possible
     pushd /var/www/html/.ddev/.downloads >/dev/null
-    acli remote:drush -n ${project_id} -- sql-dump --extra-dump=--no-tablespaces >db.sql
-    gzip db.sql
+    drush @${project_id} sql-dump -n --alias-path=~/.drush --extra-dump=--no-tablespaces --gzip >db.sql.gz
 
 files_pull_command:
   command: |
     # set -x   # You can enable bash debugging output by uncommenting
+    set -eu -o pipefail
     ls /var/www/html/.ddev >/dev/null # This just refreshes stale NFS if possible
     pushd /var/www/html/.ddev/.downloads >/dev/null;
-    drush rsync --alias-path=~/.drush -q -y @${project_id}:%files ./files
+    drush -r docroot rsync --exclude-paths='styles:css:js' --alias-path=~/.drush -q -y @${project_id}:%files ./files
 
 # push is a dangerous command. If not absolutely needed it's better to delete these lines.
 db_push_command:
   command: |
     # set -x   # You can enable bash debugging output by uncommenting
+    set -eu -o pipefail
     ls /var/www/html/.ddev >/dev/null # This just refreshes stale NFS if possible
     pushd /var/www/html/.ddev/.downloads >/dev/null;
     acli remote:drush -n ${project_id} -- sql-drop -y
@@ -64,5 +67,6 @@ db_push_command:
 files_push_command:
   command: |
     # set -x   # You can enable bash debugging output by uncommenting
+    set -eu -o pipefail
     ls ${DDEV_FILES_DIR} >/dev/null # This just refreshes stale NFS if possible
     drush rsync -y --alias-path=~/.drush @self:%files @${project_id}:%files
