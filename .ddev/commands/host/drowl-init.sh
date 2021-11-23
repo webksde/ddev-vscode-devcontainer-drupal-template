@@ -40,12 +40,13 @@ cp -R .ddev/initiation-additions/.vscode/ .
 cp .ddev/initiation-additions/phpunit.xml web/core
 
 # Set the permission for the default folder:
-chmod 755 ./web/sites/default
+chmod 0755 ./web/sites/default
+chmod 0644 ./web/sites/default/settings.php
 
 # Get settings.php, settings.local.php and services.local.yml:
-cp .ddev/initiation-additions/settings.php web/sites/default
-cp .ddev/initiation-additions/settings.local.php web/sites/default
-cp .ddev/initiation-additions/services.local.yml web/sites/default
+cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
+cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
+cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
 
 # Get Readme.md and .gitignore
 cp .ddev/initiation-additions/README.md .
