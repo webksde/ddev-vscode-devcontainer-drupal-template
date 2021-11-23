@@ -35,7 +35,7 @@ if [ $# -eq 0 ] ; then
     y|Y|yes|Yes|YES )
       echo "Ok! requiring development tools..."
       ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit drupal/devel drupal/devel_debug_log drupal/devel_php
-      ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/examples drupal/stage_file_proxy
+      ddev composer require cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy
       # PHP Codesniffer Setup:
       ddev composer require squizlabs/php_codesniffer
       # Initialize development environment tools:
