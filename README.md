@@ -36,6 +36,10 @@ beautifully packaged for easy project and environment switching.
   - Note: You can additionally add remote SSH projects under .ddev/commands/web/db-targets
  (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!!)
 
+## External ddev Tools and Additions:
+ - https://github.com/drud/awesome-ddev
+ - https://github.com/drud/ddev-contrib
+
 ## Typical Use-Cases:
 - Create a simple Drupal 9 Sandbox for offline / local
  - Contrib Module / Theme evaluation
