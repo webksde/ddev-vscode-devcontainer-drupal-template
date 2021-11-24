@@ -1,7 +1,7 @@
 # ddev-vscode-devcontainer-drupal9-template
-**Spin up a ready-to-code Drupal 9 CMS DDEV based development container for Visual Studio Code using the power of VSCode Remote-Containers in one command!**
+**Spin up a ready-to-code Drupal 9 CMS DDEV based development container for Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
 
-Provides a plug and play DDEV (Docker) based development environment for VSCode IDE with predefined Drupal CMS best practice
+Provides a plug and play 🔌 DDEV (Docker) based development environment for VSCode IDE with predefined Drupal CMS best practice
 - Extensions
 - Settings
 - Launch configuration (Run, Test (PHPUnit) & Debug (XDebug))
@@ -18,7 +18,7 @@ beautifully packaged for easy project and environment switching.
  1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git my-ddev-project`
  2. Change into the directory: `cd my-ddev-project`
  3. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
- 4. You are ready to go! Use `ddev describe` to check the status of your Project and `ddev code` to run your prepared VSCode IDE!
+ 4. You are ready to go! Use `ddev describe` to check the status & URL of your Project and `ddev code` to run your prepared VSCode IDE!
 
 ## Tooling
  - Use `ddev code` to attach VSCode to your running Container.
