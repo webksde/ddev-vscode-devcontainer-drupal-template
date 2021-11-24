@@ -43,12 +43,8 @@ beautifully packaged for easy project and environment switching.
  - Contrib Module merge request / patch creation (Git clone / commit / push)
  - Custom Module / Theme development & Testing
  - Full project creation
-- Fetch an online project copy for
+ - Fetch an online project copy for
  - Local development / testing / evaluation
- - 
-##  Helpful Links
-- Einrichten von DrupalCI ChromeDriver:
-  - https://github.com/drud/ddev-contrib/tree/master/docker-compose-services/drupalci-chromedriver
 
 ## Documentation
 
