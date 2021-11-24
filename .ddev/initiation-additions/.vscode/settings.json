@@ -84,8 +84,11 @@
     "*.tpl.php": "php",
     "*.test": "php",
     "*.php": "php",
-    "*.info": "ini",
+    "*.svg": "xml",
+    "*.yml": "yaml",
     "*.html": "twig",
+    "*.twig": "twig",
+    "*.tpl": "smarty"
   },
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
