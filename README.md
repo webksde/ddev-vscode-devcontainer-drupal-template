@@ -38,19 +38,12 @@ beautifully packaged for easy project and environment switching.
  - https://github.com/drud/ddev-contrib
 
 ## Typical Use-Cases:
-- Create a simple Drupal 9 Sandbox for offline / local
- - Contrib Module / Theme evaluation
- - Contrib Module merge request / patch creation (Git clone / commit / push)
- - Custom Module / Theme development & Testing
- - Full project creation
- - Fetch an online project copy for
- - Local development / testing / evaluation
+ - Local Drupal development / testing / evaluation instance from scratch or existing with ready-to-go IDE
+ - Module / Theme development or evaluation
+ - Contrib module issue forks / merge requests / patch creation (Git clone / commit / push / ...)
+ - Simple & quick Drupal 9 Sandbox for offline / local
 
 ## Documentation
-
-### Delete the environment:
- 1. `ddev delete -y` deletes the container and unlists the project.
- 2. Delete the project folder
 
 ### Functionality
 
@@ -58,16 +51,19 @@ beautifully packaged for easy project and environment switching.
 - use ddev start
 
 #### 1. Create an "empty" best-practice working Drupal 9 CMS Development instance
-- Sets up best-practice development Server
+`ddev drowl-init` + `ddev code`
+- Sets up best-practice Drupal VSCode IDE
 - Sets up ready to log in latest Drupal 9 Copy
 - Installs best-practice Drupal 9 Modules & Configuration
 
 #### 2. Create an environment from a local db dump and composer file
-- Set up project via composer and db dump
+`ddev drowl-init-from-existing` + `ddev code`
+- Sets up project via composer and db dump
 - (Optional) Installs development Modules & Configuration
 
 
 #### TODO: 3a. Fetch a 1:1 copy of an existing Drupal 9 CMS Project via SSH / Github
+TODO
 - drowl-init-from-existing --remote "github Link"
 - Sets up best-practice development Server
 - Fetches existing database
@@ -77,8 +73,18 @@ beautifully packaged for easy project and environment switching.
 (3a.) PLUS
 - Optionally installs development modules: TODO
 
-#### 4. Extract and push database & configuration changes back to the origin
+#### 4. TODO: Extract and push database & configuration changes back to the origin
 3 a / b PLUS:
 - Log database changes to put into update hook
 - Log configuration changes to export
 - Push to origin
+
+### Use different configuration or settings by default
+Fork me! And help us to split configuration smart for future updates :)
+
+### Update the environment
+TODO
+
+### Delete the environment:
+ 1. `ddev delete -y` deletes the container and unlists the project.
+ 2. Delete the project folder
