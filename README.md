@@ -3,10 +3,10 @@
 
 Provides a plug and play 🔌 DDEV (Docker) based development environment for VSCode IDE with predefined Drupal CMS best practice
 - Extensions
-  - PHPCS
+  - GitLens
   - ... TODO
 - Settings
-  - Linting
+  - Linting (Drupal Coding Standards)
   - ... TODO
 - Launch configuration
   - Run
