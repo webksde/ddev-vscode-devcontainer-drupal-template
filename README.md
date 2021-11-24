@@ -3,8 +3,17 @@
 
 Provides a plug and play 🔌 DDEV (Docker) based development environment for VSCode IDE with predefined Drupal CMS best practice
 - Extensions
+  - PHPCS
+  - ... TODO
 - Settings
-- Launch configuration (Run, Test (PHPUnit) & Debug (XDebug))
+  - Linting
+  - ... TODO
+- Launch configuration
+  - Run
+  - Test (PHPUnit)
+  - Debug (XDebug)
+  - Profile (XDebug)
+  - ... TODO
 beautifully packaged for easy project and environment switching.
 
 *Feel free to forked for other Frameworks or improve for lovely Drupal!* ❤️
