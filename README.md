@@ -1,27 +1,24 @@
 # ddev-vscode-devcontainer-drupal9-template
-*Drupal 9 DDEV based development container for Visual Studio Code with Remote - Containers.*
+**Spin up a ready-to-code Drupal 9 CMS DDEV based development container for Visual Studio Code using the power of VSCode Remote-Containers in one command!**
 
-Provides a plug and play DDEV (Docker) based development environment for VSCode IDE with predefined webks GmbH best practice
+Provides a plug and play DDEV (Docker) based development environment for VSCode IDE with predefined Drupal CMS best practice
 - Extensions
 - Settings
-- Launch configuration (Run & Debug)
+- Launch configuration (Run, Test (PHPUnit) & Debug (XDebug))
 beautifully packaged for easy project and environment switching.
+
+*Feel free to forked for other Frameworks or improve for lovely Drupal!* ❤️
 
 ## Prerequisites:
   1. Up to date Version of Ddev, Docker, Chrome/Firefox
   2. VSCode installed on your machine locally
-  3. The "Remote Development" Extension in VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)
+  3. The [Remote Development Extension for VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)}(https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
 ## How to Use it:
- 1. Download the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git my-ddev-project`
+ 1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git my-ddev-project`
  2. Change into the directory: `cd my-ddev-project`
  3. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
- 4. You are ready to go! Use `ddev describe` to check the status of your Project!
-
-## Delete the environment:
- 1. `ddev delete -y` deletes the container and unlists the project.
- 2. `cd ..` go back.
- 3. `sudo rm -r ddev-vscode-devcontainer-drupal9-template/` deletes the repo.
+ 4. You are ready to go! Use `ddev describe` to check the status of your Project and `ddev code` to run your prepared VSCode IDE!
 
 ## Tooling
  - Use `ddev code` to attach VSCode to your running Container.
@@ -48,10 +45,17 @@ beautifully packaged for easy project and environment switching.
  - Full project creation
 - Fetch an online project copy for
  - Local development / testing / evaluation
+ - 
 ##  Helpful Links
 - Einrichten von DrupalCI ChromeDriver:
   - https://github.com/drud/ddev-contrib/tree/master/docker-compose-services/drupalci-chromedriver
+
 ## Documentation
+
+### Delete the environment:
+ 1. `ddev delete -y` deletes the container and unlists the project.
+ 2. Delete the project folder
+
 ### Functionality
 
 #### 0. Create an empty DDev Environment
