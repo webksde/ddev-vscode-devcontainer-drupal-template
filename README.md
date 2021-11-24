@@ -14,6 +14,8 @@ Provides a plug and play 🔌 DDEV (Docker) based development environment for VS
   - Debug (XDebug)
   - Profile (XDebug)
   - ... TODO
+- Tooling
+  - ... TODO
 beautifully packaged for easy project and environment switching.
 
 *Feel free to forked for other Frameworks or improve for lovely Drupal!* ❤️
