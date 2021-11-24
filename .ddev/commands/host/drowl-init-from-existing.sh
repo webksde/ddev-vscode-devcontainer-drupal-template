@@ -14,7 +14,7 @@ trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 
 # If there are no flags do this:
 if [ $# -eq 0 ] ; then
-  read -p "Please put your composer.json in the root-directory of the project and type 'yes' to continue..." answer
+  read -p "Please put your composer.json in the root-directory of the project and type 'yes' to continue..."$'\n' answer
   case ${answer:0:1} in
     y|Y|yes|Yes|YES )
       echo "Great! Initialising your project with your composer file..."
@@ -31,7 +31,7 @@ if [ $# -eq 0 ] ; then
   # Drush and Site initialisation:
   ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
 
-  read -p "Would you like to have development tools enabled? (WARNING: This changes your composer.json and Drupal configuration! You should NOT push changes back to production afterwards!)" answer
+  read -p "Would you like to have development tools enabled? (WARNING: This changes your composer.json and Drupal configuration! You should NOT push changes back to production afterwards!)"$'\n' answer
   case ${answer:0:1} in
     y|Y|yes|Yes|YES )
       echo "Ok! requiring development tools..."
@@ -77,9 +77,20 @@ if [ $# -eq 0 ] ; then
   cp .ddev/initiation-additions/.gitignore .
 
   #Import database:
-  read -p "Please type in the project-root relative path to your Database dump (e.g. dump.mysql.gz). Supports several file formats, including: .sql, .sql.gz, .mysql, .mysql.gz, .tar, .tar.gz, and .zip:" -r src
+  read -p "Please type in the project-root relative path to your Database dump (e.g. dump.mysql.gz). Supports several file formats, including: .sql, .sql.gz, .mysql, .mysql.gz, .tar, .tar.gz, and .zip:"$'\n' -r src
   echo "Alright! Importing your database...."
   ddev import-db --target-db=db --src=$src
+  read -p "Would you like to delete your .git directory and .gitignore file?"$'\n' answer
+  case ${answer:0:1} in
+    y|Y|yes|Yes|YES )
+      echo "Ok, deleting your .gitignore and .git..."
+      rm -r ./.git ./.gitignore ./.gitattributes -f
+    ;;
+    * )
+      echo "I don't understand :( Exiting the script..."
+      yell() { echo "$0: $*" >&2; }
+    ;;
+  esac
   # Acitvate required dev-modules:
   ddev describe
 fi

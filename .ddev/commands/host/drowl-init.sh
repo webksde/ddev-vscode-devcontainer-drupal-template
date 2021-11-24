@@ -73,6 +73,19 @@ mkdir -p ./data/sql
 ddev export-db $DDEV_PROJECT > ./data/sql/db-complete-dump.sql
 echo "Created full database dump under data/sql/db-complete-dump.sql"
 
+# Ask if .git should be removed:
+read -p "Would you like to delete your .git directory and .gitignore file?"$'\n' answer
+  case ${answer:0:1} in
+    y|Y|yes|Yes|YES )
+      echo "Ok, deleting your .gitignore and .git..."
+      rm -r ./.git ./.gitignore ./.gitattributes -f
+    ;;
+    * )
+      echo "I don't understand :( Exiting the script..."
+      yell() { echo "$0: $*" >&2; }
+    ;;
+  esac
+
 # Give all Project informations:
 ddev describe
 
