@@ -61,10 +61,9 @@ ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples st
 ddev drush config-set system.logging error_level verbose -y
 
 # Add "patches" and "minimum-stability" section in composer.json:
-composer config extra.composer-exit-on-patch-failure true
-composer config extra.enable-patching true
-composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
-composer config minimum-stability dev
+ddev composer config extra.composer-exit-on-patch-failure true
+ddev composer config extra.enable-patching true
+ddev composer config minimum-stability dev
 
 # Create custom module folder:
 mkdir -p web/modules/custom
