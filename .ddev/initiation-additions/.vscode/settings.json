@@ -26,7 +26,6 @@
   "javascript.format.enable": false,
   "php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
   "terminal.integrated.defaultProfile.linux": "bash",
-  "php-cs-fixer.rules": "@PhpCsFixer",
   "emptyIndent.removeIndent": true, //Automatically remove indentation in empty lines on save
   "emptyIndent.highlightIndent": false, //Highlight indent on empty lines
   "emptyIndent.highlightColor": "rgba(246,36,89,0.6)", //Highlight indent color

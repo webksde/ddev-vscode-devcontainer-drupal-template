@@ -9,7 +9,6 @@
     "neilbrayfield.php-docblocker",
     "wayou.vscode-todo-highlight",
     "shevaua.phpcs", //needs php code-sniffer
-    "junstyle.php-cs-fixer", //needs php code sniffer
     "dmitrydorofeev.empty-indent",
     /*--------------------------------------------------Drupal 8 Specific Extensions--------------------------------------------------*/
     "ikappas.composer",
