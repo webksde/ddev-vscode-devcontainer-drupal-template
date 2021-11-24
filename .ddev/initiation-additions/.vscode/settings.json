@@ -41,7 +41,9 @@
           "overviewRulerColor": "grey"
       },
   ],
+  "phpsab.executablePathCBF": "vendor/squizlabs/php_codesniffer/bin/phpcbf.bat",
   /*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
+  "phpsab.standard": "Drupal,DrupalPractice",
   "intelephense.format.braces": "k&r",
   "phpcs.enable": true,
   "phpcs.standard": "Drupal,DrupalPractice",

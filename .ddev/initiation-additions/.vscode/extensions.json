@@ -10,6 +10,7 @@
     "wayou.vscode-todo-highlight",
     "shevaua.phpcs", //needs php code-sniffer
     "dmitrydorofeev.empty-indent",
+    "valeryanm.vscode-phpsab",
     /*--------------------------------------------------Drupal 8 Specific Extensions--------------------------------------------------*/
     "ikappas.composer",
     "tsega.drupal-8-javascript-snippets",
