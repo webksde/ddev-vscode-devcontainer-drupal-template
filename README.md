@@ -9,12 +9,12 @@ beautifully packaged for easy project and environment switching.
 
 *Feel free to forked for other Frameworks or improve for lovely Drupal!* ❤️
 
-## Prerequisites:
+## Prerequisites
   1. Up to date Version of Ddev, Docker, Chrome/Firefox
   2. VSCode installed on your machine locally
   3. The [Remote Development Extension for VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)}(https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
-## How to Use it:
+## How to use
  1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git my-ddev-project`
  2. Change into the directory: `cd my-ddev-project`
  3. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
@@ -32,10 +32,6 @@ beautifully packaged for easy project and environment switching.
  - Use `ddev deploy-db ddev` to import your tablewise dump.
   - Note: You can additionally add remote SSH projects under .ddev/commands/web/db-targets
  (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!!)
-
-## External ddev Tools and Additions:
- - https://github.com/drud/awesome-ddev
- - https://github.com/drud/ddev-contrib
 
 ## Typical Use-Cases:
  - Local Drupal development / testing / evaluation instance from scratch or existing with ready-to-go IDE
@@ -88,3 +84,7 @@ TODO
 ### Delete the environment:
  1. `ddev delete -y` deletes the container and unlists the project.
  2. Delete the project folder
+
+## Further ddev Tools and add-ons
+ - https://github.com/drud/awesome-ddev
+ - https://github.com/drud/ddev-contrib
