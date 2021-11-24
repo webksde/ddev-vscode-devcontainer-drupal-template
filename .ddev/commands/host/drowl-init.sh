@@ -27,6 +27,7 @@ ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/c
 ddev composer require squizlabs/php_codesniffer
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
+ddev exec chmod +x vendor/bin/phpcbf
 # Register Drupal's code sniffer rules.
 ddev exec phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer --verbose
 # Make Codesniffer config file writable for ordinary users in container:
@@ -93,3 +94,4 @@ ddev describe
 # Helper Messages
 echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit"
 echo "Use 'ddev phpcs path/to/sniff' to check if your Code is using Drupal Coding Standards"
+echo "Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Standards"
