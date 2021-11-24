@@ -20,5 +20,6 @@
     //"juniormucciolo.drupal-7-snippets",
     //"pauloamgomes.drupal7-hooks-snippets",
     /*--------------------------------------------------Other Extensions--------------------------------------------------*/
+    "eamodio.gitlens"
   ]
 }
