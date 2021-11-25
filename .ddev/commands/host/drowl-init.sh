@@ -67,6 +67,8 @@ ddev composer config minimum-stability dev
 
 # Create custom module folder:
 mkdir -p web/modules/custom
+# Create temp folder:
+mkdir -p ./tmp
 
 # Export DB-Dump to data/sql:
 mkdir -p ./data/sql

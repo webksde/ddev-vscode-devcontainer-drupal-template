@@ -61,8 +61,9 @@ if [ $# -eq 0 ] ; then
         cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
         cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
         cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
-        # Create custom module folder:
+        # Create temp folder and custom module folder:
         mkdir -p web/modules/custom
+        mkdir -p ./tmp
         # Acitvate required dev-modules:
         ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
         bool=0
@@ -98,16 +99,34 @@ if [ $# -eq 0 ] ; then
       ;;
     esac
   done
+  bool=1
+  while [ $bool -eq 1 ]; do
+    read -p "Would you like to create assets, files, log and scipts folders? )"$'\n' answer
+    case ${answer:0:1} in
+      y|Y|yes|Yes|YES )
+        echo "Creating the folders..."
+        mkdir -p ./assets ./files ./log ./scipts
+        bool=0
+      ;;
+      n|N|no|No|NO )
+        echo "Alright! Setting up a clean copy of your project!"
+        bool=0
+      ;;
+      * )
+        echo "I don't understand."
+      ;;
+    esac
+  done
   # Acitvate required dev-modules:
   ddev describe
 fi
 
-# If there is an -r flag do this:
-# while getopts r flag
-# do
-#   case "${flag}" in
-#           r) echo "TODO: This is not implemented yet!"
-#                   ;;
-#           *) echo "Invalid option: -$flag" ;;
-#   esac
-# done
+If there is an -r flag do this:
+while getopts r flag
+do
+  case "${flag}" in
+          r) echo "TODO: This is not implemented yet!"
+                  ;;
+          *) echo "Invalid option: -$flag" ;;
+  esac
+done
