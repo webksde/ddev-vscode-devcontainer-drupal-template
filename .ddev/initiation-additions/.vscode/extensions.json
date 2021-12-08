@@ -11,6 +11,8 @@
     "shevaua.phpcs", //needs php code-sniffer
     "dmitrydorofeev.empty-indent",
     "valeryanm.vscode-phpsab",
+    /*--------------------------------------------------Javascript Specific Extensions--------------------------------------------------*/
+    "dbaeumer.vscode-eslint",
     /*--------------------------------------------------Drupal 8 Specific Extensions--------------------------------------------------*/
     "ikappas.composer",
     "tsega.drupal-8-javascript-snippets",
