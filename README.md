@@ -26,10 +26,11 @@ beautifully packaged for easy project and environment switching.
   3. The [Remote Development Extension for VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)}(https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
 ## How to use
- 1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git my-ddev-project`
- 2. Change into the directory: `cd my-ddev-project`
- 3. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
- 4. You are ready to go! Use `ddev describe` to check the status & URL of your Project and `ddev code` to run your prepared VSCode IDE!
+ 1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git`
+ 2. Start / Restart Docker and make sure it is updated to the current version
+ 3. Change into the directory: `cd ddev-vscode-devcontainer-drupal9-template`
+ 4. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
+ 5. You are ready to go! Use `ddev describe` to check the status & URL of your Project and `ddev code` to run your prepared VSCode IDE!
 
 ## Tooling
  - Use `ddev code` to attach VSCode to your running Container.
