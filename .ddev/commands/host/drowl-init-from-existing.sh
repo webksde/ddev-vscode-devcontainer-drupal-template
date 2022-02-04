@@ -66,6 +66,9 @@ if [ $# -eq 0 ] ; then
         mkdir -p ./tmp
         # Acitvate required dev-modules:
         ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
+        read -p "Please provide the origin website for the stage_file_proxy module (e.g. 'https://www.example.com')"$'\n' -r site
+        echo "Alright! setting stage file proxy origin..."
+        drush config-set stage_file_proxy.settings origin "$site"
         bool=0
       ;;
       n|N|no|No|NO )
@@ -84,7 +87,7 @@ if [ $# -eq 0 ] ; then
   #Import database:
   read -p "Please type in the project-root relative path to your Database dump (e.g. dump.mysql.gz). Supports several file formats, including: .sql, .sql.gz, .mysql, .mysql.gz, .tar, .tar.gz, and .zip:"$'\n' -r src
   echo "Alright! Importing your database...."
-  ddev import-db --target-db=db --src=$src
+  ddev import-db --target-db=db --src="$src"
   bool=1
   while [ $bool -eq 1 ]; do
     read -p "Would you like to delete your .git directory and .gitignore file?"$'\n' answer
@@ -121,7 +124,7 @@ if [ $# -eq 0 ] ; then
   ddev describe
 fi
 
-If there is an -r flag do this:
+# If there is an -r flag do this:
 while getopts r flag
 do
   case "${flag}" in
