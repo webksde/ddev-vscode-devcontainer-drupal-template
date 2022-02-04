@@ -30,8 +30,6 @@ if [ $# -eq 0 ] ; then
   done
   # Starting ddev:
   ddev start
-  # Drush and Site initialisation:
-  ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
   bool=1
   while [ $bool -eq 1 ]; do
     read -p "Would you like to have development tools enabled? (WARNING: This changes your composer.json and Drupal configuration! You should NOT push changes back to production afterwards!)"$'\n' answer
@@ -65,8 +63,6 @@ if [ $# -eq 0 ] ; then
         # Create temp folder and custom module folder:
         mkdir -p web/modules/custom
         mkdir -p ./tmp
-        # Acitvate required dev-modules:
-        ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
         define_stage_file_proxy=1
         bool=0
       ;;
@@ -87,10 +83,15 @@ if [ $# -eq 0 ] ; then
   read -p "Please type in the project-root relative path to your Database dump (e.g. dump.mysql.gz). Supports several file formats, including: .sql, .sql.gz, .mysql, .mysql.gz, .tar, .tar.gz, and .zip:"$'\n' -r src
   echo "Alright! Importing your database...."
   ddev import-db --target-db=db --src="$src"
+  # Drush and Site initialisation:
+  ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
   bool=1
    if [ $define_stage_file_proxy -eq 1 ] ; then
+    # Acitvate required dev-modules:
+    ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
     read -p "Please provide the origin website for the stage_file_proxy module (e.g. 'https://www.example.com')"$'\n' -r site
     echo "Alright! setting stage file proxy origin..."
+    # Set stage_file_proxy origin:
     ddev drush config-set stage_file_proxy.settings origin "$site"
   fi
   while [ $bool -eq 1 ]; do
