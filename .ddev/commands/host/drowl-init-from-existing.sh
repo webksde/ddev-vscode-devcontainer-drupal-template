@@ -39,8 +39,8 @@ if [ $# -eq 0 ] ; then
         echo "Ok! requiring development tools..."
         echo "Development tools were added to composer.json and Drupal Config of this project! Do NOT push back to production!" > WARNING-DO-NOT-PUSH-BACK-TO-PRODUCTION.txt
         echo "Created a WARNING-DO-NOT-PUSH-BACK-TO-PRODUCTION.txt"
-        ddev composer require cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/devel drupal/devel_debug_log drupal/devel_php drupal/coder
-        ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit phpspec/prophecy-phpunit
+        ddev composer require --dev cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/devel drupal/devel_debug_log drupal/devel_php drupal/coder
+        ddev composer require --dev drush/drush phpunit/phpunit phpspec/prophecy-phpunit
         # PHP Codesniffer Setup:
         ddev composer require squizlabs/php_codesniffer
         # Initialize development environment tools:
@@ -68,7 +68,7 @@ if [ $# -eq 0 ] ; then
         ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
         read -p "Please provide the origin website for the stage_file_proxy module (e.g. 'https://www.example.com')"$'\n' -r site
         echo "Alright! setting stage file proxy origin..."
-        drush config-set stage_file_proxy.settings origin "$site"
+        ddev drush config-set stage_file_proxy.settings origin "$site"
         bool=0
       ;;
       n|N|no|No|NO )
