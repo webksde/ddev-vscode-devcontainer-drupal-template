@@ -1,7 +1,7 @@
 {
   "recommendations": [
     /*--------------------------------------------------PHP Specific Extensions--------------------------------------------------*/
-    "felixfbecker.php-debug",
+    "xdebug.php-debug",
     "mrmlnc.vscode-apache",
     "bmewburn.vscode-intelephense-client",
     "phproberto.vscode-php-getters-setters",

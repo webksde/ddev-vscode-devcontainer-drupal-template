@@ -114,7 +114,7 @@ $settings['extension_discovery_scan_tests'] = FALSE;
  * be gained by generating a query string from rebuild_token_calculator.sh and
  * using these parameters in a request to rebuild.php.
  */
-$settings['rebuild_access'] = TRUE;
+$settings['rebuild_access'] = FALSE;
 
 /**
  * Skip file system permissions hardening.
@@ -129,6 +129,12 @@ $settings['rebuild_access'] = TRUE;
 $settings['skip_permissions_hardening'] = TRUE;
 
 // ############################# #webksde START #############################
+
+// Set *.ddev.site as trusted host for local:
+$settings['trusted_host_patterns'] = array(
+  '^ddev\.site$',
+  '^.+\.ddev\.site',
+);
 
 // Make unused dev files temporary to auto-delete them:
 $config['file.settings']['make_unused_managed_files_temporary'] = TRUE;
