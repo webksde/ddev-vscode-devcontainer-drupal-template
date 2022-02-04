@@ -130,12 +130,6 @@ $settings['skip_permissions_hardening'] = TRUE;
 
 // ############################# #webksde START #############################
 
-// Set *.ddev.site as trusted host for local:
-$settings['trusted_host_patterns'] = array(
-  '^ddev\.site$',
-  '^.+\.ddev\.site',
-);
-
 // Make unused dev files temporary to auto-delete them:
 $config['file.settings']['make_unused_managed_files_temporary'] = TRUE;
 
