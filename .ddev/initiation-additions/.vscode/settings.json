@@ -40,6 +40,12 @@
           "backgroundColor": "yellow",
           "overviewRulerColor": "grey"
       },
+      {
+          "text": "TODO LATER",
+          "color": "white",
+          "backgroundColor": "grey",
+          "overviewRulerColor": "grey"
+      },
   ],
   "phpsab.executablePathCBF": "vendor/squizlabs/php_codesniffer/bin/phpcbf.bat",
   /*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
