@@ -135,7 +135,7 @@ $config['file.settings']['make_unused_managed_files_temporary'] = TRUE;
 
 // Reduce kint max_depth to prevent out-of-memory.
 if (class_exists('Kint')) {
-  \Kint::$max_depth = 5;
+  \Kint::$depth_limit = 5;
 }
 
 // ############################# #webksde END #############################
