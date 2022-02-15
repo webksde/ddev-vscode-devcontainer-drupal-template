@@ -1,7 +1,6 @@
 # ddev-vscode-devcontainer-drupal9-template
 
 ## Quick-Start
-Use:
 ~~~
 git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal9-template.git && cd ddev-vscode-devcontainer-drupal9-template/ && ddev drowl-init
 ~~~
