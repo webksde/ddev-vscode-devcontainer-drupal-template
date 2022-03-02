@@ -4,4 +4,4 @@
 ## Usage: phpstan [path]
 ## Example: "ddev phpstan web/modules/contrib/devel"
 
-phpstan analyse -c /var/www/html/"${DDEV_DOCROOT}"/phpstan.neon "$*"
+phpstan analyse -c /var/www/html/phpstan.neon "$*"
