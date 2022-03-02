@@ -19,7 +19,7 @@ ddev start
 ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/devel drupal/devel_debug_log drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy
 
 # Add DEV dependencies (but no modules due to their database relationship):
-ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit
+ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules
 
 # PHP Codesniffer Setup:
 ddev composer require squizlabs/php_codesniffer
@@ -48,6 +48,9 @@ chmod 0644 ./web/sites/default/settings.php
 cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
 cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
 cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
+
+# Get the phpstan.neon:
+cp .ddev/initiation-additions/phpstan.neon .
 
 # Get Readme.md and .gitignore
 cp .ddev/initiation-additions/README.md .

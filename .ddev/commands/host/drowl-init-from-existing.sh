@@ -39,7 +39,7 @@ if [ $# -eq 0 ] ; then
         echo "Development tools were added to composer.json and Drupal Config of this project! Do NOT push back to production!" > WARNING-DO-NOT-PUSH-BACK-TO-PRODUCTION.txt
         echo "Created a WARNING-DO-NOT-PUSH-BACK-TO-PRODUCTION.txt"
         ddev composer require --dev cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/devel drupal/devel_debug_log drupal/devel_php drupal/coder
-        ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit phpspec/prophecy-phpunit -W
+        ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules -W
         # PHP Codesniffer Setup:
         ddev composer require squizlabs/php_codesniffer
         # Initialize development environment tools:
@@ -60,6 +60,8 @@ if [ $# -eq 0 ] ; then
         cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
         cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
         cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
+        # Get the phpstan.neon:
+        cp .ddev/initiation-additions/phpstan.neon .
         # Create temp folder and custom module folder:
         mkdir -p web/modules/custom
         mkdir -p ./tmp
