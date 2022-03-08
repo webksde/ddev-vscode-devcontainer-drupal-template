@@ -68,6 +68,10 @@ ddev composer config --json extra.patches.package-mantainer/package "'{\"INSERT 
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
+# Add asset-packagist as composer repository:
+ddev composer config --json extra.patches.package-mantainer/package "'{\"type\": \"composer\"}'"
+ddev composer config --json extra.patches.package-mantainer/package "'{\"url\": \"https://asset-packagist.org\"}'"
+
 # Create custom module folder:
 mkdir -p web/modules/custom
 # Create temp folder:
