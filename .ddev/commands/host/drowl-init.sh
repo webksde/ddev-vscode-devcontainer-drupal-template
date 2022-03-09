@@ -19,7 +19,7 @@ ddev start
 ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/devel drupal/devel_debug_log drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy
 
 # Add DEV dependencies (but no modules due to their database relationship):
-ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules
+ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules kint-php/kint
 
 # PHP Codesniffer Setup:
 ddev composer require squizlabs/php_codesniffer
