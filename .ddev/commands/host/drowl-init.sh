@@ -62,6 +62,9 @@ ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples st
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
 
+# Activate kint as default devel variables dumper
+ddev drush config-set devel.settings devel_dumper kint -y
+
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
 ddev composer config --json extra.patches.package-mantainer/package "'{\"INSERT WHAT IT DOES\": \"PATH TO PATCH\"}'"
