@@ -54,9 +54,13 @@ if [ $# -eq 0 ] ; then
         # get PHPUnit.xml:
         cp .ddev/initiation-additions/phpunit.xml web/core
         # Set the permission for the default folder:
-        chmod 0755 ./web/sites/default
-        chmod 0644 ./web/sites/default/settings.php
+        if [ -d "./web/sites/default" ] && [ -f "./web/sites/default/settings.php" ];
+        then
+          chmod 0755 ./web/sites/default;
+          chmod 0644 ./web/sites/default/settings.php;
+        fi
         # Get settings.php, settings.local.php and services.local.yml:
+        mkdir -p ./web/sites/default
         cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
         cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
         cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
