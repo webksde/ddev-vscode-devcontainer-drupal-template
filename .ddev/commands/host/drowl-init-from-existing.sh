@@ -91,7 +91,6 @@ if [ $# -eq 0 ] ; then
   ddev import-db --target-db=db --src="$src"
   # Drush and Site initialisation:
   ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
-  bool=1
    if [ $define_stage_file_proxy -eq 1 ] ; then
     # Acitvate required dev-modules:
     ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
@@ -100,16 +99,22 @@ if [ $# -eq 0 ] ; then
     # Set stage_file_proxy origin:
     ddev drush config-set stage_file_proxy.settings origin "$site"
   fi
+  # Ask if .git should be removed:
+  bool=1
   while [ $bool -eq 1 ]; do
-    read -p "Would you like to delete your .git directory and .gitignore file?"$'\n' answer
+    read -p "Would you like to delete the ddev-vscode-devcontainer-drupal9-template .git directory and .gitignore file? (Typically you do not want to keep it and create your own project specific repository)"$'\n' answer
     case ${answer:0:1} in
       y|Y|yes|Yes|YES )
-        echo "Ok, deleting your .gitignore and .git..."
+        echo "Ok, deleting the devcontainer .gitignore and .git..."
         rm -r ./.git ./.gitignore ./.gitattributes -f
         bool=0
       ;;
+      n|N|no|No|NO )
+        echo "Ok, we don't delete the .gitignore and .git file. Take care!"
+        bool=0
+      ;;
       * )
-        echo "I don't understand."
+        echo "I don't understand. Answyer with 'yes' (y) or 'no' (n)."
       ;;
     esac
   done
