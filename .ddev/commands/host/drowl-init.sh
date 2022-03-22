@@ -67,13 +67,13 @@ ddev drush config-set devel.settings devel_dumper kint -y
 
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
-ddev composer config --json extra.patches.package-mantainer/package "'{\"INSERT WHAT IT DOES\": \"PATH TO PATCH\"}'"
+ddev composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
 # Add asset-packagist as composer repository:
-ddev composer config --json extra.patches.package-mantainer/package "'{\"type\": \"composer\"}'"
-ddev composer config --json extra.patches.package-mantainer/package "'{\"url\": \"https://asset-packagist.org\"}'"
+ddev composer config --json extra.patches.package-mantainer/package '{"type": "composer"}'
+ddev composer config --json extra.patches.package-mantainer/package '{"url": "https://asset-packagist.org"}'
 
 # Create custom module folder:
 mkdir -p web/modules/custom
