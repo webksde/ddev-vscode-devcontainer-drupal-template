@@ -72,7 +72,7 @@ ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
 # Add asset-packagist:
-ddev composer config --json repositories.asset.packagist '{"type": "composer","url": "https://asset-packagist.org"}'
+ddev composer config --json repositories.asset-packagist '{"type": "composer","url": "https://asset-packagist.org"}'
 ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
 ddev composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
