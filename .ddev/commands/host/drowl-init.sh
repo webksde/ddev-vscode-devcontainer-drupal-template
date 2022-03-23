@@ -16,7 +16,7 @@ ddev composer create -y 'drupal/recommended-project'
 ddev start
 
 # Add dependencies:
-ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/devel drupal/devel_debug_log drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy
+ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/devel drupal/devel_debug_log drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy
 
 # Add DEV dependencies (but no modules due to their database relationship):
 ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules kint-php/kint
@@ -71,9 +71,10 @@ ddev composer config --json extra.patches.package-mantainer/package '{"INSERT WH
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
-# Add asset-packagist as composer repository:
-ddev composer config --json extra.patches.package-mantainer/package '{"type": "composer"}'
-ddev composer config --json extra.patches.package-mantainer/package '{"url": "https://asset-packagist.org"}'
+# Add asset-packagist:
+ddev composer config --json repositories.asset.packagist '{"type": "composer","url": "https://asset-packagist.org"}'
+ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
+ddev composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
 # Create custom module folder:
 mkdir -p web/modules/custom
