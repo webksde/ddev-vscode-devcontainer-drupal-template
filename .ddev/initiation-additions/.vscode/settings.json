@@ -1,5 +1,4 @@
 {
-  /*--------------------------------------------------PHP Specific Settings--------------------------------------------------*/
   "emmet.showAbbreviationSuggestions": false,
   "emmet.showExpandedAbbreviation": "never",
   "intelephense.files.exclude": [ //more specific excludes so Tests should be recognized
@@ -14,7 +13,6 @@
   ],
   "intelephense.environment.shortOpenTag": true,
   "intelephense.telemetry.enabled": false,
-  "telemetry.enableCrashReporter": false,
   "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
   "php-docblocker.gap": true,
   "php-docblocker.useShortNames": true,
@@ -22,8 +20,11 @@
   "editor.quickSuggestions": {
     "comments": true
   },
-  "javascript.validate.enable": false,
-  "javascript.format.enable": false,
+  "phpstan.configFile": "phpstan.neon",
+  "javascript.validate.enable": true,
+  "javascript.format.enable": true,
+  "eslint.format.enable": true,
+  "eslint.options": { "overrideConfigFile": ".eslintrc.json" },
   "php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
   "terminal.integrated.defaultProfile.linux": "bash",
   "emptyIndent.removeIndent": true, //Automatically remove indentation in empty lines on save
@@ -47,9 +48,6 @@
           "overviewRulerColor": "grey"
       },
   ],
-  "phpsab.executablePathCBF": "vendor/squizlabs/php_codesniffer/bin/phpcbf.bat",
-  /*--------------------------------------------------Drupal Specific Settings--------------------------------------------------*/
-  "phpsab.standard": "Drupal,DrupalPractice",
   "intelephense.format.braces": "k&r",
   "phpcs.enable": true,
   "phpcs.standard": "Drupal,DrupalPractice",

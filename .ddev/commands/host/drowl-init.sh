@@ -52,6 +52,17 @@ cp .ddev/initiation-additions/services.local.yml web/sites/default/services.loca
 # Get the phpstan.neon:
 cp .ddev/initiation-additions/phpstan.neon .
 
+# Get esLint files:
+cp .ddev/initiation-additions/.eslintrc.json .
+cp .ddev/initiation-additions/.eslintignore .
+
+# Get packages for eslint:
+echo 'Requiring ESLint npm packages'
+ddev exec npm install --save-dev eslint@^8.9.0
+ddev exec npm install --save-dev eslint-plugin-import@^2.25.3 eslint-plugin-jsx-a11y@^6.5.1 eslint-plugin-react@^7.28.0 eslint-plugin-react-hooks@^4.3.0
+ddev exec npm install --save-dev eslint-config-airbnb@^19.0.4 prettier@^2 eslint-config-prettier@^8.4.0 eslint-plugin-prettier@^4.0
+ddev exec npm install --save-dev eslint-plugin-jquery@^1.5.1 eslint-plugin-yml@^0.14.0
+
 # Get Readme.md and .gitignore
 cp .ddev/initiation-additions/README.md .
 cp .ddev/initiation-additions/.gitignore .

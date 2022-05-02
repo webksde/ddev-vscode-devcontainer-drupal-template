@@ -10,10 +10,10 @@
     "wayou.vscode-todo-highlight",
     "shevaua.phpcs", //needs php code-sniffer
     "dmitrydorofeev.empty-indent",
-    "valeryanm.vscode-phpsab",
+    "SanderRonde.phpstan-vscode",
     /*--------------------------------------------------Javascript Specific Extensions--------------------------------------------------*/
     "dbaeumer.vscode-eslint",
-    /*--------------------------------------------------Drupal 8 Specific Extensions--------------------------------------------------*/
+    /*--------------------------------------------------Drupal 8 / 9 Specific Extensions--------------------------------------------------*/
     "ikappas.composer",
     "tsega.drupal-8-javascript-snippets",
     "tsega.drupal-8-twig-snippets",
