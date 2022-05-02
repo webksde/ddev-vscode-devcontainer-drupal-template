@@ -52,10 +52,6 @@ cp .ddev/initiation-additions/services.local.yml web/sites/default/services.loca
 # Get the phpstan.neon:
 cp .ddev/initiation-additions/phpstan.neon .
 
-# Get esLint files:
-cp .ddev/initiation-additions/.eslintrc.json .
-cp .ddev/initiation-additions/.eslintignore .
-
 # Get packages for eslint:
 echo 'Requiring ESLint npm packages'
 ddev exec npm install --save-dev eslint@^8.9.0

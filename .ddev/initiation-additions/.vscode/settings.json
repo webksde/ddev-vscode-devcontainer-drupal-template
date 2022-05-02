@@ -24,7 +24,7 @@
   "javascript.validate.enable": true,
   "javascript.format.enable": true,
   "eslint.format.enable": true,
-  "eslint.options": { "overrideConfigFile": ".eslintrc.json" },
+  "eslint.options": { "overrideConfigFile": "web/core/.eslintrc.json" },
   "php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
   "terminal.integrated.defaultProfile.linux": "bash",
   "emptyIndent.removeIndent": true, //Automatically remove indentation in empty lines on save
@@ -49,7 +49,7 @@
       },
   ],
   "intelephense.format.braces": "k&r",
-  "phpcs.enable": true,
+  "phpcs.enable": false,
   "phpcs.standard": "Drupal,DrupalPractice",
     "[php]": {
       "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
