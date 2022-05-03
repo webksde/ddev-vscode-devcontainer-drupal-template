@@ -125,4 +125,4 @@ echo "Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Sta
 echo "Use 'ddev phpstan path/to/execute' to look for deprecated and 'dirty' code"
 
 printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
-printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template"
+printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template\n"
