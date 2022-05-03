@@ -11,17 +11,5 @@
         "/var/www/html": "${workspaceRoot}"
       }
     },
-    {
-      "name": "Launch current script",
-      "type": "php",
-      "request": "launch",
-      "program": "${file}",
-      "cwd": "${fileDirname}",
-      "hostname": "127.0.0.1",
-      "port": 9000,
-      "pathMappings": {
-        "/var/www/html": "${workspaceRoot}"
-    }
-    },
   ]
 }

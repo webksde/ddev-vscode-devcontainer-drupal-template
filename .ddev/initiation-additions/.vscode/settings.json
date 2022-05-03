@@ -1,18 +1,6 @@
 {
   "emmet.showAbbreviationSuggestions": false,
   "emmet.showExpandedAbbreviation": "never",
-  "intelephense.files.exclude": [ //more specific excludes so Tests should be recognized
-    "**/.git/**",
-    "**/.svn/**",
-    "**/.hg/**",
-    "**/CVS/**",
-    "**/.DS_Store/**",
-    "**/node_modules/**",
-    "**/bower_components/**",
-    "**/vendor/**/{Test,test,Tests,tests}/**/*Test.php"
-  ],
-  "intelephense.environment.shortOpenTag": true,
-  "intelephense.telemetry.enabled": false,
   "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
   "php-docblocker.gap": true,
   "php-docblocker.useShortNames": true,
@@ -24,7 +12,7 @@
   "javascript.validate.enable": true,
   "javascript.format.enable": true,
   "eslint.format.enable": true,
-  "eslint.options": { "overrideConfigFile": "web/core/.eslintrc.json" },
+  "eslint.options": { "overrideConfigFile": "web/.eslintrc.json" },
   "php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
   "terminal.integrated.defaultProfile.linux": "bash",
   "emptyIndent.removeIndent": true, //Automatically remove indentation in empty lines on save
@@ -48,6 +36,18 @@
           "overviewRulerColor": "grey"
       },
   ],
+  "intelephense.files.exclude": [ //more specific excludes so Tests should be recognized
+    "**/.git/**",
+    "**/.svn/**",
+    "**/.hg/**",
+    "**/CVS/**",
+    "**/.DS_Store/**",
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**/{Test,test,Tests,tests}/**/*Test.php"
+  ],
+  "intelephense.environment.shortOpenTag": true,
+  "intelephense.telemetry.enabled": false,
   "intelephense.format.braces": "k&r",
   "phpsab.standard": "Drupal",
     "[php]": {

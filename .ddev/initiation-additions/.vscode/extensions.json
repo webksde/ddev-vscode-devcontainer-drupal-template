@@ -15,12 +15,7 @@
     "dbaeumer.vscode-eslint",
     /*--------------------------------------------------Drupal 8 / 9 Specific Extensions--------------------------------------------------*/
     "ikappas.composer",
-    "tsega.drupal-8-javascript-snippets",
-    "tsega.drupal-8-twig-snippets",
-    "mblode.twig-language", //Switch to "mblode.twig-language-2" if necessary
-    /*--------------------------------------------------Drupal 7 Specific Extension--------------------------------------------------*/
-    //"juniormucciolo.drupal-7-snippets",
-    //"pauloamgomes.drupal7-hooks-snippets",
+    "mblode.twig-language-2",
     /*--------------------------------------------------Other Extensions--------------------------------------------------*/
     "eamodio.gitlens"
   ]

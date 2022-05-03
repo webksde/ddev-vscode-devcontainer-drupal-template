@@ -4,29 +4,44 @@
 ~~~
 git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal9-template.git && cd ddev-vscode-devcontainer-drupal9-template/ && ddev drowl-init
 ~~~
-**Spin up a ready-to-code Drupal 9 CMS DDEV based development container for Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
+**Spin up a ready-to-code Drupal 9 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
 
 Provides a plug and play 🔌 DDEV (Docker) based development environment for VSCode IDE with predefined Drupal CMS best practice
-- Extensions
+- VS-Code Extensions
   - GitLens
-  - ... TODO
-- Settings
-  - Linting (Drupal Coding Standards)
-  - ... TODO
-- Launch configuration
-  - Run
-  - Test (PHPUnit)
-  - Debug (XDebug)
-  - Profile (XDebug)
-  - ... TODO
-- Tooling
-  - ... TODO
+  - TODO Highlight
+  - Apache Conf
+  - Composer
+  - Intelephense
+  - PHP Debug
+  - PHP Getters & Setters
+  - PHP Namespace Resolver
+  - PHP DocBlocker
+  - PHPStan
+  - PHP Sniffer & Beautifier
+  - ESLint
+  - Twig Language 2
+- VS-Code Settings
+  - PHPStan: Level 6 linting using "phpstan-drupal" and "phpstan-deprecation-rules".
+  - ESLint: Drupal Coding Standards defined in Drupal Core .eslintrc.json.
+  - PHPCS (Sniffer): Drupal Coding Standards defined in the Drupal Coder module.
+  - Twig Language 2: Standard.
+  - Intelephense: Drupal Best-Practice settings.
+- VS-Code Launch configuration
+  - Listen for XDebug
+- CLI-Tooling
+  - PHPUnit
+  - PHPUnit Test-Coverage
+  - PHPCS (Sniffer)
+  - PHPStan
+  - XDebug
+  - DDEV Tooling, see [here](https://ddev.readthedocs.io/en/stable/users/cli-usage/) for more information
 beautifully packaged for easy project and environment switching.
 
-*Feel free to forked for other Frameworks or improve for lovely Drupal!* ❤️
+*Feel free to fork for other Frameworks or improve for lovely Drupal!* ❤️
 
 ## Prerequisites
-  1. Up to date Version of Ddev, Docker, Chrome/Firefox
+  1. Up to date Version of DDEV, Docker, Chrome/Firefox
   2. VSCode installed on your machine locally
   3. The [Remote Development Extension for VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)}(https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
@@ -46,10 +61,9 @@ beautifully packaged for easy project and environment switching.
  - Use `ddev xdebug on` to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
  - Use `ddev import-db --src=path/to/src` to import a database file.
  - Use `ddev rename` to rename your project. !THIS COMMAND IS BUGGY, PLEASE DO NOT USE IT YET!
- - Use `ddev dump-db ddev` to dump your main db tablewise.
+ - Use `ddev dump-db ddev` to dump your main database tablewise.
  - Use `ddev deploy-db ddev` to import your tablewise dump.
   - Note: You can additionally add remote SSH projects under .ddev/commands/web/db-targets
- (BEWARE OF SOME BUGS USING THESE TOOLS! CHECK ISSUES FOR MORE INFORMATION!!)
 
 ## Typical Use-Cases:
  - Local Drupal development / testing / evaluation instance from scratch or existing with ready-to-go IDE
