@@ -1,12 +1,17 @@
-includes:
-    - vendor/mglaman/phpstan-drupal/extension.neon
-    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
-
 parameters:
-    level: 6
+    checkGenericClassInNonGenericObjectType: false
+    checkMissingIterableValueType: false
+    reportUnmatchedIgnoredErrors: false
+    level: 8
     paths:
         - 'web/modules'
         - 'web/themes'
     excludePaths:
         analyse:
             - 'web/core'
+        analyseAndScan:
+            - *Test.php
+            - *TestBase.php
+includes:
+    - vendor/mglaman/phpstan-drupal/extension.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
