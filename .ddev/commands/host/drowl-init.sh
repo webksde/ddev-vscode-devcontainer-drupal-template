@@ -117,7 +117,12 @@ bool=1
 ddev describe
 
 # Helper Messages
+echo "Use 'ddev code' to attach VSCode to your running Container."
 echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit"
+echo "Use 'ddev phpunit-coverage path/to/cover' to create a test coverage of the given file-directory."
 echo "Use 'ddev phpcs path/to/sniff' to check if your Code is using Drupal Coding Standards"
 echo "Use 'ddev phpcbf path/to/execute' format your Code using Drupal Coding Standards"
 echo "Use 'ddev phpstan path/to/execute' to look for deprecated and 'dirty' code"
+
+printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
+printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template"

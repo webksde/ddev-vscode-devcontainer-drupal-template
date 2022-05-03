@@ -21,14 +21,17 @@ Provides a plug and play 🔌 DDEV (Docker) based development environment for VS
   - PHP Sniffer & Beautifier
   - ESLint
   - Twig Language 2
+
 - VS-Code Settings
   - PHPStan: Level 6 linting using "phpstan-drupal" and "phpstan-deprecation-rules".
   - ESLint: Drupal Coding Standards defined in Drupal Core .eslintrc.json.
   - PHPCS (Sniffer): Drupal Coding Standards defined in the Drupal Coder module.
   - Twig Language 2: Standard.
   - Intelephense: Drupal Best-Practice settings.
+
 - VS-Code Launch configuration
   - Listen for XDebug
+
 - CLI-Tooling
   - PHPUnit
   - PHPUnit Test-Coverage
@@ -36,7 +39,8 @@ Provides a plug and play 🔌 DDEV (Docker) based development environment for VS
   - PHPStan
   - XDebug
   - DDEV Tooling, see [here](https://ddev.readthedocs.io/en/stable/users/cli-usage/) for more information
-beautifully packaged for easy project and environment switching.
+
+Beautifully packaged for easy project and environment switching.
 
 *Feel free to fork for other Frameworks or improve for lovely Drupal!* ❤️
 
@@ -55,7 +59,7 @@ beautifully packaged for easy project and environment switching.
 ## Tooling
  - Use `ddev code` to attach VSCode to your running Container.
  - Use `ddev phpunit path/to/tests` to Test Classes using PHPUnit.
- - Use `ddev phpunit-coverage path/to/cover` to create a test coverage of the given file-system.
+ - Use `ddev phpunit-coverage path/to/cover` to create a test coverage of the given file-directory.
  - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
  - Use `ddev phpstan path/to/execute` to look for deprecated and 'dirty' code.
  - Use `ddev xdebug on` to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
