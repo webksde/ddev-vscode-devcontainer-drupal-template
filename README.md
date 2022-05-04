@@ -62,6 +62,7 @@ Beautifully packaged for easy project and environment switching.
  - Use `ddev phpunit-coverage path/to/cover` to create a test coverage of the given file-directory.
  - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
  - Use `ddev phpstan path/to/execute` to look for deprecated and 'dirty' code.
+ - Use `esfix path/to/sniff` for linting javascript code based on Drupal Coding Standards.
  - Use `ddev xdebug on` to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
  - Use `ddev import-db --src=path/to/src` to import a database file.
  - Use `ddev rename` to rename your project. !THIS COMMAND IS BUGGY, PLEASE DO NOT USE IT YET!
