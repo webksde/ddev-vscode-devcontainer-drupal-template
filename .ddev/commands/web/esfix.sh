@@ -4,4 +4,4 @@
 ## Usage: esfix [path]
 ## Example: "ddev esfix web/modules/contrib/js/my-js-file.js"
 
-npx eslint --fix $*
+npx eslint --fix $*; exit 0
