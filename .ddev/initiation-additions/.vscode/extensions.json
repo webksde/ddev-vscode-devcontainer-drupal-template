@@ -16,6 +16,7 @@
     /*--------------------------------------------------Drupal 8 / 9 Specific Extensions--------------------------------------------------*/
     "ikappas.composer",
     "mblode.twig-language-2",
+    "andrewdavidblum.drupal-smart-snippets",
     /*--------------------------------------------------Other Extensions--------------------------------------------------*/
     "eamodio.gitlens"
   ]
