@@ -78,9 +78,6 @@ ddev composer config --json extra.patches.package-mantainer/package '{"INSERT WH
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
-# Set optimize-autoloader false:
-ddev composer config config.optimize-autoloader false
-
 # Add asset-packagist:
 ddev composer config --json repositories.asset-packagist '{"type": "composer","url": "https://asset-packagist.org"}'
 ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
