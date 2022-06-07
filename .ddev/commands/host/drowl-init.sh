@@ -26,8 +26,6 @@ ddev composer require squizlabs/php_codesniffer
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
 ddev exec chmod +x vendor/bin/phpcbf
-# Make Codesniffer config file writable for ordinary users in container:
-ddev exec chmod 666 vendor/squizlabs/php_codesniffer/CodeSniffer.conf
 
 # Drush and Site initialisation:
 ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y

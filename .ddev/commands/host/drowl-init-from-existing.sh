@@ -45,8 +45,6 @@ if [ $# -eq 0 ] ; then
         # Initialize development environment tools:
         ddev exec chmod +x vendor/bin/phpcs
         ddev exec chmod +x vendor/bin/phpcbf
-        # Make Codesniffer config file writable for ordinary users in container:
-        ddev exec chmod 666 vendor/squizlabs/php_codesniffer/CodeSniffer.conf
         # Get VSCode Settings:
         cp -R .ddev/initiation-additions/.vscode/ .
         # get PHPUnit.xml:
