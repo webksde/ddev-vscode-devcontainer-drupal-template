@@ -71,7 +71,7 @@
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "editor.renderWhitespace": "boundary",
   "editor.wordWrapColumn": 80,
   "editor.wordWrap": "off",
