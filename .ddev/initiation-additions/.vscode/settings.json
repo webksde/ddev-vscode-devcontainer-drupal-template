@@ -49,11 +49,10 @@
   ],
   "intelephense.environment.shortOpenTag": true,
   "intelephense.telemetry.enabled": false,
-  "intelephense.format.braces": "k&r",
   "phpsab.standard": "Drupal",
   "phpsab.snifferArguments": ["--extensions=inc,theme,install,module,profile,php,phtml"],
     "[php]": {
-      "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+      "editor.defaultFormatter": "valeryanm.vscode-phpsab"
     },
   "intelephense.environment.includePaths": [
     "web/core/includes"
