@@ -13,6 +13,9 @@
   "javascript.validate.enable": true,
   "javascript.format.enable": true,
   "eslint.format.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
   "eslint.options": { "overrideConfigFile": "web/.eslintrc.json" },
   "php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
   "terminal.integrated.defaultProfile.linux": "bash",
