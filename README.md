@@ -54,7 +54,8 @@ Beautifully packaged for easy project and environment switching.
  2. Start / Restart Docker and make sure it is updated to the current version
  3. Change into the directory: `cd ddev-vscode-devcontainer-drupal9-template`
  4. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
- 5. You are ready to go! Use `ddev describe` to check the status & URL of your Project and `ddev code` to run your prepared VSCode IDE!
+ 5. You are ready to go! Use `ddev describe` to check the status & URLs of your Project and `ddev code` to run your prepared VSCode IDE!
+    -  Note, when inside the attached VSCode go to "Extensions" and type in "@recommended" to reveal all the necessary Extensions. Installing them is recommended!
 
 ## Tooling
  - Use `ddev code` to attach VSCode to your running Container.
