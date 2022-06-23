@@ -16,7 +16,9 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "eslint.options": { "overrideConfigFile": "web/.eslintrc.json" },
+  "eslint.workingDirectories": [
+    "./web"
+  ],
   "php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
   "terminal.integrated.defaultProfile.linux": "bash",
   "emptyIndent.removeIndent": true, //Automatically remove indentation in empty lines on save
@@ -26,19 +28,19 @@
     ".md"
   ], //Excluded file types
   "todohighlight.keywords": [
-      "@todo",
-      {
-          "text": "@todo",
-          "color": "grey",
-          "backgroundColor": "yellow",
-          "overviewRulerColor": "grey"
-      },
-      {
-          "text": "TODO LATER",
-          "color": "white",
-          "backgroundColor": "grey",
-          "overviewRulerColor": "grey"
-      },
+    "@todo",
+    {
+      "text": "@todo",
+      "color": "grey",
+      "backgroundColor": "yellow",
+      "overviewRulerColor": "grey"
+    },
+    {
+      "text": "TODO LATER",
+      "color": "white",
+      "backgroundColor": "grey",
+      "overviewRulerColor": "grey"
+    },
   ],
   "intelephense.files.exclude": [ //more specific excludes so Tests should be recognized
     "**/.git/**",
@@ -53,10 +55,12 @@
   "intelephense.environment.shortOpenTag": true,
   "intelephense.telemetry.enabled": false,
   "phpsab.standard": "Drupal",
-  "phpsab.snifferArguments": ["--extensions=inc,theme,install,module,profile,php,phtml"],
-    "[php]": {
-      "editor.defaultFormatter": "valeryanm.vscode-phpsab"
-    },
+  "phpsab.snifferArguments": [
+    "--extensions=inc,theme,install,module,profile,php,phtml"
+  ],
+  "[php]": {
+    "editor.defaultFormatter": "valeryanm.vscode-phpsab"
+  },
   "intelephense.environment.includePaths": [
     "web/core/includes"
   ],
@@ -109,6 +113,3 @@
   "html.validate.scripts": false,
   "html.validate.styles": false,
 }
-
-
-
