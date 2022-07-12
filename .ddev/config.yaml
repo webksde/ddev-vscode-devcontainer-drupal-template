@@ -1,7 +1,7 @@
 name: ddev-vscode-devcontainer-drupal9-template #DON'T CHANGE THIS OR THE COMMAND "ddev code" WON'T WORK ANYMORE
 type: drupal9
 docroot: web
-php_version: "7.4" #Changing this to 8 will break PHPUnit!
+php_version: "8.1"
 webserver_type: apache-fpm
 router_http_port: "80"
 router_https_port: "443"
