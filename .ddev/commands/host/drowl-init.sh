@@ -15,6 +15,11 @@ ddev composer create -y 'drupal/recommended-project'
 # Starting Drupal DDEV Containers
 ddev start
 
+# Allow specific composer packages:
+ddev composer config --no-plugins allow-plugins.cweagans/composer-patches true
+ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
+ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
+
 # Add dependencies:
 ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/devel drupal/devel_debug_log drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy
 
