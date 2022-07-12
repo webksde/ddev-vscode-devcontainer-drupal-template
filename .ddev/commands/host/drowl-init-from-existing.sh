@@ -102,25 +102,8 @@ if [ $# -eq 0 ] ; then
     # Set stage_file_proxy origin:
     ddev drush config-set stage_file_proxy.settings origin "$site"
   fi
-  # Ask if .git should be removed:
-  bool=1
-  while [ $bool -eq 1 ]; do
-    read -p "Would you like to delete the ddev-vscode-devcontainer-drupal9-template .git directory and .gitignore file? (Typically you do not want to keep it and create your own project specific repository)"$'\n' answer
-    case ${answer:0:1} in
-      y|Y|yes|Yes|YES )
-        echo "Ok, deleting the devcontainer .gitignore and .git..."
-        rm -r ./.git ./.gitignore ./.gitattributes -f
-        bool=0
-      ;;
-      n|N|no|No|NO )
-        echo "Ok, we don't delete the .gitignore and .git file. Take care!"
-        bool=0
-      ;;
-      * )
-        echo "I don't understand. Answyer with 'yes' (y) or 'no' (n)."
-      ;;
-    esac
-  done
+  # Remove all git files:
+  rm -r ./.git ./.gitignore ./.gitattributes -f
   bool=1
   while [ $bool -eq 1 ]; do
     read -p "Would you like to create assets, files, log and scipts folders? )"$'\n' answer
