@@ -14,7 +14,7 @@
   "javascript.format.enable": true,
   "eslint.format.enable": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": false
   },
   "eslint.workingDirectories": [
     "./web"
