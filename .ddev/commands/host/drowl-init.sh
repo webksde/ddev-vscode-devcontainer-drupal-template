@@ -84,6 +84,9 @@ mkdir -p web/modules/custom
 # Create temp folder:
 mkdir -p ./tmp
 
+# Create private files directory:
+mkdir -p ./files/private
+
 # Export DB-Dump to data/sql:
 mkdir -p ./data/sql
 ddev export-db $DDEV_PROJECT > ./data/sql/db-complete-dump.sql

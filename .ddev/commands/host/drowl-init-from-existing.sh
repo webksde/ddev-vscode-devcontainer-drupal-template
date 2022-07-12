@@ -68,7 +68,8 @@ if [ $# -eq 0 ] ; then
         ddev exec npm install --save-dev eslint-plugin-import@^2.25.3 eslint-plugin-jsx-a11y@^6.5.1 eslint-plugin-react@^7.28.0 eslint-plugin-react-hooks@^4.3.0
         ddev exec npm install --save-dev eslint-config-airbnb@^19.0.4 prettier@^2 eslint-config-prettier@^8.4.0 eslint-plugin-prettier@^4.0
         ddev exec npm install --save-dev eslint-plugin-jquery@^1.5.1 eslint-plugin-yml@^0.14.0
-        # Create temp folder and custom module folder:
+        # Create temp folder and custom module folder and private folder:
+        mkdir -p ./files/private
         mkdir -p web/modules/custom
         mkdir -p ./tmp
         define_stage_file_proxy=1
