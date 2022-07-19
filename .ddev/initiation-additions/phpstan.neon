@@ -1,20 +1,12 @@
 parameters:
-    checkGenericClassInNonGenericObjectType: false
-    checkMissingIterableValueType: false
-    reportUnmatchedIgnoredErrors: false
-    level: 8
-    paths:
-        - 'web/modules'
-        - 'web/themes'
-    excludePaths:
-        analyse:
-            - 'web/core'
-        analyseAndScan:
-            - *Test.php
-            - *TestBase.php
-    ignoreErrors:
-        # new static() is a best practice in Drupal, so we cannot fix that.
-        - "#^Unsafe usage of new static#"
+	customRulesetUsed: true
+	reportUnmatchedIgnoredErrors: false
+	# Ignore phpstan-drupal extension's rules.
+	ignoreErrors:
+		- '#\Drupal calls should be avoided in classes, use dependency injection instead#'
+		- '#Plugin definitions cannot be altered.#'
+		- '#Missing cache backend declaration for performance.#'
+		- '#Plugin manager has cache backend specified but does not declare cache tags.#'
 includes:
-    - vendor/mglaman/phpstan-drupal/extension.neon
-    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+	- vendor/mglaman/phpstan-drupal/extension.neon
+	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
