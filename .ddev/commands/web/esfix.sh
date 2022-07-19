@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Description: Use esfix on a folder or file for linting javascript code based on Drupal Coding Standards.
+## Description: Use esfix on a folder or file for formatting javascript code based on Drupal Coding Standards.
 ## Usage: esfix [path]
 ## Example: "ddev esfix web/modules/contrib/js/my-js-file.js"
 

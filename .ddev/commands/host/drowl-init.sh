@@ -60,10 +60,6 @@ ddev exec npm install --save-dev eslint-plugin-import@^2.25.3 eslint-plugin-jsx-
 ddev exec npm install --save-dev eslint-config-airbnb@^19.0.4 prettier@^2 eslint-config-prettier@^8.4.0 eslint-plugin-prettier@^4.0
 ddev exec npm install --save-dev eslint-plugin-jquery@^1.5.1 eslint-plugin-yml@^0.14.0
 
-# Get Readme.md and .gitignore
-cp .ddev/initiation-additions/README.md .
-cp .ddev/initiation-additions/.gitignore .
-
 # Acitvate required dev-modules:
 ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate -y
 
@@ -105,9 +101,11 @@ ddev describe
 
 # Helper Messages
 echo "Use 'ddev code' to attach VSCode to your running Container."
-echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit"
-echo "Use 'ddev phpcbf path/to/execute' format your PHP Code using Drupal Coding Standards"
-echo "Use 'esfix path/to/sniff' for linting javascript code based on Drupal Coding Standards."
+echo "Use 'ddev phpunit relative-path/to/tests' to Test Classes using PHPUnit"
+echo "Use 'ddev phpcs relative-path/to/sniff' to lint your PHP Code using Drupal Coding Standards"
+echo "Use 'ddev phpcbf relative-path/to/execute' to format your PHP Code using Drupal Coding Standards"
+echo "Use 'ddev phpstan relative-path/to/execute' to lint your PHP Code for deprecation"
+echo "Use 'esfix relative-path/to/execute' to format javascript code based on Drupal Coding Standards."
 
 printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
 printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template\n"

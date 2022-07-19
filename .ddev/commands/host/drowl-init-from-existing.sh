@@ -84,9 +84,6 @@ if [ $# -eq 0 ] ; then
       ;;
     esac
   done
-  # Get Readme.md and .gitignore
-  cp .ddev/initiation-additions/README.md .
-  cp .ddev/initiation-additions/.gitignore .
 
   #Import database:
   read -p "Please type in the project-root relative path to your Database dump (e.g. dump.mysql.gz). Supports several file formats, including: .sql, .sql.gz, .mysql, .mysql.gz, .tar, .tar.gz, and .zip:"$'\n' -r src
