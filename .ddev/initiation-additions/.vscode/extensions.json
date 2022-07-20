@@ -2,14 +2,11 @@
   "recommendations": [
     /*--------------------------------------------------PHP Specific Extensions--------------------------------------------------*/
     "xdebug.php-debug",
-    "mrmlnc.vscode-apache",
     "bmewburn.vscode-intelephense-client",
     "phproberto.vscode-php-getters-setters",
     "mehedidracula.php-namespace-resolver",
     "neilbrayfield.php-docblocker",
-    "wayou.vscode-todo-highlight",
     "ValeryanM.vscode-phpsab",
-    "dmitrydorofeev.empty-indent",
     /*--------------------------------------------------Javascript Specific Extensions--------------------------------------------------*/
     "dbaeumer.vscode-eslint",
     /*--------------------------------------------------Drupal 8 / 9 Specific Extensions--------------------------------------------------*/
@@ -17,6 +14,9 @@
     "mblode.twig-language-2",
     "andrewdavidblum.drupal-smart-snippets",
     /*--------------------------------------------------Other Extensions--------------------------------------------------*/
-    "eamodio.gitlens"
+    "mrmlnc.vscode-apache",
+    "eamodio.gitlens",
+    "dmitrydorofeev.empty-indent",
+    "wayou.vscode-todo-highlight"
   ]
 }
