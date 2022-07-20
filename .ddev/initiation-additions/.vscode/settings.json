@@ -8,8 +8,6 @@
   "editor.quickSuggestions": {
     "comments": true
   },
-  "phpstan.configFile": "phpstan.neon",
-  "phpstan.timeout": 1000000,
   "javascript.validate.enable": true,
   "javascript.format.enable": true,
   "eslint.format.enable": true,
