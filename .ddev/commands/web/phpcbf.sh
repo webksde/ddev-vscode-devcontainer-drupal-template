@@ -4,4 +4,4 @@
 ## Usage: phpcbf [path]
 ## Example: "ddev phpcbf web/modules/contrib/devel"
 
-phpcbf -p --extensions=inc,theme,install,module,profile,php,phtml,md --standard=Drupal,DrupalPractice $*
+phpcbf -p --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml,phtml --standard=Drupal,DrupalPractice $*
