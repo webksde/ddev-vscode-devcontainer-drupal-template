@@ -2,10 +2,10 @@
   "recommendations": [
     /*--------------------------------------------------PHP Specific Extensions--------------------------------------------------*/
     "xdebug.php-debug",
-    "bmewburn.vscode-intelephense-client",
-    "phproberto.vscode-php-getters-setters",
-    "mehedidracula.php-namespace-resolver",
     "neilbrayfield.php-docblocker",
+    "phproberto.vscode-php-getters-setters",
+    "bmewburn.vscode-intelephense-client",    
+    "mehedidracula.php-namespace-resolver",    
     "ValeryanM.vscode-phpsab",
     /*--------------------------------------------------Javascript Specific Extensions--------------------------------------------------*/
     "dbaeumer.vscode-eslint",
