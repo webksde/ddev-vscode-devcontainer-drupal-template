@@ -15,9 +15,6 @@ composer_version: "2"
 web_environment: []
 timezone: "Europe/Berlin"
 disable_settings_management: true #This SHOULD disable .gitignore Creation in ddev Source: https://github.com/drud/ddev/issues/2191 BUT it doesn't :) Still it needs to be true because otherwise it will overwrite our phpunit.xml and our phpcs config
-hooks:
-  post-import-db:
-    - exec: "drush cr"
 
 #Decide whether ddev start should be interrupted by a failing hook:
 #fail_on_hook_fail: true
