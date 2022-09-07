@@ -4,8 +4,8 @@
     "xdebug.php-debug",
     "neilbrayfield.php-docblocker",
     "phproberto.vscode-php-getters-setters",
-    "bmewburn.vscode-intelephense-client",    
-    "mehedidracula.php-namespace-resolver",    
+    "bmewburn.vscode-intelephense-client",
+    "mehedidracula.php-namespace-resolver",
     "ValeryanM.vscode-phpsab",
     /*--------------------------------------------------Javascript Specific Extensions--------------------------------------------------*/
     "dbaeumer.vscode-eslint",
@@ -17,6 +17,7 @@
     "mrmlnc.vscode-apache",
     "eamodio.gitlens",
     "dmitrydorofeev.empty-indent",
-    "wayou.vscode-todo-highlight"
+    "wayou.vscode-todo-highlight",
+    "johnpapa.vscode-peacock"
   ]
 }

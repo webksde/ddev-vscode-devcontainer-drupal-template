@@ -110,4 +110,5 @@
   },
   "html.validate.scripts": false,
   "html.validate.styles": false,
+  "peacock.remoteColor": "#00325A",
 }
