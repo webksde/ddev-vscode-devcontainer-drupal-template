@@ -52,7 +52,7 @@
   ],
   "intelephense.environment.shortOpenTag": true,
   "intelephense.telemetry.enabled": false,
-  "phpsab.standard": "Drupal",
+  "phpsab.standard": "Drupal,DrupalPractice",
   "phpsab.snifferArguments": [
     "--extensions=inc,theme,install,module,profile,php,phtml"
   ],
