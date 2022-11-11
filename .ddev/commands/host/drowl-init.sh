@@ -21,13 +21,13 @@ ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-ext
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
 
 # Add dependencies:
-ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/devel drupal/devel_debug_log drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/config_inspector
+ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/config_inspector
 
 # Add DEV dependencies (but no modules due to their database relationship):
 ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules kint-php/kint
 
 # PHP Codesniffer Setup:
-ddev composer require squizlabs/php_codesniffer
+ddev composer require --dev squizlabs/php_codesniffer
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
 ddev exec chmod +x vendor/bin/phpcbf
@@ -61,7 +61,7 @@ ddev exec npm install --save-dev eslint-config-airbnb@^19.0.4 prettier@^2 eslint
 ddev exec npm install --save-dev eslint-plugin-jquery@^1.5.1 eslint-plugin-yml@^0.14.0
 
 # Acitvate required dev-modules:
-ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate config_inspector -y
+ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_php backup_migrate config_inspector -y
 
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
