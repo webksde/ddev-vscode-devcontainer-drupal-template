@@ -90,7 +90,7 @@ mkdir -p ./files/private
 
 # Export DB-Dump to data/sql:
 mkdir -p ./data/sql
-ddev export-db $DDEV_PROJECT > ./data/sql/db-complete-dump.sql
+ddev export-db $DDEV_PROJECT > ./data/sql/db-complete-dump.sql.gz
 echo "Created full database dump under data/sql/db-complete-dump.sql"
 
 # Remove git files:
