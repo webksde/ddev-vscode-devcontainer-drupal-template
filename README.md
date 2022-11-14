@@ -117,6 +117,8 @@ TODO
 Fork me! And help us to split configuration smart for future updates :)
 
 ### Update the environment
+`brew upgrade ddev`
+
 TODO
 
 ### Delete the environment:
