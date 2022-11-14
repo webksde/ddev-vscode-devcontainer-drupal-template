@@ -15,6 +15,8 @@ May take ~5 min - only needed once, at initialization:
 git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal9-template.git . && ddev drowl-init
 ~~~
 
+**Note, that you can currently only initiate ONE ddev-vscode instance at once!**
+
 Provides a plug and play 🔌 DDEV (Docker) based development environment for VSCode IDE with predefined Drupal CMS best practice
 - VS-Code Extensions
   - GitLens
