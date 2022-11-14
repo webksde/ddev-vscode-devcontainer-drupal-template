@@ -125,11 +125,6 @@ TODO
 ### Use different configuration or settings by default
 Fork me! And help us to split configuration smart for future updates :)
 
-### Update the environment
-`brew upgrade ddev`
-
-TODO
-
 ### Delete the environment:
  1. `ddev delete -y` deletes the container and unlists the project.
  2. Delete the project folder
@@ -137,3 +132,11 @@ TODO
 ## Further ddev Tools and add-ons
  - https://github.com/drud/awesome-ddev
  - https://github.com/drud/ddev-contrib
+
+# FAQ's:
+*How do I install ddev?*
+See https://ddev.readthedocs.io/en/stable/users/install/ddev-installation
+We recommend to use *brew* for all kinds of installation, as it's easy to install and update
+
+*How do I update dddev?*
+See above. For brew simply use `brew update`
