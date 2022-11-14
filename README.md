@@ -1,17 +1,19 @@
 # ddev-vscode-devcontainer-drupal9-template
 
 ## Quick-Start
-Optional: 
+**Spin up a ready-to-code Drupal 9 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
+
+### Optional: 
 *Before* the next step, switch to the directory (or create it), where you want to run this ddev instance.
 ~~~
 mkdir project-folder
 cd project-folder
 ~~~
-Initialize the project (may take ~5min):
+### Initialize the project
+May take ~5 min - only needed once, at initialization:
 ~~~
 git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal9-template.git . && ddev drowl-init
 ~~~
-**Spin up a ready-to-code Drupal 9 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
 
 Provides a plug and play 🔌 DDEV (Docker) based development environment for VSCode IDE with predefined Drupal CMS best practice
 - VS-Code Extensions
