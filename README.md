@@ -133,10 +133,14 @@ Fork me! And help us to split configuration smart for future updates :)
  - https://github.com/drud/awesome-ddev
  - https://github.com/drud/ddev-contrib
 
+---
+
 # FAQ's:
 *How do I install ddev?*
+
 See https://ddev.readthedocs.io/en/stable/users/install/ddev-installation
 We recommend to use *brew* for all kinds of installation, as it's easy to install and update
 
 *How do I update dddev?*
-See above. For brew simply use `brew update`
+
+See above. For brew simply use `brew update && brew upgrade`
