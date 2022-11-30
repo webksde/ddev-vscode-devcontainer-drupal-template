@@ -7,9 +7,10 @@
     "bmewburn.vscode-intelephense-client",
     "mehedidracula.php-namespace-resolver",
     "ValeryanM.vscode-phpsab",
+    "SanderRonde.phpstan-vscode",
     /*--------------------------------------------------Javascript Specific Extensions--------------------------------------------------*/
     "dbaeumer.vscode-eslint",
-    /*--------------------------------------------------Drupal 8 / 9 Specific Extensions--------------------------------------------------*/
+    /*--------------------------------------------------Drupal 10 Specific Extensions--------------------------------------------------*/
     "ikappas.composer",
     "mblode.twig-language-2",
     "andrewdavidblum.drupal-smart-snippets",

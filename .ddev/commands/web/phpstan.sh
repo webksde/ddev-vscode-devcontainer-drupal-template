@@ -7,7 +7,7 @@
 
 if [ $# == 0 ]
 then
-  phpstan analyse -c /var/www/html/phpstan.neon "$PWD"
+  phpstan analyse -c /var/www/html/web/core/phpstan.neon.dist "$PWD"
 else
-  phpstan analyse -c /var/www/html/phpstan.neon "$*"
+  phpstan analyse -c /var/www/html/web/core/phpstan.neon.dist "$*"
 fi
