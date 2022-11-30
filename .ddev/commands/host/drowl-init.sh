@@ -21,7 +21,7 @@ ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-ext
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
 
 # Add dependencies:
-ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/config_inspector
+ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended:^10 drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector
 
 # Add DEV dependencies (but no modules due to their database relationship):
 ddev composer require --dev drupal/core-dev:^10
