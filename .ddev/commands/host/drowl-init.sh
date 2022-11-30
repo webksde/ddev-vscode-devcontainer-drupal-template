@@ -62,7 +62,7 @@ ddev exec npm install --save-dev eslint-config-airbnb@^19.0.4 prettier@^2 eslint
 ddev exec npm install --save-dev eslint-plugin-jquery@^1.5.1 eslint-plugin-yml@^0.14.0
 
 # Acitvate required dev-modules:
-ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_php backup_migrate config_inspector -y
+ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_php backup_migrate config_inspector -y
 
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
