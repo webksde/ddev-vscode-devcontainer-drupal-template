@@ -1,9 +1,9 @@
-# ddev-vscode-devcontainer-drupal9-template
+# ddev-vscode-devcontainer-drupal-template
 
 ## Quick-Start
-**Spin up a ready-to-code Drupal 9 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
+**Spin up a ready-to-code Drupal 10 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
 
-### Optional: 
+### Optional:
 *Before* the next step, switch to the directory (or create it), where you want to run this ddev instance.
 ~~~
 mkdir project-folder
@@ -12,7 +12,7 @@ cd project-folder
 ### Initialize the project
 May take ~5 min - only needed once, at initialization:
 ~~~
-git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal9-template.git . && ddev drowl-init
+git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git . && ddev drowl-init
 ~~~
 
 **Note, that you can currently only initiate ONE ddev-vscode instance at once!**
@@ -61,9 +61,9 @@ Beautifully packaged for easy project and environment switching.
   3. The [Remote Development Extension for VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)}(https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
 ## How to use
- 1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git`
+ 1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git`
  2. Start / Restart Docker and make sure it is updated to the current version
- 3. Change into the directory: `cd ddev-vscode-devcontainer-drupal9-template`
+ 3. Change into the directory: `cd ddev-vscode-devcontainer-drupal-template`
  4. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
  5. You are ready to go! Use `ddev describe` to check the status & URLs of your Project and `ddev code` to run your prepared VSCode IDE!
     -  Note, when inside the attached VSCode go to "Extensions" and type in "@recommended" to reveal all the necessary Extensions. Installing them is recommended!
@@ -86,7 +86,7 @@ Beautifully packaged for easy project and environment switching.
  - Local Drupal development / testing / evaluation instance from scratch or existing with ready-to-go IDE
  - Module / Theme development or evaluation
  - Contrib module issue forks / merge requests / patch creation (Git clone / commit / push / ...)
- - Simple & quick Drupal 9 Sandbox for offline / local
+ - Simple & quick Drupal 10 Sandbox for offline / local
 
 ## Documentation
 
@@ -95,11 +95,11 @@ See 'Quick-Start' above!
 
 ### Functionality
 
-#### A) Create an "empty" best-practice working Drupal 9 CMS Development instance
+#### A) Create an "empty" best-practice working Drupal 10 CMS Development instance
 `ddev drowl-init` + `ddev code`
 - Sets up best-practice Drupal VSCode IDE
-- Sets up ready to log in latest Drupal 9 Copy
-- Installs best-practice Drupal 9 Modules & Configuration
+- Sets up ready to log in latest Drupal 10 Copy
+- Installs best-practice Drupal 10 Modules & Configuration
 
 #### B) Create an environment from a local db dump and composer file
 `ddev drowl-init-from-existing` + `ddev code`
@@ -107,14 +107,14 @@ See 'Quick-Start' above!
 - (Optional) Installs development Modules & Configuration
 
 
-#### TODO: C.1) Fetch a 1:1 copy of an existing Drupal 9 CMS Project via SSH / Github
+#### TODO: C.1) Fetch a 1:1 copy of an existing Drupal 10 CMS Project via SSH / Github
 TODO
 - drowl-init-from-existing --remote "github Link"
 - Sets up best-practice development Server
 - Fetches existing database
 - Fetches existing file structure
 
-#### TODO:  C.2) Fetch a development copy of an existing Drupal 9 CMS Project with additional development and debugging tools / modules
+#### TODO:  C.2) Fetch a development copy of an existing Drupal 10 CMS Project with additional development and debugging tools / modules
 (3a.) PLUS
 - Optionally installs development modules: TODO
 

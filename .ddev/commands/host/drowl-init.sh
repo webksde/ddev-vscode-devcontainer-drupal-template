@@ -10,7 +10,7 @@ set -e
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
 # Get newest Drupal Version:
-ddev composer create -y 'drupal/recommended-project'
+ddev composer create -y 'drupal/recommended-project' "^10"
 
 # Starting Drupal DDEV Containers
 ddev start
