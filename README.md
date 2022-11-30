@@ -1,7 +1,7 @@
-# ddev-vscode-devcontainer-drupal9-template
+# DDEV VSCode DevContainer Drupal Template
 
 ## Quick-Start
-**Spin up a ready-to-code Drupal 9 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
+**Spin up a ready-to-code Drupal 9 / 10 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
 
 ### Optional: 
 *Before* the next step, switch to the directory (or create it), where you want to run this ddev instance.
@@ -12,7 +12,7 @@ cd project-folder
 ### Initialize the project
 May take ~5 min - only needed once, at initialization:
 ~~~
-git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal9-template.git . && ddev drowl-init
+git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git . && ddev drowl-init
 ~~~
 
 **Note, that you can currently only initiate ONE ddev-vscode instance at once!**
@@ -61,9 +61,9 @@ Beautifully packaged for easy project and environment switching.
   3. The [Remote Development Extension for VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)}(https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
 ## How to use
- 1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template.git`
+ 1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git`
  2. Start / Restart Docker and make sure it is updated to the current version
- 3. Change into the directory: `cd ddev-vscode-devcontainer-drupal9-template`
+ 3. Change into the directory: `cd ddev-vscode-devcontainer-drupal-template`
  4. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
  5. You are ready to go! Use `ddev describe` to check the status & URLs of your Project and `ddev code` to run your prepared VSCode IDE!
     -  Note, when inside the attached VSCode go to "Extensions" and type in "@recommended" to reveal all the necessary Extensions. Installing them is recommended!
