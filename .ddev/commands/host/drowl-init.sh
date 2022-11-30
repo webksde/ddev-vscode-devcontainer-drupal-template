@@ -24,7 +24,8 @@ ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli tr
 ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/config_inspector
 
 # Add DEV dependencies (but no modules due to their database relationship):
-ddev composer require --dev drupal/core-dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules kint-php/kint
+ddev composer require --dev drupal/core-dev:^10
+ddev composer require --dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules kint-php/kint
 
 # PHP Codesniffer Setup:
 ddev composer require --dev squizlabs/php_codesniffer
@@ -108,4 +109,4 @@ echo "Use 'ddev phpstan relative-path/to/execute' to lint your PHP Code for depr
 echo "Use 'esfix relative-path/to/execute' to format javascript code based on Drupal Coding Standards."
 
 printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
-printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal9-template\n"
+printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"
