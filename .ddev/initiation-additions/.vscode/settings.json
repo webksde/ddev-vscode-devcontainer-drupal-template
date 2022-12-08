@@ -74,6 +74,12 @@
   "intelephense.phpdoc.returnVoid": false,
   "intelephense.format.braces": "k&r",
   "phpstan.configFile": "./web/core/phpstan.neon.dist",
+  "phpstan.paths":{
+    "analyseAndScan": [
+      "./web/modules/custom"
+    ]
+  },
+  "phpstan.enabled": false,
   "breadcrumbs.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.tabSize": 2,
@@ -82,7 +88,7 @@
   "editor.renderWhitespace": "boundary",
   "editor.wordWrapColumn": 80,
   "editor.wordWrap": "off",
-  "editor.detectIndentation": true,
+  "editor.detectIndentation": false,
   "html.suggest.html5": true,
   "css.validate": true,
   "editor.formatOnPaste": false,
@@ -110,6 +116,7 @@
   "emmet.includeLanguages": {
     "twig": "html"
   },
+  "twig-language-2.indentStyle": "space",
   "html.validate.scripts": false,
   "html.validate.styles": false,
   "peacock.remoteColor": "#d9c108",
