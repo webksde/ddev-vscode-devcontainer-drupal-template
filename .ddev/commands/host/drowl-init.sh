@@ -103,7 +103,7 @@ echo "Use 'ddev phpunit relative-path/to/tests' to Test Classes using PHPUnit"
 echo "Use 'ddev phpcs relative-path/to/sniff' to lint your PHP Code using Drupal Coding Standards"
 echo "Use 'ddev phpcbf relative-path/to/execute' to format your PHP Code using Drupal Coding Standards"
 echo "Use 'ddev phpstan relative-path/to/execute' to lint your PHP Code for deprecation"
-echo "Use 'esfix relative-path/to/execute' to format javascript code based on Drupal Coding Standards."
+echo "Use 'ddev eslint relative-path/to/execute (--fix)' to lint / format javascript code based on Drupal Coding Standards."
 
 printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
 printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"
