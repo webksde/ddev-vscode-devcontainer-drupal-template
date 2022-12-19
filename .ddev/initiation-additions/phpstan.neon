@@ -1,12 +1,8 @@
-includes:
-	- vendor/mglaman/phpstan-drupal/extension.neon
-	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
-
 parameters:
   level: 2
 
   paths:
-  - web/modules/custom
+  - .
 
   ignoreErrors:
     # new static() is a best practice in Drupal, so we cannot fix that.
@@ -15,3 +11,16 @@ parameters:
     # This check was ignored on purpose until the issues with it, which started in version 1.1.15, are solved.
     # @see https://www.drupal.org/node/3280328
     - "#^Missing explicit access check on entity query.#"
+
+  excludePaths:
+      # only scan our modules folder:
+      analyse:
+          - .ddev
+          - .vscode
+          - data
+          - node_modules
+          - vendor
+          - web/core
+          - web/sites
+          - web/themes
+          - web/modules/contrib
