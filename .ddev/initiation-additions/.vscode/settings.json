@@ -73,13 +73,8 @@
   ],
   "intelephense.phpdoc.returnVoid": false,
   "intelephense.format.braces": "k&r",
-  "phpstan.configFile": "./web/core/phpstan.neon.dist",
-  "phpstan.paths":{
-    "analyseAndScan": [
-      "./web/modules/custom"
-    ]
-  },
-  "phpstan.enabled": false,
+  "phpstan.configFile": "phpstan.neon",
+  "phpstan.enabled": true,
   "breadcrumbs.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.tabSize": 2,

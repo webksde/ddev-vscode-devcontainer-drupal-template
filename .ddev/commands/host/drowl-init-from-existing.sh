@@ -47,6 +47,8 @@ if [ $# -eq 0 ] ; then
         ddev exec chmod +x vendor/bin/phpcbf
         # Get VSCode Settings:
         cp -R .ddev/initiation-additions/.vscode/ .
+        # Get phpstan.neon:
+        cp .ddev/initiation-additions/phpstan.neon .
         # get PHPUnit.xml:
         cp .ddev/initiation-additions/phpunit.xml web/core
         # Set the permission for the default folder:

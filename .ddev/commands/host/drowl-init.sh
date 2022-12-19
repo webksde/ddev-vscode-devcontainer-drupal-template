@@ -39,8 +39,11 @@ ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admi
 # Get VSCode Settings:
 cp -R .ddev/initiation-additions/.vscode/ .
 
-# get PHPUnit.xml:
+# Get PHPUnit.xml:
 cp .ddev/initiation-additions/phpunit.xml web/core
+
+# Get phpstan.neon:
+cp .ddev/initiation-additions/phpstan.neon .
 
 # Set the permission for the default folder:
 chmod 0755 ./web/sites/default
