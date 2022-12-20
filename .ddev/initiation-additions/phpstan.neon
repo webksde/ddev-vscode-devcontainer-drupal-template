@@ -31,5 +31,5 @@ parameters:
           - vendor
           - web/core
           - web/sites
-          - web/themes
+          - web/themes/contrib
           - web/modules/contrib
