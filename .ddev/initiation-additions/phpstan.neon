@@ -4,6 +4,15 @@ parameters:
   paths:
   - .
 
+  fileExtensions:
+      - inc
+      - php
+      - module
+      - install
+      - theme
+      - tpl.php
+      - test
+
   ignoreErrors:
     # new static() is a best practice in Drupal, so we cannot fix that.
     - "#^Unsafe usage of new static#"

@@ -25,7 +25,7 @@ ddev composer require composer/installers cweagans/composer-patches szeidler/com
 
 # Add DEV dependencies (but no modules due to their database relationship):
 ddev composer require --dev drupal/core-dev:^10
-ddev composer require --dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/extension-installer kint-php/kint
+ddev composer require --dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/extension-installer phpstan/phpstan-phpunit kint-php/kint
 
 # PHP Codesniffer Setup:
 ddev composer require --dev squizlabs/php_codesniffer
