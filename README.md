@@ -146,3 +146,12 @@ We recommend to use *brew* for all kinds of installation, as it's easy to instal
 *How do I update dddev?*
 
 See above. For brew simply use `brew update && brew upgrade`
+
+*I can not execute the custom "ddev drowl-init" command*
+
+Make sure you have the newest ddev and docker version and try restarting docker first. If the problem still persists, make sure you do not have two ddev projects with the same name! The name is NOT differentiated by the projects folder name! But instead is defined in the `.ddev/config.yml` file!
+If there are no duplicate ddev projects, there might have been a ddev project with the same name in the past, which was not properly deleted using `ddev delete`. Check your Docker Container instances and delete the old Docker Cluster.
+
+*I used "ddev drowl-init-from-existing" and now my Web-Server can't reach the Database* 
+
+We are currently investigating this problem. It has something todo with ddev creating a new database when importing a database dump through their db command. In the meantime you can use `ddev drowl-init` and import your database dump after initialisation through PHPMyAdmin (and swap the composer.json). 
