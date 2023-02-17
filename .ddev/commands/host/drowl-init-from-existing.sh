@@ -65,11 +65,10 @@ if [ $# -eq 0 ] ; then
         # Get the phpstan.neon:
         cp .ddev/initiation-additions/phpstan.neon .
         # Get packages for eslint:
-        echo 'Requiring ESLint npm packages'
-        ddev exec npm install --save-dev eslint@^8.9.0
-        ddev exec npm install --save-dev eslint-plugin-import@^2.25.3 eslint-plugin-jsx-a11y@^6.5.1 eslint-plugin-react@^7.28.0 eslint-plugin-react-hooks@^4.3.0
-        ddev exec npm install --save-dev eslint-config-airbnb@^19.0.4 prettier@^2 eslint-config-prettier@^8.4.0 eslint-plugin-prettier@^4.0
-        ddev exec npm install --save-dev eslint-plugin-jquery@^1.5.1 eslint-plugin-yml@^0.14.0
+        echo 'Requiring ESLint npm packages...'
+        ddev npm install --save-dev eslint@latest
+        ddev npm install --save-dev eslint-config-airbnb-base@latest prettier@latest eslint-config-prettier@latest eslint-plugin-prettier@latest
+        ddev npm install --save-dev eslint-plugin-yml@latest
         # Create temp folder and custom module folder and private folder:
         mkdir -p ./files/private
         mkdir -p web/modules/custom
