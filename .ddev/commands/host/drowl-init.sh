@@ -80,6 +80,10 @@ ddev composer config --json repositories.asset-packagist '{"type": "composer","u
 ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
 ddev composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
+# Give authenticated and anonymous users "access devel information" (dsm / kint):
+ddev drush role:perm:add anonymous 'access devel information'
+ddev drush role:perm:add authenticated 'access devel information'
+
 # Created authenticated test user:
 ddev drush user::create max --mail='max@example.com' --password='max' -y
 

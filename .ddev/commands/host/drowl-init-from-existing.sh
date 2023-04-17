@@ -62,6 +62,9 @@ if [ $# -eq 0 ] ; then
         cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
         cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
         cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
+        # Give authenticated and anonymous users "access devel information" (dsm / kint):
+        ddev drush role:perm:add anonymous 'access devel information'
+        ddev drush role:perm:add authenticated 'access devel information'
         # Created authenticated test user:
         ddev drush user::create max --mail='max@example.com' --password='max' -y
         # Get the phpstan.neon:
