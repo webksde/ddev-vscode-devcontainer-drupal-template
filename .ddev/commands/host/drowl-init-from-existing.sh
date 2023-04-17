@@ -62,6 +62,8 @@ if [ $# -eq 0 ] ; then
         cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
         cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
         cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
+        # Created authenticated test user:
+        ddev drush user::create max --mail='max@example.com' --password='max' -y
         # Get the phpstan.neon:
         cp .ddev/initiation-additions/phpstan.neon .
         # Get packages for eslint:

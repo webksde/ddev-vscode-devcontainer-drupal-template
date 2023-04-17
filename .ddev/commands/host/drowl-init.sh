@@ -80,6 +80,9 @@ ddev composer config --json repositories.asset-packagist '{"type": "composer","u
 ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
 ddev composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
+# Created authenticated test user:
+ddev drush user::create max --mail='max@example.com' --password='max' -y
+
 # Create custom module folder:
 mkdir -p web/modules/custom
 # Create temp folder:
