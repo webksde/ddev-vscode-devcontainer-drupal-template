@@ -1,42 +1,41 @@
-# ddev-vscode-devcontainer-drupal-template
+# DDEV Drupal Template With Attached VSCode
+The tools inside this repository will create a modified Drupal environment, focused on development and debugging.
 
+**DO NOT USE IN PRODUCTION**
 ## Quick-Start
-**Spin up a ready-to-code Drupal 10 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
+**Spin up a ready-to-code Drupal 10 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in four commands!** 🚀
 
-### Optional:
-*Before* the next step, switch to the directory (or create it), where you want to run this ddev instance.
-~~~
-mkdir project-folder
-cd project-folder
-~~~
-### Initialize the project
 May take ~5 min - only needed once, at initialization:
 ~~~
-git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git . && ddev drowl-init
+mkdir ddev-drupal-vscode && cd ddev-drupal-vscode && git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git . && ddev drowl-init
 ~~~
 
-**Note, that you can currently only initiate ONE ddev-vscode instance at once!**
+---
+
+## Features
 
 Provides a plug and play 🔌 DDEV (Docker) based development environment for VSCode IDE with predefined Drupal CMS best practice
 - VS-Code Extensions
-  - GitLens
-  - TODO Highlight
-  - Apache Conf
-  - Composer
-  - Intelephense
-  - PHP Debug
-  - PHP Getters & Setters
-  - PHP Namespace Resolver
-  - PHP DocBlocker
-  - PHPStan
-  - PHP Sniffer & Beautifier
-  - ESLint
-  - Twig Language 2
+  - [Intelephense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client)
+  - [PHP Debug (Using XDebug)](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
+  - [PHP Getters & Setters](https://marketplace.visualstudio.com/items?itemName=cvergne.vscode-php-getters-setters-cv)
+  - [PHP Namespace Resolver](https://marketplace.visualstudio.com/items?itemName=MehediDracula.php-namespace-resolver)
+  - [PHP DocBlocker](https://marketplace.visualstudio.com/items?itemName=neilbrayfield.php-docblocker)
+  - [PHPStan](https://marketplace.visualstudio.com/items?itemName=SanderRonde.phpstan-vscode)
+  - [PHP Sniffer & Beautifier](https://marketplace.visualstudio.com/items?itemName=ValeryanM.vscode-phpsab)
+  - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+  - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+  - [Twig Language 2](https://marketplace.visualstudio.com/items?itemName=mblode.twig-language-2)
+  - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+  - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
+  - [Apache Conf](https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-apache)
+  - [Composer](https://marketplace.visualstudio.com/items?itemName=DEVSENSE.composer-php-vscode)
+  - [Peacock](https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock)
 
 - VS-Code Settings
-  - PHPStan: Level 6 linting using "phpstan-drupal" and "phpstan-deprecation-rules".
+  - PHPStan: Level 2 linting using Drupal core PHPStan settings.
   - ESLint: Drupal Coding Standards defined in Drupal Core .eslintrc.json.
-  - PHPCS (Sniffer): Drupal Coding Standards defined in the Drupal Coder module.
+  - PHPCS: Drupal Coding Standards defined in the Drupal Coder module.
   - Twig Language 2: Standard.
   - Intelephense: Drupal Best-Practice settings.
 
@@ -44,31 +43,46 @@ Provides a plug and play 🔌 DDEV (Docker) based development environment for VS
   - Listen for XDebug
 
 - CLI-Tooling
-  - PHPUnit
-  - PHPUnit Test-Coverage
-  - PHPCS (Sniffer)
-  - PHPStan
-  - XDebug
-  - DDEV Tooling, see [here](https://ddev.readthedocs.io/en/stable/users/cli-usage/) for more information
+  - [PHPUnit](https://phpunit.de/)
+  - [PHPUnit Code-Coverage](https://phpunit.de/manual/6.5/en/code-coverage-analysis.html)
+  - [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer)
+  - [PHPStan](https://phpstan.org/)
+  - [XDebug](https://xdebug.org/)
+  - [DDEV Tooling](https://ddev.readthedocs.io/en/stable/users/cli-usage/)
+  - [ESLint](https://eslint.org/)
 
 Beautifully packaged for easy project and environment switching.
 
 *Feel free to fork for other Frameworks or improve for lovely Drupal!* ❤️
 
+---
+
 ## Prerequisites
   1. Up to date Version of DDEV, Docker, Chrome/Firefox
   2. VSCode installed on your machine locally
-  3. The [Remote Development Extension for VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)}(https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+  3. The [Remote Development Extension for VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+
+---
 
 ## How to use
- 1. Clone the the repo to a new empty project directory: `git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git`
- 2. Start / Restart Docker and make sure it is updated to the current version
- 3. Change into the directory: `cd ddev-vscode-devcontainer-drupal-template`
- 4. Use `ddev drowl-init` or `ddev drowl-init-from-existing` to start up the environment / start the environment with an existing composer file and database dump.
- 5. You are ready to go! Use `ddev describe` to check the status & URLs of your Project and `ddev code` to run your prepared VSCode IDE!
-    -  Note, when inside the attached VSCode go to "Extensions" and type in "@recommended" to reveal all the necessary Extensions. Installing them is recommended!
+ 1. Create a project folder and switch into it: `mkdir project-folder && cd project-folder`
+ 2. Clone the repository into the just created folder: `git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git .`
+ 3. Use either
+    1. `ddev drowl-init` to directly start up the environment with VSCode / Drupal Best Practice Tools
+    2. `ddev drowl-init-from-existing` to start the environment with an existing composer file and database dump (and alternatviely also Dev Tools enabled).
+ 4. You are ready to go! Use `ddev describe` to check the status & URLs of your Project and `ddev code` to run your prepared VSCode IDE!
+    1. Note, when inside the attached VSCode go to "Extensions" and type in "@recommended" to reveal all the necessary Extensions. Installing them is recommended!
 
-## Tooling
+## Typical Use-Cases:
+ - Local Drupal development / testing / evaluation instance from scratch or existing with ready-to-go IDE
+ - Module / Theme development or evaluation
+ - Contrib module issue forks / merge requests / patch creation (Git clone / commit / push / ...)
+ - Simple & quick Drupal 10 Sandbox for offline / local
+
+---
+
+## Documentation
+### Tooling
  - Use `ddev code` to attach VSCode to your running Container.
  - Use `ddev phpunit path/to/tests` to Test Classes using PHPUnit.
  - Use `ddev phpunit-coverage path/to/cover` to create a test coverage of the given file-directory.
@@ -77,81 +91,35 @@ Beautifully packaged for easy project and environment switching.
  - Use `ddev eslint path/to/sniff (--fix)` for linting / auto-fixing javascript code based on Drupal Coding Standards.
  - Use `ddev xdebug on` to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
  - Use `ddev import-db --target-db=db --src=db.sql.gz` to import a database file.
- - Use `ddev rename` to rename your project. !THIS COMMAND IS BUGGY, PLEASE DO NOT USE IT YET!
  - Use `ddev dump-db ddev` to dump your main database tablewise.
  - Use `ddev deploy-db ddev` to import your tablewise dump.
   - Note: You can additionally add remote SSH projects under .ddev/commands/web/db-targets
-
-## Typical Use-Cases:
- - Local Drupal development / testing / evaluation instance from scratch or existing with ready-to-go IDE
- - Module / Theme development or evaluation
- - Contrib module issue forks / merge requests / patch creation (Git clone / commit / push / ...)
- - Simple & quick Drupal 10 Sandbox for offline / local
-
-## Documentation
-
-### Getting started
-See 'Quick-Start' above!
-
-### Functionality
-
-#### A) Create an "empty" best-practice working Drupal 10 CMS Development instance
-`ddev drowl-init` + `ddev code`
-- Sets up best-practice Drupal VSCode IDE
-- Sets up ready to log in latest Drupal 10 Copy
-- Installs best-practice Drupal 10 Modules & Configuration
-
-#### B) Create an environment from a local db dump and composer file
-`ddev drowl-init-from-existing` + `ddev code`
-- Sets up project via composer and db dump
-- (Optional) Installs development Modules & Configuration
-
-
-#### TODO: C.1) Fetch a 1:1 copy of an existing Drupal 10 CMS Project via SSH / Github
-TODO
-- drowl-init-from-existing --remote "github Link"
-- Sets up best-practice development Server
-- Fetches existing database
-- Fetches existing file structure
-
-#### TODO:  C.2) Fetch a development copy of an existing Drupal 10 CMS Project with additional development and debugging tools / modules
-(3a.) PLUS
-- Optionally installs development modules: TODO
-
-#### D) TODO: Extract and push database & configuration changes back to the origin
-3 a / b PLUS:
-- Log database changes to put into update hook
-- Log configuration changes to export
-- Push to origin
-
-### Use different configuration or settings by default
-Fork me! And help us to split configuration smart for future updates :)
 
 ### Delete the environment:
  1. `ddev delete -y` deletes the container and unlists the project.
  2. Delete the project folder
 
-## Further ddev Tools and add-ons
+### Further ddev Tools and add-ons
  - https://github.com/drud/awesome-ddev
  - https://github.com/drud/ddev-contrib
 
 ---
 
-# FAQ's:
-*How do I install ddev?*
+## FAQ / Troubleshooting:
+### *How do I install ddev?*
 
 See https://ddev.readthedocs.io/en/stable/users/install/ddev-installation
 We recommend to use *brew* for all kinds of installation, as it's easy to install and update
 
-*How do I update dddev?*
+### *How do I update dddev?*
 
 See above. For brew simply use `brew update && brew upgrade`
 
-*I can not execute the custom "ddev drowl-init" command*
+### *I can not execute the custom "ddev drowl-init" command*
 
-Make sure you have the newest ddev and docker version and try restarting docker first. If the problem still persists, make sure you do not have two ddev projects with the same name! The name is NOT differentiated by the projects folder name! But instead is defined in the `.ddev/config.yml` file!
+Make sure you have the newest ddev and docker version and try restarting docker first. If the problem still persists, make sure you do not have two ddev projects with the same name!
 If there are no duplicate ddev projects, there might have been a ddev project with the same name in the past, which was not properly deleted using `ddev delete`. Check your Docker Container instances and delete the old Docker Cluster.
 
-*I used "ddev drowl-init-from-existing" and now my Web-Server can't reach the Database* 
+### *I used "ddev drowl-init-from-existing" and now my Web-Server can't reach the Database*
 
-We are currently investigating this problem. It has something todo with ddev creating a new database when importing a database dump through their db command. In the meantime you can use `ddev drowl-init` and import your database dump after initialisation through PHPMyAdmin (and swap the composer.json). 
+We are currently investigating this problem. It has something todo with ddev creating a new database when importing a database dump through their db command. In the meantime you can use `ddev drowl-init` and import your database dump after initialisation through PHPMyAdmin (and swap the composer.json).

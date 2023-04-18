@@ -3,7 +3,7 @@
     /*--------------------------------------------------PHP Specific Extensions--------------------------------------------------*/
     "xdebug.php-debug",
     "neilbrayfield.php-docblocker",
-    "phproberto.vscode-php-getters-setters",
+    "cvergne.vscode-php-getters-setters-cv",
     "bmewburn.vscode-intelephense-client",
     "mehedidracula.php-namespace-resolver",
     "ValeryanM.vscode-phpsab",
@@ -16,9 +16,11 @@
     "andrewdavidblum.drupal-smart-snippets",
     /*--------------------------------------------------Other Extensions--------------------------------------------------*/
     "mrmlnc.vscode-apache",
+    "DEVSENSE.composer-php-vscode",
     "eamodio.gitlens",
     "dmitrydorofeev.empty-indent",
     "wayou.vscode-todo-highlight",
-    "johnpapa.vscode-peacock"
+    "johnpapa.vscode-peacock",
+    "esbenp.prettier-vscode"
   ]
 }
