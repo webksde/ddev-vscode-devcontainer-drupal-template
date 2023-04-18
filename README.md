@@ -33,13 +33,6 @@ Provides a plug and play 🔌 DDEV (Docker) based development environment for VS
   - [Composer](https://marketplace.visualstudio.com/items?itemName=DEVSENSE.composer-php-vscode)
   - [Peacock](https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock)
 
-- VS-Code Settings
-  - PHPStan: Level 2 linting using Drupal core PHPStan settings.
-  - ESLint: Drupal Coding Standards defined in Drupal Core .eslintrc.json.
-  - PHPCS: Drupal Coding Standards defined in the Drupal Coder module.
-  - Twig Language 2: Standard.
-  - Intelephense: Drupal Best-Practice settings.
-
 - VS-Code Launch configuration
   - Listen for XDebug
 
@@ -51,6 +44,16 @@ Provides a plug and play 🔌 DDEV (Docker) based development environment for VS
   - [XDebug](https://xdebug.org/)
   - [DDEV Tooling](https://ddev.readthedocs.io/en/stable/users/cli-usage/)
   - [ESLint](https://eslint.org/)
+
+- Drupal Development Modules
+  - [Devel](https://www.drupal.org/project/devel)
+  - [Devel PHP](https://www.drupal.org/project/devel_php)
+  - [Admin Toolbar](https://www.drupal.org/project/admin_toolbar)
+  - [Backup Migrate](https://www.drupal.org/project/backup_migrate)
+  - [Stage File Proxy](https://www.drupal.org/project/stage_file_proxy)
+  - [Config Inspector](https://www.drupal.org/project/config_inspector)
+  - [Examples](https://www.drupal.org/project/examples)
+  - [Web Profiler](https://www.drupal.org/project/webprofiler)
 
 Beautifully packaged for easy project and environment switching.
 

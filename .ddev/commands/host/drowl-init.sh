@@ -24,7 +24,7 @@ ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-ext
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
 
 # Add dependencies:
-ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended:^10 drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples
+ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended:^10 drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples drupal/webprofiler
 
 # Add DEV dependencies (but no modules due to their database relationship):
 ddev composer require --dev drupal/core-dev:^10
@@ -67,7 +67,7 @@ ddev npm install --save-dev eslint-config-airbnb-base@latest prettier@latest esl
 ddev npm install --save-dev eslint-plugin-yml@latest
 
 # Acitvate required dev-modules:
-ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_php backup_migrate config_inspector examples -y
+ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_php backup_migrate config_inspector examples webprofiler -y
 
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
