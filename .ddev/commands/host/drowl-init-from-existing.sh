@@ -10,6 +10,9 @@ set -e
 # keep track of the last executed command
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
+# Create the config.yaml:
+ddev config --composer-version="stable" --php-version="8.2" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal10" --disable-settings-management --auto
+
 bool=1
 while [ $bool -eq 1 ]; do
   read -p $'\e[33mThis command will NOT initialize a production ready copy of your Website! It will create a modified environment, focused on development and debugging.\n\nDO NOT PUSH TO PRODUCTION!\n\nContinue anyway (y/n)?\e[0m'$'\n' answer

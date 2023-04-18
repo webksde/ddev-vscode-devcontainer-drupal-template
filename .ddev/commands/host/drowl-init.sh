@@ -9,6 +9,9 @@ set -e
 # keep track of the last executed command
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
+# Create the config.yaml:
+ddev config --composer-version="stable" --php-version="8.2" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal10" --disable-settings-management --auto
+
 # Get Drupal 10:
 ddev composer create -y --stability RC "drupal/recommended-project:^10"
 
