@@ -101,10 +101,8 @@ mkdir -p ./tmp
 # Create private files directory:
 mkdir -p ./files/private
 
-# Export DB-Dump to data/sql:
-mkdir -p ./data/sql
-ddev export-db $DDEV_PROJECT > ./data/sql/db-complete-dump.sql.gz
-echo "Created full database dump under data/sql/db-complete-dump.sql"
+# Create database backup using backup_migrate:
+ddev drush backup_migrate:quick_backup
 
 # Remove git files:
 rm -r ./.git ./.gitignore ./.gitattributes -f
