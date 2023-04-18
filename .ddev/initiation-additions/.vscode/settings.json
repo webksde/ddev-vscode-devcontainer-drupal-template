@@ -91,6 +91,7 @@
   "html.suggest.html5": true,
   "css.validate": true,
   "editor.formatOnPaste": false,
+  "cSpell.workspaceRootPath": "./web/core",
   "editor.rulers": [
     80
   ],

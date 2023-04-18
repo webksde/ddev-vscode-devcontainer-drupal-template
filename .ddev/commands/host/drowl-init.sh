@@ -48,6 +48,9 @@ cp .ddev/initiation-additions/phpunit.xml web/core
 # Get phpstan.neon:
 cp .ddev/initiation-additions/phpstan.neon .
 
+# Get cspell.json:
+cp .ddev/initiation-additions/cspell.json .
+
 # Set the permission for the default folder:
 chmod 0755 ./web/sites/default
 chmod 0644 ./web/sites/default/settings.php

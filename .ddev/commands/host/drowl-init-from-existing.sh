@@ -57,6 +57,8 @@ if [ $# -eq 0 ]; then
       cp -R .ddev/initiation-additions/.vscode/ .
       # Get phpstan.neon:
       cp .ddev/initiation-additions/phpstan.neon .
+      # Get cspell.json:
+      cp .ddev/initiation-additions/cspell.json .
       # get PHPUnit.xml:
       cp .ddev/initiation-additions/phpunit.xml web/core
       # Set the permission for the default folder:

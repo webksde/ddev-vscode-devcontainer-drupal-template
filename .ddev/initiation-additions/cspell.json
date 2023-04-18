@@ -1,0 +1,69 @@
+{
+  "version": "0.1",
+  "language": "en-US",
+  "allowCompoundWords": false,
+  "globRoot": ".",
+  "ignorePaths": [
+    ".ddev",
+    ".editorconfig",
+    ".vscode",
+    "composer.json",
+    "composer.lock",
+    "cspell.json",
+    "data",
+    "files",
+    "node_modules",
+    "package-lock.json",
+    "package.json",
+    "phpstan.neon",
+    "tmp",
+    "vendor",
+    "web/.csslintrc",
+    "web/.eslintignore",
+    "web/.eslintrc.json",
+    "web/.ht.router.php",
+    "web/.htaccess",
+    "web/INSTALL.txt",
+    "web/README.md",
+    "web/autoload.php",
+    "web/example.gitignore",
+    "web/index.php",
+    "web/profiles",
+    "web/robots.txt",
+    "web/sites",
+    "web/update.php",
+    "web/web.config",
+    "web/core",
+    "web/themes/contrib",
+    "web/modules/contrib"
+  ],
+  "ignoreRegExpList": [
+    "^msgstr .*",
+    "!!binary .*",
+    "%[0-9][0-9A-F]",
+    "\\Wi18n",
+    "\\x{[0-9A-F]{4,5}}"
+  ],
+  "dictionaries": [
+    "drupal",
+    "companies",
+    "fonts",
+    "html",
+    "php",
+    "softwareTerms"
+  ],
+  "dictionaryDefinitions": [
+    { "name": "drupal", "path": "./web/core/misc/cspell/dictionary.txt" }
+  ],
+  "flagWords": ["grey", "hte"],
+  "overrides": [
+    {
+      "filename": "**/{*.engine,*.inc,*.install,*.module,*.profile,*.theme}",
+      "languageId": "php"
+    },
+    {
+      "filename": "**/scripts/{*.php.txt, *.sh}",
+      "languageId": "php"
+    }
+  ]
+}
