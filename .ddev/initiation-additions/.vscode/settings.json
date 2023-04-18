@@ -12,6 +12,7 @@
   "javascript.format.enable": true,
   "eslint.format.enable": true,
   "eslint.enable": true,
+  "prettier.configPath": "web/core/.prettierrc.json",
   "[javascript]": {
     "editor.defaultFormatter":"dbaeumer.vscode-eslint"
   },
