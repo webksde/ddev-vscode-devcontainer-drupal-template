@@ -85,7 +85,7 @@ ddev drush role:perm:add anonymous 'access devel information'
 ddev drush role:perm:add authenticated 'access devel information'
 
 # Created authenticated test user:
-ddev drush user::create max --mail='max@example.com' --password='max' -y
+ddev drush user:create max --mail='max@example.com' --password='max' -y
 
 # Create custom module folder:
 mkdir -p web/modules/custom
