@@ -1,3 +1,7 @@
+includes:
+  - phpstan-baseline.neon
+  - phar://phpstan.phar/conf/bleedingEdge.neon
+
 parameters:
   level: 2
 
@@ -17,9 +21,12 @@ parameters:
     # new static() is a best practice in Drupal, so we cannot fix that.
     - "#^Unsafe usage of new static#"
 
-    # This check was ignored on purpose until the issues with it, which started in version 1.1.15, are solved.
-    # @see https://www.drupal.org/node/3280328
-    - "#^Missing explicit access check on entity query.#"
+    # Ignore common errors for now.
+    - "#Drupal calls should be avoided in classes, use dependency injection instead#"
+    - "#^Plugin definitions cannot be altered.#"
+    - "#^Missing cache backend declaration for performance.#"
+    - "#cache tag might be unclear and does not contain the cache key in it.#"
+    - "#^Class .* extends @internal class#"
 
   excludePaths:
       # only scan our modules folder:
