@@ -7,7 +7,7 @@ The tools inside this repository will create a modified Drupal environment, focu
 
 May take ~5 min - only needed once, at initialization:
 ~~~
-mkdir ddev-drupal-vscode && cd ddev-drupal-vscode && git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git . && ddev drowl-init
+mkdir ddev-vscode-drupal && cd ddev-vscode-drupal && git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git . && ddev drowl-init
 ~~~
 
 ---
