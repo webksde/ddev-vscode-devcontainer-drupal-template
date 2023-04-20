@@ -46,6 +46,7 @@ Provides a plug and play 🔌 DDEV (Docker) based development environment for VS
   - [ESLint](https://eslint.org/)
 
 - Drupal Development Modules
+  - [Coder](https://www.drupal.org/project/coder)
   - [Devel](https://www.drupal.org/project/devel)
   - [Devel PHP](https://www.drupal.org/project/devel_php)
   - [Admin Toolbar](https://www.drupal.org/project/admin_toolbar)
