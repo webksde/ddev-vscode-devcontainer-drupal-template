@@ -3,12 +3,13 @@ The tools inside this repository will create a modified Drupal environment, focu
 
 **DO NOT USE IN PRODUCTION**
 ## Quick-Start
-**Spin up a ready-to-code Drupal 10 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in four commands!** 🚀
+**Spin up a ready-to-code Drupal 9/10 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in four commands!** 🚀
 
 May take ~5 min - only needed once, at initialization:
 ~~~
 mkdir ddev-vscode-drupal && cd ddev-vscode-drupal && git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git . && ddev drowl-init
 ~~~
+Note: You can also initiate a Drupal 9 environment instead, using `ddev drowl-init --version 9`
 
 ---
 
@@ -73,7 +74,8 @@ Beautifully packaged for easy project and environment switching.
  1. Create a project folder and switch into it: `mkdir project-folder && cd project-folder`
  2. Clone the repository into the just created folder: `git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git .`
  3. Use either
-    1. `ddev drowl-init` to directly start up the environment with VSCode / Drupal Best Practice Tools
+    1. `ddev drowl-init` to directly start up the environment using Drupal 10 with VSCode / Drupal Best Practice Tools
+       1. Alternatively you can explicitly choose the Drupal version, using `ddev drowl-init -v 9` for Drupal 9, or `ddev drowl-init -v 10` for Drupal 10. Running the command without a flag, will initiate a Drupal 10 environment.
     2. `ddev drowl-init-from-existing` to start the environment with an existing composer file and database dump (and alternatviely also Dev Tools enabled).
  4. You are ready to go! Use `ddev describe` to check the status & URLs of your Project and `ddev code` to run your prepared VSCode IDE!
     1. Note, when inside the attached VSCode go to "Extensions" and type in "@recommended" to reveal all the necessary Extensions. Installing them is recommended!
@@ -107,7 +109,6 @@ Beautifully packaged for easy project and environment switching.
 ### Further ddev Tools and add-ons
  - https://github.com/drud/awesome-ddev
  - https://github.com/drud/ddev-contrib
-
 ---
 
 ## FAQ / Troubleshooting:

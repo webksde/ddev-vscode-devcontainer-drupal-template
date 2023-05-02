@@ -2,18 +2,44 @@
 
 ## Description: Startup A Drupal DDEV Environment, using DROWL Best Practices
 ## Usage: drowl-init
-## Example: "drowl-init"
+## Example: drowl-init, drowl-init -v 9, drowl-init -v 10
+## Flags: [{"Name":"version","Shorthand":"v","Usage":"Set the Drupal Version (Drupal 9 and 10 supported)"}]
 
 # exit when any command fails
 set -e
 # keep track of the last executed command
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
+DRUPAL_VERSION=10;
+PHP_VERSION=8.2
+
+if [[ $# = 1 ]]; then
+  echo "Missing parameter given. Use either 'ddev drowl-init -v 9' or 'ddev drowl-init -v 10'";
+  exit;
+fi
+
+if [[ $# = 2 && ( "$1" != "-v" && "$1" != "--version" )]]; then
+  echo "Unkown flag '$1' given. Use either 'ddev drowl-init -v 9' or 'ddev drowl-init -v 10'";
+  exit;
+fi
+
+if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" != "9" && "$2" != "10" ) ]]; then
+  echo "Unkown parameter '$2' given. Use either 'ddev drowl-init -v 9' or 'ddev drowl-init -v 10'";
+  exit;
+fi
+
+if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = 9 ]]; then
+  DRUPAL_VERSION=9;
+  PHP_VERSION=8.1
+fi
+
+echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
+
 # Create the config.yaml:
-ddev config --composer-version="stable" --php-version="8.2" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal10" --disable-settings-management --auto
+ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal${DRUPAL_VERSION}" --disable-settings-management --auto
 
 # Get Drupal 10:
-ddev composer create -y --stability RC "drupal/recommended-project:^10"
+ddev composer create -y --stability RC "drupal/recommended-project:^${DRUPAL_VERSION}"
 
 # Starting Drupal DDEV Containers
 ddev start
@@ -24,10 +50,10 @@ ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-ext
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
 
 # Add dependencies:
-ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold drupal/core-project-message drupal/core-recommended:^10 drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples drupal/webprofiler
+ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold:^${DRUPAL_VERSION} drupal/core-project-message drupal/core-recommended:^${DRUPAL_VERSION} drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples drupal/webprofiler
 
 # Add DEV dependencies (but no modules due to their database relationship):
-ddev composer require --dev drupal/core-dev:^10
+ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION}
 ddev composer require --dev drush/drush phpunit/phpunit:^9.5 drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/extension-installer phpstan/phpstan-phpunit kint-php/kint
 
 # PHP Codesniffer Setup:
