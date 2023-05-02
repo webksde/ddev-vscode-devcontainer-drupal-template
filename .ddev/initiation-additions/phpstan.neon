@@ -38,3 +38,4 @@ parameters:
     - "#^Missing cache backend declaration for performance.#"
     - "#cache tag might be unclear and does not contain the cache key in it.#"
     - "#^Class .* extends @internal class#"
+
