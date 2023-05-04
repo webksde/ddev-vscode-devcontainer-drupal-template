@@ -5,6 +5,9 @@
 ## Example: "drowl-init-from-existing"
 ## TODO: Create a --remote tag to initiate a project via remote ssh.
 
+echo -e $'\e\n[31mTHIS COMMAND IS CURRENTLY NOT WORKING PROPERLY, see https://github.com/webksde/ddev-vscode-devcontainer-drupal-template/issues/129 for more information.\n\e[0m'
+exit
+
 # exit when any command fails
 set -e
 # keep track of the last executed command
@@ -100,7 +103,7 @@ if [ $# -eq 0 ]; then
   echo -e $'\e\n[32mAlright! Importing your database...\n\e[0m'
   ddev import-db --target-db=db --src="$src"
   # Drush and Site initialisation:
-  ddev drush ucrt admin --password admin
+  ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
   if [ $define_stage_file_proxy -eq 1 ]; then
     # Acitvate required dev-modules:
     ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate examples webprofiler -y
