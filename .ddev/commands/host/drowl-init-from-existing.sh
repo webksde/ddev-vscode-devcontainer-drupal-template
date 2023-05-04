@@ -15,7 +15,7 @@ ddev config --composer-version="stable" --php-version="8.2" --docroot="web" --cr
 
 bool=1
 while [ $bool -eq 1 ]; do
-  read -p $'\e[33mThis command will NOT initialize a production ready copy of your Website! It will create a modified environment, focused on development and debugging.\n\nDO NOT PUSH TO PRODUCTION!\n\nContinue anyway (y/n)?\e[0m'$'\n' answer
+  read -p $'\n\e[33mThis command will NOT initialize a production ready copy of your Website! It will create a modified environment, focused on development and debugging.\n\nDO NOT PUSH TO PRODUCTION!\n\nContinue anyway (y/n)?\e[0m'$'\n' answer
   case ${answer:0:1} in
   y | Y | yes | Yes | YES)
     echo -e $'\e\n[32mInitiating...\n\e[0m'
@@ -34,7 +34,7 @@ done
 # If there are no flags do this:
 if [ $# -eq 0 ]; then
   define_stage_file_proxy=0
-  read -p $'\e[36mPlease put your composer.json in the root directory of the project (Enter to continue).\e[0m'
+  read -p $'\e[36mPlease put your composer.json in the root directory of the project. Make sure any custom composer "scripts" and "scaffold" entries are removed beforehand (Enter to continue)!\e[0m'
   echo -e $'\e\n[32mGreat! Initialising your project with your composer file...\n\e[0m'
   # Use composer update -W instead of install here for existing projects to run the expected hooks:
   ddev composer update -W
@@ -96,11 +96,11 @@ if [ $# -eq 0 ]; then
   done
 
   #Import database:
-  read -p $'\e\n[33mPlease type in the project root relative path to your Database dump (e.g. "./dump.mysql.gz"). Supports several file formats, including: .sql, .sql.gz, .mysql, .mysql.gz, .tar, .tar.gz, and .zip:\e[0m '$'\n' -r src
+  read -p $'\e\n[33mPlease type in the project root relative path to your Database dump (e.g. "./dump.mysql.gz", quotes are NOT required, even if the file name contains spaces). Supports several file formats, including: .sql, .sql.gz, .mysql, .mysql.gz, .tar, .tar.gz, and .zip:\e[0m '$'\n' -r src
   echo -e $'\e\n[32mAlright! Importing your database...\n\e[0m'
   ddev import-db --target-db=db --src="$src"
   # Drush and Site initialisation:
-  ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
+  ddev drush ucrt admin --password admin
   if [ $define_stage_file_proxy -eq 1 ]; then
     # Acitvate required dev-modules:
     ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate examples webprofiler -y

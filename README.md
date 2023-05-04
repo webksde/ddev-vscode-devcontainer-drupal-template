@@ -7,9 +7,12 @@ The tools inside this repository will create a modified Drupal environment, focu
 
 May take ~5 min - only needed once, at initialization:
 ~~~
-mkdir ddev-vscode-drupal && cd ddev-vscode-drupal && git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git . && ddev drowl-init
+git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git ddev-vscode-drupal && ddev drowl-init
 ~~~
-Note: You can also initiate a Drupal 9 environment instead, using `ddev drowl-init --version 9`
+Tipps:
+- "ddev-vscode-drupal" can be replaced with any project name of your liking.
+  - Note, that the ddev containers will be generated based of your chosen name.
+- You can also initiate a Drupal 9 environment instead, using `ddev drowl-init --version 9`
 
 ---
 
