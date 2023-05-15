@@ -3,11 +3,11 @@ The tools inside this repository will create a modified Drupal environment, focu
 
 **DO NOT USE IN PRODUCTION**
 ## Quick-Start
-**Spin up a ready-to-code Drupal 9/10 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in two commands!** 🚀
+**Spin up a ready-to-code Drupal 9/10 CMS DDEV based development container with Visual Studio Code using the power of VSCode Remote-Containers in three commands!** 🚀
 
 May take ~5 min - only needed once, at initialization:
 ~~~
-git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git ddev-vscode-drupal && ddev drowl-init
+git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git ddev-vscode-drupal && cd ddev-vscode-drupal && ddev drowl-init
 ~~~
 Tipps:
 - "ddev-vscode-drupal" can be replaced with any project name of your liking.
