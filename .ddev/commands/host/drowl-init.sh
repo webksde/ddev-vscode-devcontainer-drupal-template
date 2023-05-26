@@ -106,10 +106,6 @@ ddev composer config --json repositories.asset-packagist '{"type": "composer","u
 ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
 ddev composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
-# Give authenticated and anonymous users "access devel information" (dsm / kint):
-ddev drush role:perm:add anonymous 'access devel information'
-ddev drush role:perm:add authenticated 'access devel information'
-
 # Created authenticated test user:
 ddev drush user:create max --mail='max@example.com' --password='max' -y
 
@@ -132,6 +128,10 @@ ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_
 
 # Activate kint as default devel variables dumper
 ddev drush config-set devel.settings devel_dumper kint -y
+
+# Give authenticated and anonymous users "access devel information" (dsm / kint):
+ddev drush role:perm:add anonymous 'access devel information'
+ddev drush role:perm:add authenticated 'access devel information'
 
 # Create the "normal" db dump:
 ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
