@@ -92,9 +92,6 @@ ddev npm install --save-dev eslint@latest
 ddev npm install --save-dev eslint-config-airbnb-base@latest prettier@latest eslint-config-prettier@latest eslint-plugin-prettier@latest
 ddev npm install --save-dev eslint-plugin-yml@latest
 
-# Acitvate required dev-modules:
-ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_php backup_migrate config_inspector examples webprofiler -y
-
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
 
@@ -127,10 +124,18 @@ mkdir -p ./tmp
 # Create private files directory:
 mkdir -p ./files/private
 
-# Export DB-Dump to data/sql:
+# Export a DB-Dump to "data/sql", BEFORE enabling contrib modules, in cases,
+# where they break:
 mkdir -p ./data/sql
-ddev export-db $DDEV_PROJECT > ./data/sql/db-complete-dump.sql.gz
-echo "Created full database dump under data/sql/db-complete-dump.sql"
+ddev export-db "$DDEV_PROJECT" > ./data/sql/db-dump-before-contrib.sql.gz
+echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
+
+# Acitvate required dev-modules:
+ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_php backup_migrate config_inspector examples webprofiler -y
+
+# Create the "normal" db dump:
+ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
+echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 
 # Remove git files:
 rm -r ./.git ./.gitignore ./.gitattributes -f
