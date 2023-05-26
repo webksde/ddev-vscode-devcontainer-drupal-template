@@ -95,9 +95,6 @@ ddev npm install --save-dev eslint-plugin-yml@latest
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
 
-# Activate kint as default devel variables dumper
-ddev drush config-set devel.settings devel_dumper kint -y
-
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
 ddev composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
@@ -132,6 +129,9 @@ echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
 
 # Acitvate required dev-modules:
 ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_php backup_migrate config_inspector examples webprofiler -y
+
+# Activate kint as default devel variables dumper
+ddev drush config-set devel.settings devel_dumper kint -y
 
 # Create the "normal" db dump:
 ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
