@@ -6,7 +6,7 @@
   "php-docblocker.useShortNames": true,
   "php-docblocker.returnVoid": false,
   "editor.quickSuggestions": {
-    "comments": true
+    "comments": false
   },
   "javascript.validate.enable": true,
   "javascript.format.enable": true,
