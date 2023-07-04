@@ -50,7 +50,7 @@ ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-ext
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
 
 # Add dependencies:
-ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold:^${DRUPAL_VERSION} drupal/core-project-message drupal/core-recommended:^${DRUPAL_VERSION} drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples drupal/webprofiler
+ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold:^${DRUPAL_VERSION} drupal/core-project-message drupal/core-recommended:^${DRUPAL_VERSION} drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples
 
 # Add DEV dependencies (but no modules due to their database relationship):
 ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION}
@@ -124,7 +124,7 @@ ddev export-db "$DDEV_PROJECT" > ./data/sql/db-dump-before-contrib.sql.gz
 echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
 
 # Acitvate required dev-modules:
-ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_php backup_migrate config_inspector examples webprofiler -y
+ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_generate devel_php backup_migrate config_inspector examples -y
 
 # Activate kint as default devel variables dumper
 ddev drush config-set devel.settings devel_dumper kint -y

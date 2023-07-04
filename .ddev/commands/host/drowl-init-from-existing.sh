@@ -49,7 +49,7 @@ if [ $# -eq 0 ]; then
     case ${answer:0:1} in
     y | Y | yes | Yes | YES)
       echo -e $'\e\n[32mOk! requiring development tools...\n\e[0m'
-      ddev composer require --dev cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/devel drupal/devel_debug_log drupal/devel_php drupal/coder drupal/examples drupal/webprofiler
+      ddev composer require --dev cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/devel drupal/devel_debug_log drupal/devel_php drupal/coder drupal/examples
       ddev composer require --dev drupal/core-dev:^10 drush/drush phpunit/phpunit:^9.5 phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/phpstan-phpunit phpstan/extension-installer -W
       # PHP Codesniffer Setup:
       ddev composer require squizlabs/php_codesniffer
@@ -106,7 +106,7 @@ if [ $# -eq 0 ]; then
   ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
   if [ $define_stage_file_proxy -eq 1 ]; then
     # Acitvate required dev-modules:
-    ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_debug_log devel_php backup_migrate examples webprofiler -y
+    ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_generate devel_debug_log devel_php backup_migrate examples -y
     # Give authenticated and anonymous users "access devel information" (dsm / kint):
     ddev drush role:perm:add anonymous 'access devel information'
     ddev drush role:perm:add authenticated 'access devel information'
