@@ -4,6 +4,7 @@
 ## Usage: code
 ## Example: "ddev code"
 
-# Note the Numbers ar the hex Value of the Container Name we are attaching VSCode to
+# Get the webserver container name:
 WEBSERVER_NAME=ddev-"$DDEV_SITENAME"-web
-code --folder-uri vscode-remote://attached-container+$(printf "$WEBSERVER_NAME" | xxd -p)/var/www/html
+# Attach vscode to the webserver using a hex representation of the webserver name:
+code --folder-uri=vscode-remote://attached-container+$(printf "$WEBSERVER_NAME" | od -A n -t x1 | sed 's/ *//g' | tr -d '\n')/var/www/html
