@@ -21,6 +21,7 @@
     "wayou.vscode-todo-highlight",
     "johnpapa.vscode-peacock",
     "esbenp.prettier-vscode",
-    "streetsidesoftware.code-spell-checker"
+    "streetsidesoftware.code-spell-checker",
+    "smcpeak.default-keys-windows"
   ]
 }
