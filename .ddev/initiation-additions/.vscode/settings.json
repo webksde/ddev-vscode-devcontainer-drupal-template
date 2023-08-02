@@ -109,7 +109,7 @@
     "*.twig": "twig",
     "*.tpl": "smarty"
   },
-  "files.trimTrailingWhitespace": true,
+  "files.trimTrailingWhitespace": false,
   "files.insertFinalNewline": true,
   "html.format.enable": true,
   "html.format.wrapLineLength": 80,
