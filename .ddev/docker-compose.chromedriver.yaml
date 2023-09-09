@@ -13,8 +13,9 @@ services:
       com.ddev.approot: $DDEV_APPROOT
     external_links:
       - ddev-router:${DDEV_SITENAME}.${DDEV_TLD}
-
+    shm_size: 1gb
   web:
+    shm_size: 1gb
     links:
       - chromedriver
     environment:
