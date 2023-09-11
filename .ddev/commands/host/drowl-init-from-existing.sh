@@ -104,6 +104,9 @@ if [ $# -eq 0 ]; then
   ddev import-db --target-db=db --src="$src"
   # Drush and Site initialisation:
   ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
+  # Require the "PHPMyAdmin" plugin:
+  echo 'Requiring the "ddev-phpmyadmin" plugin...'
+  ddev get ddev/ddev-phpmyadmin
   if [ $define_stage_file_proxy -eq 1 ]; then
     # Acitvate required dev-modules:
     ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search examples stage_file_proxy devel devel_generate devel_debug_log devel_php backup_migrate examples -y

@@ -92,6 +92,10 @@ ddev npm install --save-dev eslint@latest
 ddev npm install --save-dev eslint-config-airbnb-base@latest prettier@latest eslint-config-prettier@latest eslint-plugin-prettier@latest
 ddev npm install --save-dev eslint-plugin-yml@latest
 
+# Require the "PHPMyAdmin" plugin:
+echo 'Requiring the "ddev-phpmyadmin" plugin...'
+ddev get ddev/ddev-phpmyadmin
+
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
 
