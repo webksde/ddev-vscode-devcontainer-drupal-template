@@ -7,11 +7,11 @@
 
 # If no argument given, lint current dir:
 if [[ $# == 0 ]]; then
-  npx eslint -c /var/www/html/"${DDEV_DOCROOT}"/core/.eslintrc.json "$PWD"; exit 0
+  npx eslint "$PWD"; exit 0
 # If only argument is "--fix", fix current dir:
 elif [[ $# == 1 && $* == '--fix' ]]; then
-  npx eslint -c /var/www/html/"${DDEV_DOCROOT}"/core/.eslintrc.json --fix "$PWD"; exit 0
+  npx eslint --fix "$PWD"; exit 0
 # else do whatever you typed in (e.g. path only or path with --fix):
 else
-  npx eslint -c /var/www/html/"${DDEV_DOCROOT}"/core/.eslintrc.json "$*"; exit 0
+  npx eslint "$*"; exit 0
 fi
