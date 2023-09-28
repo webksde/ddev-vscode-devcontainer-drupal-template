@@ -1,0 +1,15 @@
+type: drupal10
+docroot: web
+php_version: "8.2"
+webserver_type: apache-fpm
+xdebug_enabled: false
+additional_hostnames: []
+additional_fqdns: []
+database:
+    type: mariadb
+    version: "10.4"
+use_dns_when_possible: true
+composer_version: stable
+disable_settings_management: true
+web_environment: []
+nodejs_version: "18"
