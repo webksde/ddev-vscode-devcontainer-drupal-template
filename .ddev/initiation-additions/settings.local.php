@@ -130,6 +130,18 @@ $settings['skip_permissions_hardening'] = TRUE;
 
 // ############################# #webksde START #############################
 
+/**
+ * Define custom sendmail commands.
+ *
+ * Add a custom sendmail command, so "Mailpit" can catch mails send via
+ * symfony_mailer.
+ * Note, that this command needs to be selected on the Symfony Mailer default
+ * "Sendmail" transport entity (/admin/config/system/mailer/transport/sendmail).
+ */
+$settings['mailer_sendmail_commands'] = [
+  ini_get('sendmail_path') . ' -t',
+];
+
 // Make unused dev files temporary to auto-delete them:
 $config['file.settings']['make_unused_managed_files_temporary'] = TRUE;
 
