@@ -50,7 +50,7 @@ if [ $# -eq 0 ]; then
     y | Y | yes | Yes | YES)
       echo -e $'\e\n[32mOk! requiring development tools...\n\e[0m'
       ddev composer require --dev cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/devel drupal/devel_debug_log drupal/devel_php drupal/coder drupal/examples
-      ddev composer require --dev drupal/core-dev:^10 drush/drush phpunit/phpunit:^9.5 phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/phpstan-phpunit phpstan/extension-installer -W
+      ddev composer require --dev drupal/core-dev:^10 drush/drush phpunit/phpunit phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/phpstan-phpunit phpstan/extension-installer -W
       # PHP Codesniffer Setup:
       ddev composer require squizlabs/php_codesniffer
       # Initialize development environment tools:
@@ -63,7 +63,7 @@ if [ $# -eq 0 ]; then
       # Get cspell.json:
       cp .ddev/initiation-additions/cspell.json .
       # get PHPUnit.xml:
-      cp .ddev/initiation-additions/phpunit.xml web/core
+      cp .ddev/initiation-additions/phpunit.xml .
       # Set the permission for the default folder:
       if [ -d "./web/sites/default" ] && [ -f "./web/sites/default/settings.php" ]; then
         chmod 0755 ./web/sites/default

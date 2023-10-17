@@ -8,8 +8,8 @@
 if [ $# == 0 ]
 then
   enable_xdebug
-  phpunit -c /var/www/html/"${DDEV_DOCROOT}"/core/phpunit.xml --coverage-html=./coverage "$PWD"
+  phpunit -c /var/www/html/phpunit.xml --coverage-html=./coverage "$PWD"
 else
   enable_xdebug
-  phpunit -c /var/www/html/"${DDEV_DOCROOT}"/core/phpunit.xml --coverage-html=./coverage "$*"
+  phpunit -c /var/www/html/phpunit.xml --coverage-html=./coverage "$*"
 fi

@@ -54,7 +54,7 @@ ddev composer require composer/installers cweagans/composer-patches szeidler/com
 
 # Add DEV dependencies (but no modules due to their database relationship):
 ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION}
-ddev composer require --dev drush/drush phpunit/phpunit:^9.5 drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/extension-installer phpstan/phpstan-phpunit kint-php/kint
+ddev composer require --dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/extension-installer phpstan/phpstan-phpunit kint-php/kint
 
 # PHP Codesniffer Setup:
 ddev composer require --dev squizlabs/php_codesniffer
@@ -69,7 +69,7 @@ ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admi
 cp -R .ddev/initiation-additions/.vscode/ .
 
 # Get PHPUnit.xml:
-cp .ddev/initiation-additions/phpunit.xml web/core
+cp .ddev/initiation-additions/phpunit.xml .
 
 # Get phpstan.neon:
 cp .ddev/initiation-additions/phpstan.neon .
