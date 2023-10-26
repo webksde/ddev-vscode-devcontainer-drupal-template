@@ -7,7 +7,7 @@
 
 if [ $# == 0 ]
 then
-  phpunit -c /var/www/html/phpunit.xml $PWD
+  phpunit -c /var/www/html/phpunit.xml "$PWD"
 else
-  phpunit -c /var/www/html/phpunit.xml $*
+  phpunit -c /var/www/html/phpunit.xml "$*"
 fi
