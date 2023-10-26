@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## HostWorkingDir: true
-## Description: Use phpunit with xdebug in coverage mode to show test coverage of a folder a Folder
+## Description: Use phpunit with xdebug in coverage mode to show test coverage of a folder (e.g. a Drupal module folder).
 ## Usage: phpunit-coverage [path]
 ## Example: "ddev phpunit path/to/tests"
 
