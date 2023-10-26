@@ -5,7 +5,7 @@ resolved. -->
  or your current system user. See core/tests/README.md and
  https://www.drupal.org/node/2116263 for details.
 -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="tests/bootstrap.php"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="web/core/tests/bootstrap.php"
   colors="true" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutOutputDuringTests="true"
   beStrictAboutChangesToGlobalState="true" failOnWarning="true"
   printerClass="\Drupal\Tests\Listeners\HtmlOutputPrinter" cacheResult="false"
