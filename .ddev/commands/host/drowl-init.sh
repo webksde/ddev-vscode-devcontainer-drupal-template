@@ -56,9 +56,10 @@ ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli tr
 # Add dependencies:
 ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold:^${DRUPAL_VERSION} drupal/core-project-message drupal/core-recommended:^${DRUPAL_VERSION} drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples
 
-# Add DEV dependencies (but no modules due to their database relationship):
-ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION}
-ddev composer require --dev drush/drush phpunit/phpunit drupal/coder phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/extension-installer phpstan/phpstan-phpunit kint-php/kint
+# Add DEV dependencies (but no modules due to their database relationship)
+# Note, that "drupal/core-dev" contains dependencies like phpunit, phpstan, etc.
+ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION} --update-with-all-dependencies
+ddev composer require --dev drush/drush drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint
 
 # PHP Codesniffer Setup:
 ddev composer require --dev squizlabs/php_codesniffer
