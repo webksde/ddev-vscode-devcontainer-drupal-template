@@ -14,19 +14,22 @@ parameters:
       - tpl.php
       - test
 
-  excludePaths:
-      # only scan our modules folder:
-      analyse:
-        - vendor
-        - web/core
-        - web/sites
-        - web/themes/contrib
-        - web/modules/contrib
-      analyseAndScan:
-        - .ddev
-        - .vscode
-        - data
-        - node_modules
+# These options were originally meant for the PHPStan VSCode extension, because
+# it would constantly analyse everything, but the extension is too fragile and
+# removed now:
+#  excludePaths:
+#      # only scan our modules folder:
+#      analyse:
+#        - vendor
+#        - web/core
+#        - web/sites
+#        - web/themes/contrib
+#        - web/modules/contrib
+#      analyseAndScan:
+#        - .ddev
+#        - .vscode
+#        - data
+#        - node_modules
 
   ignoreErrors:
     # new static() is a best practice in Drupal, so we cannot fix that.
