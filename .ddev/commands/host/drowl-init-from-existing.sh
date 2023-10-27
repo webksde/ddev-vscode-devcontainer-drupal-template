@@ -50,7 +50,8 @@ if [ $# -eq 0 ]; then
     y | Y | yes | Yes | YES)
       echo -e $'\e\n[32mOk! requiring development tools...\n\e[0m'
       ddev composer require --dev cweagans/composer-patches szeidler/composer-patches-cli drupal/admin_toolbar drupal/backup_migrate drupal/examples drupal/stage_file_proxy drupal/devel drupal/devel_debug_log drupal/devel_php drupal/coder drupal/examples
-      ddev composer require --dev drupal/core-dev:^10 drush/drush phpunit/phpunit phpspec/prophecy-phpunit phpstan/phpstan mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules phpstan/phpstan-phpunit phpstan/extension-installer -W
+      ddev composer require --dev drupal/core-dev:^10 --update-with-all-dependencies
+      ddev composer require --dev drush/drush drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint
       # PHP Codesniffer Setup:
       ddev composer require squizlabs/php_codesniffer
       # Initialize development environment tools:
