@@ -1,7 +1,7 @@
 # DDEV Drupal Template With Attached VSCode
 The tools inside this repository will create a modified Drupal environment, focused on development and debugging.
 
-**DO NOT USE IN PRODUCTION**
+**DO NOT USE IN PRODUCTION - This is a local development tool!**
 ## Quick-Start
 **Spin up a ready-to-code Drupal 9/10 CMS DDEV based development container with preconfigured Drupal Best-Practice Dev-Modules and Visual Studio Code Settings/Extensions in three commands!** 🚀
 
