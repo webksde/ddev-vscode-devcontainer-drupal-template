@@ -35,6 +35,9 @@ fi
 
 echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
 
+# Remove git files:
+rm -r ./.git ./.gitignore ./.gitattributes -f
+
 # Create the config.yaml:
 ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal${DRUPAL_VERSION}" --disable-settings-management --auto
 
@@ -144,9 +147,6 @@ ddev drush role:perm:add authenticated 'access devel information'
 # Create the "normal" db dump:
 ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
 echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
-
-# Remove git files:
-rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Give all Project informations:
 ddev describe
