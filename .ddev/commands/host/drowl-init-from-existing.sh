@@ -13,6 +13,9 @@ set -e
 # keep track of the last executed command
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
+# Remove all git files, to ensure nothing gets pushed:
+rm -r ./.git ./.gitignore ./.gitattributes -f
+
 # Create the config.yaml:
 ddev config --composer-version="stable" --php-version="8.2" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal10" --disable-settings-management --auto
 
@@ -122,8 +125,6 @@ if [ $# -eq 0 ]; then
     # Set stage_file_proxy origin:
     ddev drush config-set stage_file_proxy.settings origin "$site"
   fi
-  # Remove all git files, to ensure nothing gets pushed:
-  rm -r ./.git ./.gitignore ./.gitattributes -f
   bool=1
   while [ $bool -eq 1 ]; do
     read -p $'\e[33mWould you like to create assets, files, log and scipts folders (y/n)?\e[0m '$'\n' answer
