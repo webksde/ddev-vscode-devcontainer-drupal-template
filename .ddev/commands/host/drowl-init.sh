@@ -35,6 +35,9 @@ fi
 
 echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
 
+# Remove README.md:
+rm ./README.md
+
 # Remove git files:
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
