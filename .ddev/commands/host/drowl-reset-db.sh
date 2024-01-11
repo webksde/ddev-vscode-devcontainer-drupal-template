@@ -1,9 +1,7 @@
 #!/bin/bash
 
 ## HostWorkingDir: true
-## Description: Resets the Drupal database to its original state after project
-## initialisation. (or before conrtib modules get installed using
-## `--before-contrib`)
+## Description: Resets the Drupal database to its original state after project initialisation. (or before conrtib modules get installed using `--before-contrib`)
 ## Usage: drowl-reset-db
 ## Example: "ddev phpunit drowl-reset-db"
 
