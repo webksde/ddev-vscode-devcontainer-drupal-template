@@ -119,7 +119,12 @@
   "twig-language-2.indentStyle": "space",
   "html.validate.scripts": false,
   "html.validate.styles": false,
-  "peacock.remoteColor": "#d9c108",
+  "[scss]": {
+    "editor.defaultFormatter":"esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter":"esbenp.prettier-vscode"
+  },
   "workbench.colorCustomizations": {
     "activityBar.activeBackground": "#f7de1d",
     "activityBar.background": "#f7de1d",
