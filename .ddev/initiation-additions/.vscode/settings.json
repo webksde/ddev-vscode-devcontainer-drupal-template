@@ -116,6 +116,9 @@
   "emmet.includeLanguages": {
     "twig": "html"
   },
+  "emmet.syntaxProfiles": {
+    "twig": "html"
+  },
   "twig-language-2.indentStyle": "space",
   "html.validate.scripts": false,
   "html.validate.styles": false,
