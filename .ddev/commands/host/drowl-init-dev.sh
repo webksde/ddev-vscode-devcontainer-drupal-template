@@ -109,6 +109,7 @@ mkdir -p ./tmp
 mkdir -p ./files/private
 
 # Create the db dump:
+mkdir -p ./data/sql
 ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
 echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 
