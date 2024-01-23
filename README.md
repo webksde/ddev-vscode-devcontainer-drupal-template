@@ -11,7 +11,9 @@ git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git dd
 ~~~
 Tipps:
 - "ddev-vscode-drupal" can be replaced with any project name of your liking.
-  - Note, that the ddev containers will be generated based of your chosen name.
+  - **Note**, that:
+    - Project names need to be **valid**. Valid project names are: "no-spaces-but-hyphens", "UpperAndLower", "should.work.with.dots".
+    - The ddev containers will be generated based of your chosen name.
 - You can also initiate a Drupal 9 environment instead, using `ddev drowl-init --version 9`
 
 ---
