@@ -6,7 +6,7 @@
 
 # Install the devcontainer cli if not already installed:
 package='@devcontainers/cli'
-if [ $(npm list -g | grep -c $package) -eq 0 ]; then
+if [ $(npm list --location=global | grep -c $package) -eq 0 ]; then
   bool=1
   while [ $bool -eq 1 ]; do
     read -p $'\e\n[33mThe "@devcontainers/cli" package needs to be globally installed on your host machine for this command to work. Do you want to install "@devcontainers/cli" globally? (y/n)\e[0m'$'\n' answer
@@ -27,7 +27,5 @@ if [ $(npm list -g | grep -c $package) -eq 0 ]; then
   done
 fi
 
-# Get the webserver container name:
-WEBSERVER_NAME=ddev-"$DDEV_SITENAME"-web
 # Attach vscode to the webserver using devcontainer up and the hex representation of the webserver name:
-devcontainer up --workspace-folder . | code --folder-uri vscode-remote://attached-container+$(printf "$WEBSERVER_NAME" | od -A n -t x1 | sed 's/ *//g' | tr -d '\n')/workspace
+CONTAINER_NAME_OR_ID=$(devcontainer up --workspace-folder . | jq -r .containerId) code --folder-uri vscode-remote://attached-container+$(printf "$CONTAINER_NAME_OR_ID" | od -A n -t x1 | sed 's/ *//g' | tr -d '\n')/home

@@ -1,0 +1,24 @@
+{
+  "image": "ddev/ddev-webserver:v1.22.6-ddev-vscode-drupal-built",
+  "name": "ddev-ddev-vscode-drupal-web",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "dbaeumer.vscode-eslint",
+        "dionmunk.vscode-notes",
+        "DmitryDorofeev.empty-indent",
+        "eamodio.gitlens",
+        "ikappas.composer",
+        "mblode.twig-language-2",
+        "MehediDracula.php-namespace-resolver",
+        "neilbrayfield.php-docblocker",
+        "phproberto.vscode-php-getters-setters",
+        "valeryanm.vscode-phpsab",
+        "xdebug.php-debug",
+        "yzhang.markdown-all-in-one"
+      ]
+    }
+  },
+  "workspaceFolder": "/var/www/html",
+}
