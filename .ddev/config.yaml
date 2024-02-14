@@ -13,3 +13,4 @@ composer_version: stable
 disable_settings_management: true
 web_environment: []
 nodejs_version: "18"
+timezone: Europe/Berlin
