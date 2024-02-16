@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES6"
+  },
+  "include": [
+    "web/core/misc"
+  ]
+}

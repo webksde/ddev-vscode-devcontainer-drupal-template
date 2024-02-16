@@ -100,11 +100,12 @@ cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
 cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
 cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
 
-# Get packages for eslint:
-echo 'Requiring ESLint npm packages...'
-ddev npm install --save-dev eslint@latest
-ddev npm install --save-dev eslint-config-airbnb-base@latest prettier@latest eslint-config-prettier@latest eslint-plugin-prettier@latest
-ddev npm install --save-dev eslint-plugin-yml@latest
+# Get packages for eslint and JS code completion:
+echo 'Requiring npm dev packages... (This might take a bit)'
+cp web/core/package.json .
+ddev npm install
+# Get jsconfig.json from initiation additions:
+cp .ddev/initiation-additions/jsconfig.json .
 
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
