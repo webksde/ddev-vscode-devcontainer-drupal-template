@@ -14,7 +14,9 @@ Tipps:
   - **Note**, that:
     - Project names need to be **valid**. Valid project names are: "no-spaces-but-hyphens", "UpperAndLower", "should.work.with.dots".
     - The ddev containers will be generated based of your chosen name.
-- You can also initiate a Drupal 9 environment instead, using `ddev drowl-init --version 9`
+- You can also initiate:
+  - A Drupal 9 environment, using `ddev drowl-init -v 9`
+  - A Drupal 11 environment, using `ddev drowl-init -v dev`
 
 ---
 

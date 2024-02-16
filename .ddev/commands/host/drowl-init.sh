@@ -2,7 +2,7 @@
 
 ## Description: Startup A Drupal DDEV Environment, using DROWL Best Practices
 ## Usage: drowl-init
-## Example: drowl-init, drowl-init -v 9, drowl-init -v 10
+## Example: drowl-init, drowl-init -v 9, drowl-init -v 10, drowl-init -v dev
 ## Flags: [{"Name":"version","Shorthand":"v","Usage":"Set the Drupal Version (Drupal 9 and 10 supported)"}]
 
 # exit when any command fails
@@ -12,25 +12,34 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
 DRUPAL_VERSION=10;
 PHP_VERSION=8.2
+COMPOSER_VERSION="stable"
+PROJECT_TYPE="drupal10"
 
 if [[ $# = 1 ]]; then
-  echo "Missing parameter given. Use either 'ddev drowl-init -v 9' or 'ddev drowl-init -v 10'";
+  echo "Missing parameter given. Use 'ddev drowl-init -v 9/10/dev' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" != "-v" && "$1" != "--version" )]]; then
-  echo "Unkown flag '$1' given. Use either 'ddev drowl-init -v 9' or 'ddev drowl-init -v 10'";
+  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 9/10/dev' instead";
   exit;
 fi
 
-if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" != "9" && "$2" != "10" ) ]]; then
-  echo "Unkown parameter '$2' given. Use either 'ddev drowl-init -v 9' or 'ddev drowl-init -v 10'";
+if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" != "9" && "$2" != "10" && "$2" != "dev") ]]; then
+  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 9/10/dev' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = 9 ]]; then
   DRUPAL_VERSION=9;
   PHP_VERSION=8.1
+  PROJECT_TYPE="drupal9"
+fi
+
+if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = "dev" ]]; then
+  DRUPAL_VERSION="11.x-dev";
+  COMPOSER_VERSION="dev"
+  PHP_VERSION=8.3
 fi
 
 echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
@@ -42,7 +51,7 @@ rm ./README.md
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Create the config.yaml:
-ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal${DRUPAL_VERSION}" --disable-settings-management --auto
+ddev config --composer-version="${COMPOSER_VERSION}" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="${PROJECT_TYPE}" --disable-settings-management --auto
 
 # Get Drupal 10:
 ddev composer create -y --stability RC "drupal/recommended-project:^${DRUPAL_VERSION}"
