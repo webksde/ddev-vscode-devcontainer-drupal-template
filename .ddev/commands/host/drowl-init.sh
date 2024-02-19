@@ -74,8 +74,14 @@ ddev composer config --no-plugins allow-plugins.cweagans/composer-patches true
 ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
 
-# Add dependencies:
-ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples
+# Add general dependencies:
+ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender
+
+if [ "${DRUPAL_VERSION}" != "11.x-dev" ] ; then
+  # Add drupal dependencies:
+  ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples;
+fi
+
 
 # Add DEV dependencies (but no modules due to their database relationship)
 # Note, that "drupal/core-dev" contains dependencies like phpunit, phpstan, etc.
@@ -153,15 +159,17 @@ mkdir -p ./data/sql
 ddev export-db "$DDEV_PROJECT" > ./data/sql/db-dump-before-contrib.sql.gz
 echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
 
-# Acitvate required dev-modules:
-ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_generate devel_php backup_migrate config_inspector examples -y
+if [ "${DRUPAL_VERSION}" != "11.x-dev" ] ; then
+  # Acitvate drupal development modules:
+  ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_generate devel_php backup_migrate config_inspector examples -y
 
-# Activate kint as default devel variables dumper
-ddev drush config-set devel.settings devel_dumper kint -y
+  # Activate kint as default devel variables dumper
+  ddev drush config-set devel.settings devel_dumper kint -y
 
-# Give authenticated and anonymous users "access devel information" (dsm / kint):
-ddev drush role:perm:add anonymous 'access devel information'
-ddev drush role:perm:add authenticated 'access devel information'
+  # Give authenticated and anonymous users "access devel information" (dsm / kint):
+  ddev drush role:perm:add anonymous 'access devel information'
+  ddev drush role:perm:add authenticated 'access devel information'
+fi
 
 # Create the "normal" db dump:
 ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
