@@ -14,6 +14,7 @@ DRUPAL_VERSION=10;
 PHP_VERSION=8.2
 COMPOSER_VERSION="stable"
 PROJECT_TYPE="drupal10"
+COMPOSER_CREATE_STABILITY="RC"
 
 if [[ $# = 1 ]]; then
   echo "Missing parameter given. Use 'ddev drowl-init -v 9/10/dev' instead";
@@ -32,29 +33,34 @@ fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = 9 ]]; then
   DRUPAL_VERSION=9;
-  PHP_VERSION=8.1
-  PROJECT_TYPE="drupal9"
+  PHP_VERSION=8.1;
+  PROJECT_TYPE="drupal9";
 fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = "dev" ]]; then
   DRUPAL_VERSION="11.x-dev";
-  COMPOSER_VERSION="dev"
-  PHP_VERSION=8.3
+  COMPOSER_VERSION="dev";
+  PHP_VERSION=8.3;
+  COMPOSER_CREATE_STABILITY="dev";
 fi
 
 echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
 
-# Remove README.md:
-rm ./README.md
+# Remove README.md, if it exists:
+if [ -f "./README.md" ] ; then
+  rm ./README.md
+fi
 
-# Remove git files:
-rm -r ./.git ./.gitignore ./.gitattributes -f
+# Remove git files, if they exist:
+if [ -f "./.git" ] && [ -f "./.gitignore" ] && [ -f "./.gitattributes" ]; then
+  rm -r ./.git ./.gitignore ./.gitattributes -f
+fi
 
 # Create the config.yaml:
 ddev config --composer-version="${COMPOSER_VERSION}" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="${PROJECT_TYPE}" --disable-settings-management --auto
 
 # Get Drupal 10:
-ddev composer create -y --stability RC "drupal/recommended-project:^${DRUPAL_VERSION}"
+ddev composer create -y --stability ${COMPOSER_CREATE_STABILITY} "drupal/recommended-project:^${DRUPAL_VERSION}"
 
 # Require the "PHPMyAdmin" plugin:
 echo 'Requiring the "ddev-phpmyadmin" plugin...'
@@ -69,7 +75,7 @@ ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-ext
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
 
 # Add dependencies:
-ddev composer require composer/installers cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/core-composer-scaffold:^${DRUPAL_VERSION} drupal/core-project-message drupal/core-recommended:^${DRUPAL_VERSION} drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples
+ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples
 
 # Add DEV dependencies (but no modules due to their database relationship)
 # Note, that "drupal/core-dev" contains dependencies like phpunit, phpstan, etc.
