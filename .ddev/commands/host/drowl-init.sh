@@ -46,15 +46,11 @@ fi
 
 echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
 
-# Remove README.md, if it exists:
-if [ -f "./README.md" ] ; then
-  rm ./README.md
-fi
+# Remove README.md:
+rm ./README.md
 
-# Remove git files, if they exist:
-if [ -f "./.git" ] && [ -f "./.gitignore" ] && [ -f "./.gitattributes" ]; then
-  rm -r ./.git ./.gitignore ./.gitattributes -f
-fi
+# Remove git files:
+rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Create the config.yaml:
 ddev config --composer-version="${COMPOSER_VERSION}" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="${PROJECT_TYPE}" --disable-settings-management --auto
