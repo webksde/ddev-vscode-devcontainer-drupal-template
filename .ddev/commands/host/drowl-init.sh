@@ -176,11 +176,15 @@ ddev describe
 
 # Helper Messages
 echo "Use 'ddev code' to attach VSCode to your running Container."
-echo "Use 'ddev phpunit relative-path/to/tests' to Test Classes using PHPUnit"
-echo "Use 'ddev phpcs relative-path/to/sniff' to lint your PHP Code using Drupal Coding Standards"
-echo "Use 'ddev phpcbf relative-path/to/execute' to format your PHP Code using Drupal Coding Standards"
-echo "Use 'ddev phpstan relative-path/to/execute' to lint your PHP Code for deprecation"
-echo "Use 'ddev eslint relative-path/to/execute (--fix)' to lint / format javascript code based on Drupal Coding Standards."
+echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit."
+echo "Use 'ddev phpunit-coverage path/to/cover' to create a test coverage of the given file-directory."
+echo "Use 'ddev phpcs path/to/sniff' to check your Code using Drupal Coding Standards."
+echo "Use 'ddev phpstan path/to/execute' to look for deprecated and 'dirty' code."
+echo "Use 'ddev eslint path/to/sniff (--fix)' for linting / auto-fixing javascript code based on Drupal Coding Standards."
+echo "Use 'ddev stylelint web/modules/custom/my_module' for linting css files based on Drupal Coding Standards."
+echo "Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser."
+echo "Use 'ddev drowl-reset-db' to reset the database to its state after initial startup."
+echo "Use 'ddev import-db --target-db=db --src=db.sql.gz' to import a database file."
 
 printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
 printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"

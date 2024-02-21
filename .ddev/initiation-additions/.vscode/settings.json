@@ -126,8 +126,10 @@
     "editor.defaultFormatter":"esbenp.prettier-vscode"
   },
   "[css]": {
-    "editor.defaultFormatter":"esbenp.prettier-vscode"
+    "editor.defaultFormatter":"stylelint.vscode-stylelint"
   },
+  "stylelint.enable":true,
+  "stylelint.configFile": "./web/core/.stylelintrc.json",
   "workbench.colorCustomizations": {
     "activityBar.activeBackground": "#f7de1d",
     "activityBar.background": "#f7de1d",

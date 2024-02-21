@@ -7,11 +7,11 @@
 
 # If no argument given, lint current dir:
 if [[ $# == 0 ]]; then
-  npx eslint --no-error-on-unmatched-pattern --ignore-pattern="*.es6.js" --resolve-plugins-relative-to=$DDEV_PROJECT/web/core --ext=.js,.yml "$PWD"; exit 0
+  npx eslint -c /var/www/html/web/core/.eslintrc.json --no-error-on-unmatched-pattern --ext=.js,.yml "$PWD"; exit 0
 # If only argument is "--fix", fix current dir:
 elif [[ $# == 1 && $* == '--fix' ]]; then
-  npx eslint --fix --no-error-on-unmatched-pattern --ignore-pattern="*.es6.js" --resolve-plugins-relative-to=$DDEV_PROJECT/web/core --ext=.js,.yml "$PWD"; exit 0
+  npx eslint --fix -c /var/www/html/web/core/.eslintrc.json --no-error-on-unmatched-pattern --ext=.js,.yml "$PWD"; exit 0
 # else do whatever you typed in (e.g. path only or path with --fix):
 else
-  npx eslint --no-error-on-unmatched-pattern --ignore-pattern="*.es6.js" --resolve-plugins-relative-to=$DDEV_PROJECT/web/core --ext=.js,.yml "$*"; exit 0
+  npx eslint -c /var/www/html/web/core/.eslintrc.json --no-error-on-unmatched-pattern --ext=.js,.yml "$*"; exit 0
 fi

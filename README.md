@@ -101,8 +101,10 @@ Beautifully packaged for easy project and environment switching.
  - Use `ddev phpcs path/to/sniff` to check your Code using Drupal Coding Standards.
  - Use `ddev phpstan path/to/execute` to look for deprecated and 'dirty' code.
  - Use `ddev eslint path/to/sniff (--fix)` for linting / auto-fixing javascript code based on Drupal Coding Standards.
+ - Use `ddev stylelint web/modules/custom/my_module` for linting css files based on Drupal Coding Standards.
  - Use `ddev xdebug on` to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser.
  - Use `ddev import-db --target-db=db --src=db.sql.gz` to import a database file.
+ - Use `ddev drowl-reset-db` to reset the database to its state after initial startup.
  - Use `ddev dump-db ddev` to dump your main database tablewise.
  - Use `ddev deploy-db ddev` to import your tablewise dump.
   - Note: You can additionally add remote SSH projects under .ddev/commands/web/db-targets
