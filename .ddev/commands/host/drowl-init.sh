@@ -108,6 +108,9 @@ cp .ddev/initiation-additions/cspell.json .
 # Get the .prettierrc.json from core, if it exists:
 test -e web/core/.prettierrc.json && cp web/core/.prettierrc.json web
 
+# Get the cspell.json from core, if it exists:
+test -e web/core/cspell.json && cp web/core/cspell.json .
+
 # Set the permission for the default folder:
 chmod 0755 ./web/sites/default
 chmod 0644 ./web/sites/default/settings.php
