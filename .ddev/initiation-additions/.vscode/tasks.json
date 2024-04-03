@@ -1,0 +1,17 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+      {
+          "label": "DDEV: Enable Xdebug",
+          "type": "shell",
+          "command": "enable_xdebug"
+      },
+      {
+          "label": "DDEV: Disable Xdebug",
+          "type": "shell",
+          "command": "disable_xdebug"
+      }
+  ]
+}

@@ -74,6 +74,8 @@ Beautifully packaged for easy project and environment switching.
   1. Up to date Version of DDEV, Docker, Chrome/Firefox
   2. VSCode installed on your machine locally
   3. The [Remote Development Extension for VSCode (extension name: ms-vscode-remote.vscode-remote-extensionpack)](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+  4. (Optional) To debug inside the attached VS-Code instance, run `ddev config global --xdebug-ide-location=container`
+     1.  Unfortunately, this option is only available globally, so you need to adjust your xdebug ide location, when working with other ddev instances, where VSCode is not attached to the web container (e.g., when running the IDE in wsl instead of a container run `ddev config global --xdebug-ide-location=wsl2`).
 
 ---
 

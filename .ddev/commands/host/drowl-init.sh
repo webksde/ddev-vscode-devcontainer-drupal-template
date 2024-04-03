@@ -177,6 +177,9 @@ echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 # Give all Project informations:
 ddev describe
 
+# Notice about debugging inside attached VS-Code:
+echo -e $'\e\n[33mNOTE: To debug inside the attached VS-Code instance, run `ddev config global --xdebug-ide-location=container`\n\e[0m'
+
 # Helper Messages
 echo "Use 'ddev code' to attach VSCode to your running Container."
 echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit."
