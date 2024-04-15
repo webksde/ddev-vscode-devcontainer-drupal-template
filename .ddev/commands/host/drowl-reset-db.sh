@@ -3,7 +3,7 @@
 ## HostWorkingDir: true
 ## Description: Resets the Drupal database to its original state after project initialisation. (or before conrtib modules get installed using `--before-contrib`)
 ## Usage: drowl-reset-db
-## Example: "ddev phpunit drowl-reset-db"
+## Example: "ddev drowl-reset-db"
 
 # Go down directories, until the current directory is the ddev project folder
 # (there is no DDEV_PROJECT_HOST_ABSOLUTE_PATH variable, so we need this
