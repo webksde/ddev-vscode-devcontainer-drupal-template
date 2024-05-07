@@ -11,9 +11,8 @@ set -e
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
 DRUPAL_VERSION=10;
-PHP_VERSION=8.2
+PHP_VERSION=8.3
 COMPOSER_VERSION="stable"
-PROJECT_TYPE="drupal10"
 COMPOSER_CREATE_STABILITY="RC"
 
 if [[ $# = 1 ]]; then
@@ -34,13 +33,11 @@ fi
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = 9 ]]; then
   DRUPAL_VERSION=9;
   PHP_VERSION=8.1;
-  PROJECT_TYPE="drupal9";
 fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = "dev" ]]; then
   DRUPAL_VERSION="11.x-dev";
   COMPOSER_VERSION="dev";
-  PHP_VERSION=8.3;
   COMPOSER_CREATE_STABILITY="dev";
 fi
 
@@ -53,7 +50,7 @@ rm ./README.md
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Create the config.yaml:
-ddev config --composer-version="${COMPOSER_VERSION}" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="${PROJECT_TYPE}" --disable-settings-management --auto
+ddev config --composer-version="${COMPOSER_VERSION}" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
 # Get Drupal 10:
 ddev composer create -y --stability ${COMPOSER_CREATE_STABILITY} "drupal/recommended-project:^${DRUPAL_VERSION}"
