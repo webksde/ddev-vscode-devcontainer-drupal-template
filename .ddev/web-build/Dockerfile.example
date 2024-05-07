@@ -1,6 +1,7 @@
 
+#ddev-generated
 # You can copy this Dockerfile.example to Dockerfile to add configuration
 # or packages or anything else to your webimage
-ARG BASE_IMAGE
-FROM $BASE_IMAGE
-RUN npm install --global gulp-cli
+# These additions will be appended last to ddev's own Dockerfile
+RUN npm install --global forever
+RUN echo "Built on $(date)" > /build-date.txt
