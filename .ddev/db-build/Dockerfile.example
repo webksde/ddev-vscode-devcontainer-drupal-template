@@ -1,6 +1,5 @@
 
+#ddev-generated
 # You can copy this Dockerfile.example to Dockerfile to add configuration
 # or packages or anything else to your dbimage
-ARG BASE_IMAGE
-FROM $BASE_IMAGE
-RUN echo "Built from drud/ddev-dbserver-mariadb-10.3:v1.17.3" >/var/tmp/built-from.txt
+RUN echo "Built on $(date)" > /build-date.txt
