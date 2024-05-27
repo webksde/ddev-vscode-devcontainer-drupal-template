@@ -30,20 +30,47 @@
   "emptyIndent.exclude": [
     ".md"
   ], //Excluded file types
+  "todohighlight.isEnable": true,
+  "todohighlight.isCaseSensitive": true,
   "todohighlight.keywords": [
-    "@todo",
     {
       "text": "@todo",
       "color": "grey",
-      "backgroundColor": "yellow",
-      "overviewRulerColor": "grey"
+      "backgroundColor": "rgba(255, 252, 127)",
+      "border": "none",
+      "isWholeLine": false
     },
     {
       "text": "TODO LATER",
       "color": "white",
-      "backgroundColor": "grey",
-      "overviewRulerColor": "grey"
+      "backgroundColor": "rgba(189, 195, 199)",
+      "border": "none",
+      "overviewRulerColor": "grey",
+      "isWholeLine": false
     },
+  ],
+  "todohighlight.include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.html",
+    "**/*.css",
+    "**/*.scss",
+    "**/*.php",
+    "**/*.txt",
+    "**/*.mdown",
+    "**/*.md",
+    "**/*.txt",
+    "**/*.inc",
+    "**/*.theme",
+    "**/*.install",
+    "**/*.module",
+    "**/*.profile",
+    "**/*.php",
+    "**/*.phtml",
+    "**/*.twig",
+    "**/*.tpl",
   ],
   "intelephense.files.exclude": [ //more specific excludes so Tests should be recognized
     "**/.git/**",
