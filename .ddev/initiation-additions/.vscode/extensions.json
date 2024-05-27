@@ -11,7 +11,6 @@
     "dbaeumer.vscode-eslint",
     /*--------------------------------------------------Drupal 10 Specific Extensions--------------------------------------------------*/
     "mblode.twig-language-2",
-    "andrewdavidblum.drupal-smart-snippets",
     "nadim-vscode.twig-code-snippets",
     /*--------------------------------------------------Other Extensions--------------------------------------------------*/
     "mrmlnc.vscode-apache",
