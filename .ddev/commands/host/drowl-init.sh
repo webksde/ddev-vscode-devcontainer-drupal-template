@@ -46,8 +46,10 @@ echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will
 # Remove README.md:
 rm ./README.md
 
-# Remove git files:
-rm -r ./.git ./.gitignore ./.gitattributes -f
+if [[ $DRUPAL_VERSION != "11.x-dev" ]]; then
+  # Remove git files:
+  rm -r ./.git ./.gitignore ./.gitattributes -f
+fi
 
 # Create the config.yaml:
 ddev config --composer-version="${COMPOSER_VERSION}" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
