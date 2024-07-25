@@ -52,8 +52,16 @@ rm -r ./.git ./.gitignore ./.gitattributes -f
 # Create the config.yaml:
 ddev config --composer-version="${COMPOSER_VERSION}" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
-# Get Drupal 10:
-ddev composer create -y --stability ${COMPOSER_CREATE_STABILITY} "drupal/recommended-project:^${DRUPAL_VERSION}"
+# Create the composer create command:
+CREATE="ddev composer create -y --stability ${COMPOSER_CREATE_STABILITY} \"drupal/recommended-project:^${DRUPAL_VERSION}\""
+
+# Check if DRUPAL_VERSION is "11.x-dev". If so, initiate the project using source as the prefered install method:
+if [ "$DRUPAL_VERSION" = "11.x-dev" ]; then
+  CREATE+=" --prefer-install=source"
+fi
+
+# Execute the creation of the project:
+eval $CREATE
 
 # Require the "PHPMyAdmin" plugin:
 echo 'Requiring the "ddev-phpmyadmin" plugin...'
@@ -124,9 +132,6 @@ ddev npm install
 # Get jsconfig.json from initiation additions:
 cp .ddev/initiation-additions/jsconfig.json .
 
-# Activate Error Logging:
-ddev drush config-set system.logging error_level verbose -y
-
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
 ddev composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
@@ -156,6 +161,9 @@ ddev export-db "$DDEV_PROJECT" > ./data/sql/db-dump-before-contrib.sql.gz
 echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
 
 if [ "${DRUPAL_VERSION}" != "11.x-dev" ] ; then
+  # Activate Error Logging:
+  ddev drush config-set system.logging error_level verbose -y
+
   # Acitvate drupal development modules:
   ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_generate devel_php backup_migrate config_inspector examples -y
 
