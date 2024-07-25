@@ -57,7 +57,7 @@ CREATE="ddev composer create -y --stability ${COMPOSER_CREATE_STABILITY} \"drupa
 
 # Check if DRUPAL_VERSION is "11.x-dev". If so, initiate the project using source as the prefered install method:
 if [ "$DRUPAL_VERSION" = "11.x-dev" ]; then
-  CREATE+=" --prefer-install=source"
+  CREATE+=" --prefer-source"
 fi
 
 # Execute the creation of the project:
