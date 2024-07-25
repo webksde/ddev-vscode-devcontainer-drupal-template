@@ -143,9 +143,6 @@ ddev composer config --json repositories.asset-packagist '{"type": "composer","u
 ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
 ddev composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
-# Created authenticated test user:
-ddev drush user:create max --mail='max@example.com' --password='max' -y
-
 # Create custom module folder:
 mkdir -p web/modules/custom
 # Create temp folder:
@@ -163,6 +160,9 @@ echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
 if [ "${DRUPAL_VERSION}" != "11.x-dev" ] ; then
   # Activate Error Logging:
   ddev drush config-set system.logging error_level verbose -y
+
+  # Created authenticated test user:
+  ddev drush user:create max --mail='max@example.com' --password='max' -y
 
   # Acitvate drupal development modules:
   ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_generate devel_php backup_migrate config_inspector examples -y
