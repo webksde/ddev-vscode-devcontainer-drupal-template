@@ -57,12 +57,15 @@ CREATE="ddev composer create -y --stability ${COMPOSER_CREATE_STABILITY} \"drupa
 
 # Check if DRUPAL_VERSION is "11.x-dev". If so, initiate the project using source as the prefered install method:
 if [ "$DRUPAL_VERSION" = "11.x-dev" ]; then
-  # Note, that for the dev version, we can't use the "^" before the Drupal version and we need to add "--prefer-source". So we overwrite create here:
-  CREATE="ddev composer create -y --stability ${COMPOSER_CREATE_STABILITY} \"drupal/recommended-project:${DRUPAL_VERSION}\" --prefer-source"
+  # For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
+  CREATE="ddev composer create -y \"joachim-n/drupal-core-development-project\""
 fi
 
 # Execute the creation of the project:
 eval $CREATE
+
+# Update the config:
+ddev config --update
 
 # Require the "PHPMyAdmin" plugin:
 echo 'Requiring the "ddev-phpmyadmin" plugin...'
