@@ -57,7 +57,8 @@ CREATE="ddev composer create -y --stability ${COMPOSER_CREATE_STABILITY} \"drupa
 
 # Check if DRUPAL_VERSION is "11.x-dev". If so, initiate the project using source as the prefered install method:
 if [ "$DRUPAL_VERSION" = "11.x-dev" ]; then
-  CREATE+=" --prefer-source"
+  # Note, that for the dev version, we can't use the "^" before the Drupal version and we need to add "--prefer-source". So we overwrite create here:
+  CREATE="ddev composer create -y --stability ${COMPOSER_CREATE_STABILITY} \"drupal/recommended-project:${DRUPAL_VERSION}\" --prefer-source"
 fi
 
 # Execute the creation of the project:
