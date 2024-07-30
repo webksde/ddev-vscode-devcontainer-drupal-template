@@ -1,39 +1,15 @@
 #!/usr/bin/env bash
 
 ## Description: Startup A Drupal DDEV Environment, using DROWL Best Practices
-## Usage: drowl-init
-## Example: drowl-init, drowl-init -v 9, drowl-init -v 10
-## Flags: [{"Name":"version","Shorthand":"v","Usage":"Set the Drupal Version (Drupal 9 and 10 supported)"}]
+## Usage: drowl-init-dev
+## Example: drowl-init-dev
 
 # exit when any command fails
 set -e
 # keep track of the last executed command
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
-DRUPAL_VERSION=10;
-PHP_VERSION=8.3
-
-if [[ $# = 1 ]]; then
-  echo "Missing parameter given. Use 'ddev drowl-init -v 9/10/dev' instead";
-  exit;
-fi
-
-if [[ $# = 2 && ( "$1" != "-v" && "$1" != "--version" )]]; then
-  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 9/10/dev' instead";
-  exit;
-fi
-
-if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" != "9" && "$2" != "10" && "$2" != "dev") ]]; then
-  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 9/10/dev' instead";
-  exit;
-fi
-
-if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = 9 ]]; then
-  DRUPAL_VERSION=9;
-  PHP_VERSION=8.1;
-fi
-
-echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
+echo -e $"\e\n[32mInitialising a Drupal DEV environment! This will take about ~5 min...\n\e[0m"
 
 # Remove README.md:
 rm ./README.md
@@ -42,10 +18,10 @@ rm ./README.md
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Create the config.yaml:
-ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
+ddev config --composer-version="${COMPOSER_VERSION}" --php-version="8.3" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
-# Create the composer create command:
-ddev composer create -y --stability RC "drupal/recommended-project:^${DRUPAL_VERSION}"
+# For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
+ddev composer create -y "joachim-n/drupal-core-development-project"
 
 # Update the config:
 ddev config --update
@@ -69,8 +45,6 @@ ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oo
 ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples;
 
 # Add DEV dependencies (but no modules due to their database relationship)
-# Note, that "drupal/core-dev" contains dependencies like phpunit, phpstan, etc.
-ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION} --update-with-all-dependencies
 ddev composer require --dev drush/drush drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint
 
 # PHP Codesniffer Setup:
@@ -84,9 +58,6 @@ ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admi
 
 # Get VSCode Settings:
 cp -R .ddev/initiation-additions/.vscode/ .
-
-# Get PHPUnit.xml:
-cp .ddev/initiation-additions/phpunit.xml .
 
 # Get phpstan.neon:
 cp .ddev/initiation-additions/phpstan.neon .
@@ -160,6 +131,14 @@ ddev drush role:perm:add authenticated 'access devel information'
 # Create the "normal" db dump:
 ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
 echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
+
+# Clean the drupal core git repository:
+cd web/core
+git reset --hard && git clean -f -d && git pull
+cd ../../
+
+# Get PHPUnit.xml:
+cp phpunit-ddev.xml phpunit.xml
 
 # Give all Project informations:
 ddev describe

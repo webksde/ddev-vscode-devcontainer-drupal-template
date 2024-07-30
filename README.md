@@ -15,8 +15,8 @@ Tipps:
     - Project names need to be **valid**. Valid project names are: "no-spaces-but-hyphens", "UpperAndLower", "should.work.with.dots".
     - The ddev containers will be generated based of your chosen name.
 - You can also initiate:
-  - A Drupal 9 environment, using `ddev drowl-init -v 9`
-  - A Drupal 11 environment, using `ddev drowl-init -v dev`
+  - A Drupal 9 environment, using `ddev drowl-init -v 9`.
+  - A Drupal dev environment (for working on drupal core issues) using `ddev drowl-init-dev`.
 
 ---
 
@@ -138,3 +138,7 @@ If there are no duplicate ddev projects, there might have been a ddev project wi
 ### *I used "ddev drowl-init-from-existing" and now my Web-Server can't reach the Database*
 
 We are currently investigating this problem. It has something todo with ddev creating a new database when importing a database dump through their db command. In the meantime you can use `ddev drowl-init` and import your database dump after initialisation through PHPMyAdmin (and swap the composer.json).
+
+## Other
+**Special thanks to [Joachim](https://github.com/joachim-n) for creating https://github.com/joachim-n/drupal-core-development-project/, which
+helped us to make this project valid for work on drupal core issues.**
