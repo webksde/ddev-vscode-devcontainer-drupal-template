@@ -3,7 +3,7 @@ The tools inside this repository will create a modified Drupal environment, focu
 
 **DO NOT USE IN PRODUCTION - This is a local development tool!**
 ## Quick-Start
-**Spin up a ready-to-code Drupal 9/10 CMS DDEV based development container with preconfigured Drupal Best-Practice Dev-Modules and Visual Studio Code Settings/Extensions in three commands!** 🚀
+**Spin up a ready-to-code Drupal 10/11 CMS DDEV based development container with preconfigured Drupal Best-Practice Dev-Modules and Visual Studio Code Settings/Extensions in three commands!** 🚀
 
 May take ~5 min - only needed once, at initialization:
 ~~~
@@ -15,8 +15,7 @@ Tipps:
     - Project names need to be **valid**. Valid project names are: "no-spaces-but-hyphens", "UpperAndLower", "should.work.with.dots".
     - The ddev containers will be generated based of your chosen name.
 - You can also initiate:
-  - A Drupal 9 environment, using `ddev drowl-init -v 9`
-  - A Drupal 11 environment, using `ddev drowl-init -v dev`
+  - A Drupal dev environment (for working on drupal core issues) using `ddev drowl-init-dev`.
 
 ---
 
@@ -83,7 +82,6 @@ Beautifully packaged for easy project and environment switching.
  1. Create a project folder and switch into it: `mkdir project-folder && cd project-folder`
  2. Clone the repository into the just created folder: `git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git .`
  3. Use `ddev drowl-init` to directly start up the environment using Drupal 10 with VSCode / Drupal Best Practice Tools
-       1. Alternatively you can explicitly choose the Drupal version, using `ddev drowl-init -v 9` for Drupal 9, or `ddev drowl-init -v 10` for Drupal 10. Running the command without a flag, will initiate a Drupal 10 environment.
  4. You are ready to go! Use `ddev describe` to check the status & URLs of your Project and `ddev code` to run your prepared VSCode IDE!
     1. Note, when inside the attached VSCode go to "Extensions" and type in "@recommended" to reveal all the necessary Extensions. Installing them is recommended!
 
@@ -138,3 +136,6 @@ If there are no duplicate ddev projects, there might have been a ddev project wi
 ### *I used "ddev drowl-init-from-existing" and now my Web-Server can't reach the Database*
 
 We are currently investigating this problem. It has something todo with ddev creating a new database when importing a database dump through their db command. In the meantime you can use `ddev drowl-init` and import your database dump after initialisation through PHPMyAdmin (and swap the composer.json).
+
+## Other
+**Special thanks to [Joachim](https://github.com/joachim-n) for creating https://github.com/joachim-n/drupal-core-development-project/, which helped us to make this project valid for work on drupal core issues.**
