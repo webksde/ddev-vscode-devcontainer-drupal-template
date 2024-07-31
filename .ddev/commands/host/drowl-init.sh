@@ -14,23 +14,24 @@ DRUPAL_VERSION=10;
 PHP_VERSION=8.3
 
 if [[ $# = 1 ]]; then
-  echo "Missing parameter given. Use 'ddev drowl-init -v 9/10/dev' instead";
+  echo "Missing parameter given. Use 'ddev drowl-init -v 9/10' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" != "-v" && "$1" != "--version" )]]; then
-  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 9/10/dev' instead";
+  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 9/10' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" != "9" && "$2" != "10" && "$2" != "dev") ]]; then
-  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 9/10/dev' instead";
+  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 9/10' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = 9 ]]; then
-  DRUPAL_VERSION=9;
-  PHP_VERSION=8.1;
+  echo "Initialising a Drupal 9 environment is not supported anymore. Starting up a Drupal 10 environment instead...";
+  # DRUPAL_VERSION=9;
+  # PHP_VERSION=8.1;
 fi
 
 echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
