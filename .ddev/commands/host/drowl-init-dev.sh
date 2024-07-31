@@ -133,8 +133,12 @@ ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
 echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 
 # Clean the drupal core git repository:
+
+echo "Cleaning the Drupal Core Repository..."
 cd web/core
-git reset --hard && git clean -f -d && git pull
+git add --all
+git reset --hard
+git pull
 cd ../../
 
 # Get PHPUnit.xml:
