@@ -5,9 +5,15 @@ The tools inside this repository will create a modified Drupal environment, focu
 ## Quick-Start
 **Spin up a ready-to-code Drupal 10/11 CMS DDEV based development container with preconfigured Drupal Best-Practice Dev-Modules and Visual Studio Code Settings/Extensions in three commands!** 🚀
 
-May take ~5 min - only needed once, at initialization:
+May take ~5 min - only needed once, at initialization.
+
+Quickly startup a **standard** dev environment using Drupal 10, meant to be used for testing and working on contrib modules / issues:
 ~~~
-git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git ddev-vscode-drupal && cd ddev-vscode-drupal && ddev drowl-init
+git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git standard-vscode-drupal && cd standard-vscode-drupal && ddev drowl-init
+~~~
+or startup a **core** dev environment using gitified Drupal 11.x-dev, meant to be used for working on core issues:
+~~~
+git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git core-vscode-drupal && cd core-vscode-drupal && ddev drowl-init-dev
 ~~~
 Tipps:
 - "ddev-vscode-drupal" can be replaced with any project name of your liking.
