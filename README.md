@@ -127,21 +127,23 @@ Beautifully packaged for easy project and environment switching.
 ## FAQ / Troubleshooting:
 ### *How do I install ddev?*
 
-See https://ddev.readthedocs.io/en/stable/users/install/ddev-installation
-We recommend to use *brew* for all kinds of installation, as it's easy to install and update
+- Install docker-ce inside Ubuntu / WSL: https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+- Add DDEV to apt and install it: https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/#debianubuntu
+- Run ddev -v, to see if it is installed correctly.
 
 ### *How do I update dddev?*
 
-See above. For brew simply use `brew update && brew upgrade`
+You can always update ddev using `sudo apt update && sudo apt upgrade` inside your Ubuntu / WSL istance.
 
 ### *I can not execute the custom "ddev drowl-init" command*
 
-Make sure you have the newest ddev and docker version and try restarting docker first. If the problem still persists, make sure you do not have two ddev projects with the same name!
+- Make sure you have the newest ddev and docker version and try restarting docker first. If the problem still persists, make sure you do not have two ddev projects with the same name!
 If there are no duplicate ddev projects, there might have been a ddev project with the same name in the past, which was not properly deleted using `ddev delete`. Check your Docker Container instances and delete the old Docker Cluster.
+- Project names need to be valid. Valid project names are: "no-spaces-but-hyphens", "UpperAndLower", "should.work.with.dots". Underscores are NOT allowed!
+- If all of this doesn't work, try running ddev start  first, to see if that already throws any errors. Afterwards delete the project again using ddev delete, remove it and reininitate it again.
 
-### *I used "ddev drowl-init-from-existing" and now my Web-Server can't reach the Database*
+### *I can not reach any url from within the ddev container*
 
-We are currently investigating this problem. It has something todo with ddev creating a new database when importing a database dump through their db command. In the meantime you can use `ddev drowl-init` and import your database dump after initialisation through PHPMyAdmin (and swap the composer.json).
-
+- This is probably related to some internal dns problems. [This](https://stackoverflow.com/questions/78853210/not-able-to-resolve-any-hostnames-inside-docker-container-using-wsl-2-docker-ce/78853229#78853229) might help.
 ## Other
 **Special thanks to [Joachim](https://github.com/joachim-n) for creating https://github.com/joachim-n/drupal-core-development-project/, which helped us to make this project valid for work on drupal core issues.**
