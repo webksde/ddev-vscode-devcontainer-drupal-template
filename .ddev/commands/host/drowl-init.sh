@@ -116,7 +116,7 @@ cp .ddev/initiation-additions/services.local.yml web/sites/default/services.loca
 # Get packages for eslint and JS code completion:
 echo 'Requiring npm dev packages... (This might take a bit)'
 cp web/core/package.json .
-ddev npm install
+ddev npm install --no-audit
 # Get jsconfig.json from initiation additions:
 cp .ddev/initiation-additions/jsconfig.json .
 
