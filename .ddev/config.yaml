@@ -9,7 +9,7 @@ additional_hostnames: []
 additional_fqdns: []
 database:
     type: mariadb
-    version: "11.6"
+    version: "11.4"
 use_dns_when_possible: true
 timezone: Europe/Berlin
 composer_version: stable
