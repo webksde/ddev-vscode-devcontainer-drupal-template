@@ -42,7 +42,7 @@ rm ./README.md
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Create the config.yaml:
-ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
+ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
 # Create the composer create command:
 ddev composer create -y --stability RC "drupal/recommended-project:^${DRUPAL_VERSION}"
@@ -63,20 +63,21 @@ ddev start
 ddev composer config --no-plugins allow-plugins.cweagans/composer-patches true
 ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
+ddev composer config --no-plugins allow-plugins.tbachert/spi true
 
 # Add general dependencies:
-ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender
+ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender --no-audit
 
 # Add drupal dependencies:
-ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples;
+ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples --no-audit
 
 # Add DEV dependencies (but no modules due to their database relationship)
 # Note, that "drupal/core-dev" contains dependencies like phpunit, phpstan, etc.
-ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION} --update-with-all-dependencies
-ddev composer require --dev drush/drush drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint
+ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION} --update-with-all-dependencies --no-audit
+ddev composer require --dev drush/drush drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
 
 # PHP Codesniffer Setup:
-ddev composer require --dev squizlabs/php_codesniffer
+ddev composer require --dev squizlabs/php_codesniffer --no-audit
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
 ddev exec chmod +x vendor/bin/phpcbf
