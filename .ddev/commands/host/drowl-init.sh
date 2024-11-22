@@ -122,12 +122,12 @@ cp .ddev/initiation-additions/jsconfig.json .
 
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
-ddev composer config --json extra.patches.package-mantainer/package '{"description": "path/to/patch"}'
+ddev composer config --json "repositories.asset-packagist" '{"type": "composer","url": "https://asset-packagist.org"}'
+ddev composer config --json "extra.patches.package-mantainer/package" '{"description": "path/to/patch"}'
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
 # Add asset-packagist:
-ddev composer config --json "repositories.asset-packagist" '{"type": "composer","url": "https://asset-packagist.org"}'
 ddev composer config --json "extra.installer-types" '["npm-asset", "bower-asset"]'
 ddev composer config --json "extra.installer-paths.web/libraries/{\$name\}" '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
