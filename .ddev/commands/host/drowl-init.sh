@@ -10,28 +10,27 @@ set -e
 # keep track of the last executed command
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
-DRUPAL_VERSION=10;
-PHP_VERSION=8.3
+DRUPAL_VERSION=11;
+PHP_VERSION=8.4
 
 if [[ $# = 1 ]]; then
-  echo "Missing parameter given. Use 'ddev drowl-init -v 9/10' instead";
+  echo "Missing parameter given. Use 'ddev drowl-init -v 10/11' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" != "-v" && "$1" != "--version" )]]; then
-  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 9/10' instead";
+  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 10/11' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" != "9" && "$2" != "10" && "$2" != "dev") ]]; then
-  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 9/10' instead";
+  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 10/11' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = 9 ]]; then
-  echo "Initialising a Drupal 9 environment is not supported anymore. Starting up a Drupal 10 environment instead...";
-  # DRUPAL_VERSION=9;
-  # PHP_VERSION=8.1;
+  DRUPAL_VERSION=10;
+  PHP_VERSION=8.3;
 fi
 
 echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
@@ -54,6 +53,8 @@ ddev config --update
 # Require the "PHPMyAdmin" plugin:
 echo 'Requiring the "ddev-phpmyadmin" plugin...'
 ddev get ddev/ddev-phpmyadmin
+echo 'Requiring the "ddev-selenium-standalone-chrome" plugin...'
+ddev get ddev/ddev-selenium-standalone-chrome
 
 # Starting Drupal DDEV Containers
 ddev start
@@ -87,6 +88,7 @@ ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admi
 cp -R .ddev/initiation-additions/.vscode/ .
 
 # Get PHPUnit.xml:
+# @improve: It might make sense to get the phpunit.xml from core, if it exists:
 cp .ddev/initiation-additions/phpunit.xml .
 
 # Get phpstan.neon:
@@ -124,9 +126,9 @@ ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
 # Add asset-packagist:
-ddev composer config --json repositories.asset-packagist '{"type": "composer","url": "https://asset-packagist.org"}'
-ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
-ddev composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
+ddev composer config --json "repositories.asset-packagist" '{"type": "composer","url": "https://asset-packagist.org"}'
+ddev composer config --json "extra.installer-types" '["npm-asset", "bower-asset"]'
+ddev composer config --json "extra.installer-paths.web/libraries/{\$name\}" '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
