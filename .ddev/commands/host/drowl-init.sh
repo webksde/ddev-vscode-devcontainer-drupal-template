@@ -10,28 +10,27 @@ set -e
 # keep track of the last executed command
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
-DRUPAL_VERSION=10;
-PHP_VERSION=8.3
+DRUPAL_VERSION=11;
+PHP_VERSION=8.4
 
 if [[ $# = 1 ]]; then
-  echo "Missing parameter given. Use 'ddev drowl-init -v 9/10' instead";
+  echo "Missing parameter given. Use 'ddev drowl-init -v 10/11' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" != "-v" && "$1" != "--version" )]]; then
-  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 9/10' instead";
+  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 10/11' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" != "9" && "$2" != "10" && "$2" != "dev") ]]; then
-  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 9/10' instead";
+  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 10/11' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = 9 ]]; then
-  echo "Initialising a Drupal 9 environment is not supported anymore. Starting up a Drupal 10 environment instead...";
-  # DRUPAL_VERSION=9;
-  # PHP_VERSION=8.1;
+  DRUPAL_VERSION=10;
+  PHP_VERSION=8.3;
 fi
 
 echo -e $"\e\n[32mInitialising a Drupal ${DRUPAL_VERSION} environment! This will take about ~5 min...\n\e[0m"
@@ -43,7 +42,7 @@ rm ./README.md
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Create the config.yaml:
-ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
+ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
 # Create the composer create command:
 ddev composer create -y --stability RC "drupal/recommended-project:^${DRUPAL_VERSION}"
@@ -54,6 +53,8 @@ ddev config --update
 # Require the "PHPMyAdmin" plugin:
 echo 'Requiring the "ddev-phpmyadmin" plugin...'
 ddev get ddev/ddev-phpmyadmin
+echo 'Requiring the "ddev-selenium-standalone-chrome" plugin...'
+ddev get ddev/ddev-selenium-standalone-chrome
 
 # Starting Drupal DDEV Containers
 ddev start
@@ -62,20 +63,21 @@ ddev start
 ddev composer config --no-plugins allow-plugins.cweagans/composer-patches true
 ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
+ddev composer config --no-plugins allow-plugins.tbachert/spi true
 
 # Add general dependencies:
-ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender
+ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender --no-audit
 
 # Add drupal dependencies:
-ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples;
+ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples --no-audit
 
 # Add DEV dependencies (but no modules due to their database relationship)
 # Note, that "drupal/core-dev" contains dependencies like phpunit, phpstan, etc.
-ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION} --update-with-all-dependencies
-ddev composer require --dev drush/drush drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint
+ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION} --update-with-all-dependencies --no-audit
+ddev composer require --dev drush/drush drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
 
 # PHP Codesniffer Setup:
-ddev composer require --dev squizlabs/php_codesniffer
+ddev composer require --dev squizlabs/php_codesniffer --no-audit
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
 ddev exec chmod +x vendor/bin/phpcbf
@@ -87,6 +89,7 @@ ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admi
 cp -R .ddev/initiation-additions/.vscode/ .
 
 # Get PHPUnit.xml:
+# @improve: It might make sense to get the phpunit.xml from core, if it exists:
 cp .ddev/initiation-additions/phpunit.xml .
 
 # Get phpstan.neon:
@@ -113,20 +116,21 @@ cp .ddev/initiation-additions/services.local.yml web/sites/default/services.loca
 # Get packages for eslint and JS code completion:
 echo 'Requiring npm dev packages... (This might take a bit)'
 cp web/core/package.json .
-ddev npm install
+ddev npm install --no-audit
 # Get jsconfig.json from initiation additions:
 cp .ddev/initiation-additions/jsconfig.json .
 
+# @todo Remove "raw" for all --json config calls (current workaround for https://github.com/ddev/ddev/issues/6628):
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
-ddev composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
+ddev exec --raw composer config extra.patches.package-mantainer/package --json '{"description": "path/to/patch"}'
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
 # Add asset-packagist:
-ddev composer config --json repositories.asset-packagist '{"type": "composer","url": "https://asset-packagist.org"}'
-ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
-ddev composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
+ddev exec --raw composer config repositories.asset-packagist --json '{"type": "composer","url": "https://asset-packagist.org"}'
+ddev exec --raw composer config extra.installer-types --json '["npm-asset", "bower-asset"]'
+ddev exec --raw composer config extra.installer-paths.web/libraries/{\$name\} --json '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y

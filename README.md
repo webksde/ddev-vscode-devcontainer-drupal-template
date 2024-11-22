@@ -7,7 +7,7 @@ The tools inside this repository will create a modified Drupal environment, focu
 
 May take ~5 min - only needed once, at initialization.
 
-Quickly startup a **standard** dev environment using Drupal 10, meant to be used for testing and working on contrib modules / issues:
+Quickly startup a **standard** dev environment using Drupal 11, meant to be used for testing and working on contrib modules / issues:
 ~~~
 git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git standard-vscode-drupal && cd standard-vscode-drupal && ddev drowl-init
 ~~~

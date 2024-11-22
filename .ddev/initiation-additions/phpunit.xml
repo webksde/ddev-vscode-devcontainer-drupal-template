@@ -5,37 +5,16 @@ resolved. -->
  or your current system user. See core/tests/README.md and
  https://www.drupal.org/node/2116263 for details.
 -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="web/core/tests/bootstrap.php"
-  colors="true" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutOutputDuringTests="true"
-  beStrictAboutChangesToGlobalState="true" failOnWarning="true"
-  printerClass="\Drupal\Tests\Listeners\HtmlOutputPrinter" cacheResult="false"
-  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-  <coverage>
-    <include>
-      <directory>./web/core/includes</directory>
-      <directory>./web/core/lib</directory>
-      <directory>./web/core/modules</directory>
-      <directory>./web/modules</directory>
-      <directory>./web/sites</directory>
-    </include>
-    <exclude>
-      <directory>./web/core/modules/*/src/Tests</directory>
-      <directory>./web/core/modules/*/tests</directory>
-      <directory>./web/modules/*/src/Tests</directory>
-      <directory>./web/modules/*/tests</directory>
-      <directory>./web/modules/*/*/src/Tests</directory>
-      <directory>./web/modules/*/*/tests</directory>
-    </exclude>
-  </coverage>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="web/core/tests/bootstrap.php" colors="true" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutOutputDuringTests="true" beStrictAboutChangesToGlobalState="true" failOnWarning="true" cacheResult="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" cacheDirectory=".phpunit.cache">
   <php>
     <!-- Set error reporting to E_ALL. -->
-    <ini name="error_reporting" value="32767" />
+    <ini name="error_reporting" value="32767"/>
     <!-- Do not limit the amount of memory tests take to run. -->
-    <ini name="memory_limit" value="-1" />
+    <ini name="memory_limit" value="-1"/>
     <!-- Example SIMPLETEST_BASE_URL value: http://localhost -->
     <env name="SIMPLETEST_BASE_URL" value="https://web"/>
     <!-- Example SIMPLETEST_DB value: mysql://username:password@localhost/databasename#table_prefix -->
-    <env name="SIMPLETEST_DB" value="mysql://db:db@db/test" />
+    <env name="SIMPLETEST_DB" value="mysql://db:db@db/test"/>
     <!-- Example BROWSERTEST_OUTPUT_DIRECTORY value:
     /path/to/webroot/sites/simpletest/browser_output -->
     <env name="BROWSERTEST_OUTPUT_DIRECTORY" value="/var/www/html/web/sites/simpletest/browser_output"/>
@@ -43,20 +22,27 @@ resolved. -->
      SIMPLETEST_BASE_URL is an internal DDEV URL, you can set this to the
      external DDev URL so you can follow the links directly.
     -->
-    <env name="BROWSERTEST_OUTPUT_BASE_URL" value="" />
+    <env name="BROWSERTEST_OUTPUT_BASE_URL" value=""/>
     <!-- To disable deprecation testing completely uncomment the next line. -->
     <!-- <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/> -->
     <!-- Example for changing the driver class for mink tests MINK_DRIVER_CLASS value:
     'Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver' -->
-    <env name="MINK_DRIVER_CLASS" value="" />
+    <env name="MINK_DRIVER_CLASS" value=""/>
     <!-- Example for changing the driver args to mink tests MINK_DRIVER_ARGS value:
     '["http://127.0.0.1:8510"]' -->
-    <env name="MINK_DRIVER_ARGS" value="" />
+    <env name="MINK_DRIVER_ARGS" value=""/>
     <!-- Example for changing the driver args to webdriver tests MINK_DRIVER_ARGS_WEBDRIVER value:
     '["chrome", { "chromeOptions": { "w3c": false } }, "http://localhost:4444/wd/hub"]' For using
     the Firefox browser, replace "chrome" with "firefox" -->
-    <env name="MINK_DRIVER_ARGS_WEBDRIVER" value="" />
+    <env name="MINK_DRIVER_ARGS_WEBDRIVER" value=""/>
   </php>
+  <extensions>
+    <!-- Functional tests HTML output logging. -->
+    <bootstrap class="Drupal\TestTools\Extension\HtmlLogging\HtmlOutputLogger">
+      <parameter name="outputDirectory" value="sites/simpletest/browser_output"/>
+      <parameter name="verbose" value="true"/>
+    </bootstrap>
+  </extensions>
   <testsuites>
     <testsuite name="unit">
       <file>./tests/TestSuites/UnitTestSuite.php</file>
@@ -74,9 +60,22 @@ resolved. -->
       <file>./tests/TestSuites/BuildTestSuite.php</file>
     </testsuite>
   </testsuites>
-  <listeners>
-    <listener class="\Drupal\Tests\Listeners\DrupalListener">
-    </listener>
-  </listeners>
   <!-- Filter for coverage reports. -->
+  <source>
+    <include>
+      <directory>./web/core/includes</directory>
+      <directory>./web/core/lib</directory>
+      <directory>./web/core/modules</directory>
+      <directory>./web/modules</directory>
+      <directory>./web/sites</directory>
+    </include>
+    <exclude>
+      <directory>./web/core/modules/*/src/Tests</directory>
+      <directory>./web/core/modules/*/tests</directory>
+      <directory>./web/modules/*/src/Tests</directory>
+      <directory>./web/modules/*/tests</directory>
+      <directory>./web/modules/*/*/src/Tests</directory>
+      <directory>./web/modules/*/*/tests</directory>
+    </exclude>
+  </source>
 </phpunit>
