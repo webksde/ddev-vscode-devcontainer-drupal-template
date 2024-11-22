@@ -11,6 +11,8 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
 echo -e $"\e\n[32mInitialising a Drupal DEV environment! This will take about ~5 min...\n\e[0m"
 
+PHP_VERSION=8.4
+
 # Remove README.md:
 rm ./README.md
 
@@ -18,7 +20,7 @@ rm ./README.md
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Create the config.yaml:
-ddev config --composer-version="${COMPOSER_VERSION}" --php-version="8.3" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
+ddev config --composer-version="${COMPOSER_VERSION}" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
 # For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
 ddev composer create -y "joachim-n/drupal-core-development-project"
@@ -37,18 +39,19 @@ ddev start
 ddev composer config --no-plugins allow-plugins.cweagans/composer-patches true
 ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
+ddev composer config --no-plugins allow-plugins.tbachert/spi true
 
 # Add general dependencies:
-ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender:^2
+ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender:^2 --no-audit
 
 # Add drupal dependencies:
-ddev composer require drupal/devel:^5 drupal/devel_php:^1 drupal/admin_toolbar:^3 drupal/backup_migrate:^5 drupal/stage_file_proxy:^3 drupal/config_inspector:^2 drupal/examples:^4;
+ddev composer require drupal/devel:^5 drupal/devel_php:^1 drupal/admin_toolbar:^3 drupal/backup_migrate:^5 drupal/stage_file_proxy:^3 drupal/config_inspector:^2 drupal/examples:^4 --no-audit
 
 # Add DEV dependencies (but no modules due to their database relationship)
-ddev composer require --dev drupal/coder:^8 phpstan/phpstan-deprecation-rules:^1 kint-php/kint:^5
+ddev composer require --dev drupal/coder:^8 phpstan/phpstan-deprecation-rules:^1 kint-php/kint:^5 --no-audit
 
 # PHP Codesniffer Setup:
-ddev composer require --dev squizlabs/php_codesniffer:^3
+ddev composer require --dev squizlabs/php_codesniffer:^3 --no-audit
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
 ddev exec chmod +x vendor/bin/phpcbf
@@ -89,14 +92,14 @@ cp .ddev/initiation-additions/jsconfig.json .
 
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
-ddev composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
+ddev exec --raw composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
 # Add asset-packagist:
-ddev composer config --json repositories.asset-packagist '{"type": "composer","url": "https://asset-packagist.org"}'
-ddev composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
-ddev composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
+ddev exec --raw composer config --json repositories.asset-packagist '{"type": "composer","url": "https://asset-packagist.org"}'
+ddev exec --raw composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
+ddev exec --raw composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
