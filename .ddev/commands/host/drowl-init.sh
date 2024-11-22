@@ -122,7 +122,7 @@ cp .ddev/initiation-additions/jsconfig.json .
 
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
-ddev composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
+ddev composer config --json extra.patches.package-mantainer/package '{"description": "path/to/patch"}'
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
