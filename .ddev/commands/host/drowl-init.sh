@@ -120,16 +120,17 @@ ddev npm install
 # Get jsconfig.json from initiation additions:
 cp .ddev/initiation-additions/jsconfig.json .
 
+# @todo Remove "raw" for all --json config calls (current workaround for https://github.com/ddev/ddev/issues/6628):
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
-ddev composer config extra.patches.package-mantainerSLASHpackage --json '{"description": "path/to/patch"}'
+ddev exec --raw composer config extra.patches.package-mantainer/package --json '{"description": "path/to/patch"}'
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
 # Add asset-packagist:
-ddev composer config repositories.asset-packagist --json '{"type": "composer","url": "https://asset-packagist.org"}'
-ddev composer config extra.installer-types --json '["npm-asset", "bower-asset"]'
-ddev composer config extra.installer-paths.web/libraries/{\$name\} --json '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
+ddev exec --raw composer config repositories.asset-packagist --json '{"type": "composer","url": "https://asset-packagist.org"}'
+ddev exec --raw composer config extra.installer-types --json '["npm-asset", "bower-asset"]'
+ddev exec --raw composer config extra.installer-paths.web/libraries/{\$name\} --json '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
