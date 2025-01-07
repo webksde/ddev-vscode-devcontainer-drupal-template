@@ -15,14 +15,11 @@ or startup a **core** dev environment using gitified Drupal 11.x-dev, meant to b
 ~~~
 git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git core-vscode-drupal && cd core-vscode-drupal && ddev drowl-init-dev
 ~~~
-Tipps:
-- "ddev-vscode-drupal" can be replaced with any project name of your liking.
+Tips:
+- The name of the project ("standard-vscode-drupal" / "core-vscode-drupal") can be replaced with any project name of your liking.
   - **Note**, that:
     - Project names need to be **valid**. Valid project names are: "no-spaces-but-hyphens", "UpperAndLower", "should.work.with.dots".
-    - The ddev containers will be generated based of your chosen name.
-- You can also initiate:
-  - A Drupal dev environment (for working on drupal core issues) using `ddev drowl-init-dev`.
-
+    - The ddev containers will be generated based of your chosen name (e.g. "ddev-standard-vscode-drupal-web" when choosing "standard-vscode-drupal" as the project name).
 ---
 
 ## Features
