@@ -48,7 +48,7 @@ ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oo
 ddev composer require drupal/devel:^5 drupal/devel_php:^1 drupal/admin_toolbar:^3 drupal/backup_migrate:^5 drupal/stage_file_proxy:^3 drupal/config_inspector:^2 drupal/examples:^4 --no-audit
 
 # Add DEV dependencies (but no modules due to their database relationship)
-ddev composer require --dev drupal/coder:^8 phpstan/phpstan-deprecation-rules:^1 kint-php/kint:^5 --no-audit
+ddev composer require --dev drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
 
 # PHP Codesniffer Setup:
 ddev composer require --dev squizlabs/php_codesniffer:^3 --no-audit
