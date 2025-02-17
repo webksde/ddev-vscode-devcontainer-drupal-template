@@ -11,7 +11,7 @@ set -e
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
 DRUPAL_VERSION=11;
-PHP_VERSION=8.4
+PHP_VERSION=8.3
 
 if [[ $# = 1 ]]; then
   echo "Missing parameter given. Use 'ddev drowl-init -v 10/11' instead";
