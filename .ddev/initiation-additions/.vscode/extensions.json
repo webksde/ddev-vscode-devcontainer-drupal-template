@@ -9,9 +9,10 @@
     "ValeryanM.vscode-phpsab",
     /*--------------------------------------------------Javascript Specific Extensions--------------------------------------------------*/
     "dbaeumer.vscode-eslint",
-    /*--------------------------------------------------Drupal 10 Specific Extensions--------------------------------------------------*/
+    /*--------------------------------------------------Drupal Specific Extensions--------------------------------------------------*/
     "mblode.twig-language-2",
     "nadim-vscode.twig-code-snippets",
+    "stanislav.vscode-drupal"
     /*--------------------------------------------------Other Extensions--------------------------------------------------*/
     "mrmlnc.vscode-apache",
     "DEVSENSE.composer-php-vscode",
@@ -20,6 +21,7 @@
     "jgclark.vscode-todo-highlight",
     "esbenp.prettier-vscode",
     "streetsidesoftware.code-spell-checker",
-    "stylelint.vscode-stylelint"
+    "stylelint.vscode-stylelint",
+    "redhat.vscode-yaml",
   ]
 }
