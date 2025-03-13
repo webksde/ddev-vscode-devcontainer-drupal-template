@@ -158,6 +158,10 @@ ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_
 # Activate kint as default devel variables dumper
 ddev drush config-set devel.settings devel_dumper kint -y
 
+# Disable css and js aggregation:
+ddev drush config-set system.performance css.preprocess 0 -y
+ddev drush config-set system.performance js.preprocess 0 -y
+
 # Give authenticated and anonymous users "access devel information" (dsm / kint):
 ddev drush role:perm:add anonymous 'access devel information'
 ddev drush role:perm:add authenticated 'access devel information'
