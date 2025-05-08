@@ -11,7 +11,7 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
 echo -e $"\e\n[32mInitialising a Drupal DEV environment! This will take about ~5 min...\n\e[0m"
 
-PHP_VERSION=8.4
+PHP_VERSION=8.3
 
 # Remove README.md:
 rm ./README.md
@@ -20,7 +20,7 @@ rm ./README.md
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Create the config.yaml:
-ddev config --composer-version="${COMPOSER_VERSION}" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
+ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
 # For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
 ddev composer create -y "joachim-n/drupal-core-development-project"
@@ -31,6 +31,8 @@ ddev config --update
 # Require the "PHPMyAdmin" plugin:
 echo 'Requiring the "ddev-phpmyadmin" plugin...'
 ddev get ddev/ddev-phpmyadmin
+echo 'Requiring the "ddev-selenium-standalone-chrome" plugin...'
+ddev get ddev/ddev-selenium-standalone-chrome
 
 # Starting Drupal DDEV Containers
 ddev start
@@ -42,16 +44,16 @@ ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli tr
 ddev composer config --no-plugins allow-plugins.tbachert/spi true
 
 # Add general dependencies:
-ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender:^2 --no-audit
+ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender --no-audit
 
 # Add drupal dependencies:
-ddev composer require drupal/devel:^5 drupal/devel_php:^1 drupal/admin_toolbar:^3 drupal/backup_migrate:^5 drupal/stage_file_proxy:^3 drupal/config_inspector:^2 drupal/examples:^4 --no-audit
+ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples --no-audit
 
 # Add DEV dependencies (but no modules due to their database relationship)
 ddev composer require --dev drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
 
 # PHP Codesniffer Setup:
-ddev composer require --dev squizlabs/php_codesniffer:^3 --no-audit
+ddev composer require --dev squizlabs/php_codesniffer --no-audit
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
 ddev exec chmod +x vendor/bin/phpcbf
@@ -86,20 +88,20 @@ cp .ddev/initiation-additions/services.local.yml web/sites/default/services.loca
 # Get packages for eslint and JS code completion:
 echo 'Requiring npm dev packages... (This might take a bit)'
 cp web/core/package.json .
-ddev npm install
+ddev npm install --no-audit
 # Get jsconfig.json from initiation additions:
 cp .ddev/initiation-additions/jsconfig.json .
 
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
-ddev exec --raw composer config --json extra.patches.package-mantainer/package '{"INSERT WHAT IT DOES": "PATH TO PATCH"}'
+ddev exec --raw composer config extra.patches.package-mantainer/package --json '{"description": "path/to/patch"}'
 ddev composer config extra.enable-patching true
 ddev composer config minimum-stability dev
 
 # Add asset-packagist:
-ddev exec --raw composer config --json repositories.asset-packagist '{"type": "composer","url": "https://asset-packagist.org"}'
-ddev exec --raw composer config --json extra.installer-types '["npm-asset", "bower-asset"]'
-ddev exec --raw composer config --json extra.installer-paths.web/libraries/{\$name\} '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
+ddev exec --raw composer config repositories.asset-packagist --json '{"type": "composer","url": "https://asset-packagist.org"}'
+ddev exec --raw composer config extra.installer-types --json '["npm-asset", "bower-asset"]'
+ddev exec --raw composer config extra.installer-paths.web/libraries/{\$name\} --json '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
 
 # Activate Error Logging:
 ddev drush config-set system.logging error_level verbose -y
@@ -122,7 +124,7 @@ ddev export-db "$DDEV_PROJECT" > ./data/sql/db-dump-before-contrib.sql.gz
 echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
 
 # Acitvate drupal development modules:
-ddev drush en stage_file_proxy devel devel_generate devel_php config_inspector -y
+ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_generate devel_php config_inspector -y
 
 # Activate kint as default devel variables dumper
 ddev drush config-set devel.settings devel_dumper kint -y
@@ -150,6 +152,8 @@ cd ../../
 
 # Get PHPUnit.xml:
 cp phpunit-ddev.xml phpunit.xml
+# Delete old phpunit.xml:
+rm -f phpunit-ddev.xml
 
 # Give all Project informations:
 ddev describe
