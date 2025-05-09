@@ -14,6 +14,14 @@
           },
           "preLaunchTask": "DDEV: Enable Xdebug",
           "postDebugTask": "DDEV: Disable Xdebug"
-      }
+      },
+      {
+        "name": "Debug Javascript",
+        "type": "chrome",
+        "request": "launch",
+        // @todo We should make this url dynamic, based on the ddev project name:
+        "url": "https://standard-vscode-drupal.ddev.site/",
+        "webRoot": "/var/www/html/web"
+    }
   ]
 }
