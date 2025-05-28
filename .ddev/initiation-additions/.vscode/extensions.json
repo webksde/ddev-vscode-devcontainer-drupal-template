@@ -12,7 +12,6 @@
     /*--------------------------------------------------Drupal Specific Extensions--------------------------------------------------*/
     "mblode.twig-language-2",
     "nadim-vscode.twig-code-snippets",
-    "stanislav.vscode-drupal"
     /*--------------------------------------------------Other Extensions--------------------------------------------------*/
     "mrmlnc.vscode-apache",
     "DEVSENSE.composer-php-vscode",
