@@ -23,7 +23,7 @@ rm -r ./.git ./.gitignore ./.gitattributes -f
 ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
 # For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
-ddev composer create -y "joachim-n/drupal-core-development-project"
+ddev composer create-project -y "joachim-n/drupal-core-development-project"
 
 # Update the config:
 ddev config --update
