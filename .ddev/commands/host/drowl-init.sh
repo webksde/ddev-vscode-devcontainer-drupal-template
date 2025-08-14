@@ -45,7 +45,7 @@ rm -r ./.git ./.gitignore ./.gitattributes -f
 ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
 # Create the composer create command:
-ddev composer create -y --stability RC "drupal/recommended-project:^${DRUPAL_VERSION}"
+ddev composer create-project -y --stability RC "drupal/recommended-project:^${DRUPAL_VERSION}"
 
 # Update the config:
 ddev config --update
