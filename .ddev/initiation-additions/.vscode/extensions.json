@@ -5,7 +5,6 @@
     "neilbrayfield.php-docblocker",
     "cvergne.vscode-php-getters-setters-cv",
     "bmewburn.vscode-intelephense-client",
-    "mehedidracula.php-namespace-resolver",
     "ValeryanM.vscode-phpsab",
     /*--------------------------------------------------Javascript Specific Extensions--------------------------------------------------*/
     "dbaeumer.vscode-eslint",
@@ -21,5 +20,6 @@
     "esbenp.prettier-vscode",
     "streetsidesoftware.code-spell-checker",
     "stylelint.vscode-stylelint",
+    "timonwong.shellcheck",
   ]
 }
