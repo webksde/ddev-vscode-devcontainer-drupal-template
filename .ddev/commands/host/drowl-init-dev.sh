@@ -25,6 +25,9 @@ ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot
 # For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
 ddev composer create-project -y "joachim-n/drupal-core-development-project"
 
+# Fix autoload path for PHPUnit testing:
+sed -i "s|__DIR__ . '/vendor/autoload.php'|__DIR__ . '/../../vendor/autoload.php'|" repos/drupal/autoload.php
+
 # Update the config:
 ddev config --update
 
