@@ -69,7 +69,7 @@ ddev composer config --no-plugins allow-plugins.tbachert/spi true
 ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender --no-audit
 
 # Add drupal dependencies:
-ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples --no-audit
+ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples drupal/webprofiler --no-audit
 
 # Add DEV dependencies (but no modules due to their database relationship)
 # Note, that "drupal/core-dev" contains dependencies like phpunit, phpstan, etc.
@@ -153,7 +153,7 @@ ddev export-db "$DDEV_PROJECT" > ./data/sql/db-dump-before-contrib.sql.gz
 echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
 
 # Acitvate drupal development modules:
-ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_generate devel_php backup_migrate config_inspector examples -y
+ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_generate devel_php backup_migrate config_inspector examples webprofiler -y
 
 # Activate kint as default devel variables dumper
 ddev drush config-set devel.settings devel_dumper kint -y
@@ -174,7 +174,8 @@ echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 ddev describe
 
 # Notice about debugging inside attached VS-Code:
-echo -e $'\e\n[33mNOTE: To debug inside the attached VS-Code instance, run `ddev config global --xdebug-ide-location=container`\n\e[0m'
+echo -e $'\e\n[33mNOTE: To debug inside the attached VS-Code instance, run `ddev config global --xdebug-ide-location=container && ddev restart`\n\e[0m'
+echo -e $'\e\n[33mNOTE: To enable xhprof profiling, run `ddev config global --xhprof-mode=xhgui && ddev restart`\n\e[0m'
 
 # Helper Messages
 echo "Use 'ddev code' to attach VSCode to your running Container."
