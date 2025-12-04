@@ -17,7 +17,7 @@
     "eamodio.gitlens",
     "dmitrydorofeev.empty-indent",
     "jgclark.vscode-todo-highlight",
-    "esbenp.prettier-vscode",
+    "prettier.prettier-vscode",
     "streetsidesoftware.code-spell-checker",
     "stylelint.vscode-stylelint",
     "timonwong.shellcheck",
