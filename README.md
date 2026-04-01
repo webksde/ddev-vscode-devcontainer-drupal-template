@@ -64,7 +64,6 @@ Provides a plug and play 🔌 DDEV (Docker) based development environment with a
   - [Stage File Proxy](https://www.drupal.org/project/stage_file_proxy)
   - [Config Inspector](https://www.drupal.org/project/config_inspector)
   - [Examples](https://www.drupal.org/project/examples)
-  - [Web Profiler](https://www.drupal.org/project/webprofiler)
 
 Beautifully packaged for easy project and environment switching.
 
