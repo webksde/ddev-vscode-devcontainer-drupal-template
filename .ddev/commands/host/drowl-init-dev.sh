@@ -51,7 +51,7 @@ ddev composer config --no-plugins allow-plugins.tbachert/spi true
 ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender --no-audit
 
 # Add drupal dependencies:
-ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples --no-audit
+ddev composer require drush/drush drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples --no-audit
 
 # Add DEV dependencies (but no modules due to their database relationship)
 ddev composer require --dev drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
