@@ -136,15 +136,17 @@ ddev drush en config_inspector -y
 # devel devel_generate devel_php admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy
 
 # Activate kint as default devel variables dumper
-ddev drush config-set devel.settings devel_dumper kint -y
+# @todo Enable again, once support is added:
+# ddev drush config-set devel.settings devel_dumper kint -y
 
 # Disable css and js aggregation:
 ddev drush config-set system.performance css.preprocess 0 -y
 ddev drush config-set system.performance js.preprocess 0 -y
 
 # Give authenticated and anonymous users "access devel information" (dsm / kint):
-ddev drush role:perm:add anonymous 'access devel information'
-ddev drush role:perm:add authenticated 'access devel information'
+# @todo Enable again, once support is added:
+# ddev drush role:perm:add anonymous 'access devel information'
+# ddev drush role:perm:add authenticated 'access devel information'
 
 # Create the "normal" db dump:
 ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
