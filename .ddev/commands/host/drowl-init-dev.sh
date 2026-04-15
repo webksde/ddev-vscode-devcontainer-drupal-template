@@ -11,7 +11,8 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 
 echo -e $"\e\n[32mInitialising a Drupal DEV environment! This will take about ~5 min...\n\e[0m"
 
-PHP_VERSION=8.3
+PHP_VERSION=8.5
+PROJECT_TYPE="drupal12"
 
 # Remove README.md:
 rm ./README.md
@@ -20,7 +21,7 @@ rm ./README.md
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
 # Create the config.yaml:
-ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
+ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="${PROJECT_TYPE}" --disable-settings-management --auto
 
 # For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
 ddev composer create-project -y "joachim-n/drupal-core-development-project"
