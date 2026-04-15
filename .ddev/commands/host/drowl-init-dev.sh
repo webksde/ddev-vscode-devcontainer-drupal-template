@@ -51,7 +51,10 @@ ddev composer config --no-plugins allow-plugins.tbachert/spi true
 ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender --no-audit
 
 # Add drupal dependencies:
-ddev composer require drush/drush drupal/devel drupal/devel_php drupal/admin_toolbar drupal/backup_migrate drupal/stage_file_proxy drupal/config_inspector drupal/examples --no-audit
+ddev composer require drush/drush drupal/devel:^5 drupal/backup_migrate drupal/config_inspector --no-audit
+
+# @todo These modules are currently not Drupal 12 compatible. Activate them in the future:
+# drupal/devel_php drupal/admin_toolbar drupal/examples drupal/stage_file_proxy
 
 # Add DEV dependencies (but no modules due to their database relationship)
 ddev composer require --dev drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
@@ -128,7 +131,9 @@ ddev export-db "$DDEV_PROJECT" > ./data/sql/db-dump-before-contrib.sql.gz
 echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
 
 # Acitvate drupal development modules:
-ddev drush en admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy devel devel_generate devel_php config_inspector -y
+ddev drush en devel devel_generate config_inspector -y
+# @todo These modules are currently not Drupal 12 compatible. Activate them in the future:
+# devel_php admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy
 
 # Activate kint as default devel variables dumper
 ddev drush config-set devel.settings devel_dumper kint -y
