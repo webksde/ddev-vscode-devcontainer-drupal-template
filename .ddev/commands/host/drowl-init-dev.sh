@@ -27,7 +27,10 @@ ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot
 ddev composer create-project -y "joachim-n/drupal-core-development-project"
 
 # Fix autoload path for PHPUnit testing:
-sed -i "s|__DIR__ . '/vendor/autoload.php'|__DIR__ . '/../../vendor/autoload.php'|" repos/drupal/autoload.php
+# Create a symlink to the vendor directory so phpunit can find the autoloader
+ln -sf ../../vendor repos/drupal/vendor
+# Add vendor to git exclude so it isn't tracked
+echo "vendor" >> repos/drupal/.git/info/exclude
 
 # Update the config:
 ddev config --update
