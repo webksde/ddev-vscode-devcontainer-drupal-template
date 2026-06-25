@@ -17,7 +17,7 @@
     "editor.defaultFormatter":"dbaeumer.vscode-eslint"
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": false
+    "source.fixAll.eslint": "never"
   },
   "eslint.workingDirectories": [
     "./web"
@@ -85,8 +85,6 @@
   "intelephense.environment.shortOpenTag": true,
   "intelephense.telemetry.enabled": false,
   "phpsab.standard": "Drupal,DrupalPractice",
-  "phpsab.snifferArguments": ["--extensions=inc,theme,install,module,profile,php,phtml"],
-  "phpsab.fixerArguments": ["--extensions=inc,theme,install,module,profile,php,phtml"],
   "[php]": {
     "editor.defaultFormatter": "valeryanm.vscode-phpsab"
   },
@@ -157,23 +155,5 @@
   },
   "stylelint.enable":true,
   "stylelint.configFile": "./web/core/.stylelintrc.json",
-  "workbench.colorCustomizations": {
-    "activityBar.activeBackground": "#0897ef",
-    "activityBar.background": "#0897ef",
-    "activityBar.foreground": "#e7e7e7",
-    "activityBar.inactiveForeground": "#e7e7e799",
-    "activityBarBadge.background": "#fdc1e6",
-    "activityBarBadge.foreground": "#15202b",
-    "commandCenter.border": "#e7e7e799",
-    "sash.hoverBorder": "#0897ef",
-    "statusBar.background": "#0678be",
-    "statusBar.foreground": "#e7e7e7",
-    "statusBarItem.hoverBackground": "#0897ef",
-    "statusBarItem.remoteBackground": "#0678be",
-    "statusBarItem.remoteForeground": "#e7e7e7",
-    "titleBar.activeBackground": "#0678be",
-    "titleBar.activeForeground": "#e7e7e7",
-    "titleBar.inactiveBackground": "#0678be99",
-    "titleBar.inactiveForeground": "#e7e7e799"
-  },
+  "chat.implicitContext.suggestedContext": false
 }
