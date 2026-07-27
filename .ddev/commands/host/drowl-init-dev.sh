@@ -90,6 +90,30 @@ test -e web/core/cspell.json && cp web/core/cspell.json .
 chmod 0755 ./web/sites/default
 chmod 0644 ./web/sites/default/settings.php
 
+# Ensure PHPUnit/Functional test filesystem targets exist.
+#
+# When `web/core` is a symlink to `repos/drupal/core`, Drupal's test runner
+# effectively treats `repos/drupal` as the application root. In that case it
+# expects `repos/drupal/sites/default/files` to exist for `public://`.
+mkdir -p ./web/sites/default/files
+mkdir -p ./web/sites/default/files/simpletest
+
+# simpletest/ is used for browser test output and other artifacts.
+mkdir -p ./web/sites/simpletest/browser_output
+
+# Symlink the test filesystem targets into the Drupal core repo.
+# Keep existing directories intact; only symlink when missing or already a link.
+if [ ! -e ./repos/drupal/sites/default/files ] || [ -L ./repos/drupal/sites/default/files ]; then
+  ln -sf ../../../../web/sites/default/files ./repos/drupal/sites/default/files
+fi
+if [ ! -e ./repos/drupal/sites/simpletest ] || [ -L ./repos/drupal/sites/simpletest ]; then
+  ln -sf ../../../web/sites/simpletest ./repos/drupal/sites/simpletest
+fi
+
+# Ensure the directories are writable for the PHP process.
+chmod 0777 ./web/sites/default/files ./web/sites/default/files/simpletest
+chmod 0777 ./web/sites/simpletest ./web/sites/simpletest/browser_output
+
 # Get settings.php, settings.local.php and services.local.yml:
 cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
 cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
