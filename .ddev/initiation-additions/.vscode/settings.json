@@ -11,6 +11,7 @@
   "javascript.validate.enable": true,
   "javascript.format.enable": true,
   "eslint.format.enable": true,
+  "editor.inlayHints.enabled": false,
   "eslint.enable": true,
   "prettier.configPath": "web/core/.prettierrc.json",
   "[javascript]": {
