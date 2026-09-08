@@ -24,7 +24,7 @@ rm -r ./.git ./.gitignore ./.gitattributes -f
 ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="${PROJECT_TYPE}" --disable-settings-management --auto
 
 # For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
-ddev composer create-project -y "joachim-n/drupal-core-development-project"
+ddev composer create-project "joachim-n/drupal-core-development-project"
 
 # Fix autoload path for PHPUnit testing:
 # Create a symlink to the vendor directory so phpunit can find the autoloader
