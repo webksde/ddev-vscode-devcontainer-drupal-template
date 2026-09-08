@@ -8,29 +8,24 @@
   "editor.quickSuggestions": {
     "comments": false
   },
-  "javascript.validate.enable": true,
-  "javascript.format.enable": true,
+  "js/ts.validate.enabled": true,
   "eslint.format.enable": true,
-  "editor.inlayHints.enabled": false,
+  "editor.inlayHints.enabled": "off",
   "eslint.enable": true,
   "prettier.configPath": "web/core/.prettierrc.json",
   "[javascript]": {
-    "editor.defaultFormatter":"dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "never"
   },
-  "eslint.workingDirectories": [
-    "./web"
-  ],
+  "eslint.workingDirectories": ["./web"],
   "php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
   "terminal.integrated.defaultProfile.linux": "bash",
   "emptyIndent.removeIndent": true, //Automatically remove indentation in empty lines on save
   "emptyIndent.highlightIndent": false, //Highlight indent on empty lines
   "emptyIndent.highlightColor": "rgba(246,36,89,0.6)", //Highlight indent color
-  "emptyIndent.exclude": [
-    ".md"
-  ], //Excluded file types
+  "emptyIndent.exclude": [".md"], //Excluded file types
   "todohighlight.isEnable": true,
   "todohighlight.isCaseSensitive": true,
   "todohighlight.keywords": [
@@ -48,7 +43,7 @@
       "border": "none",
       "overviewRulerColor": "grey",
       "isWholeLine": false
-    },
+    }
   ],
   "todohighlight.include": [
     "**/*.js",
@@ -71,9 +66,10 @@
     "**/*.php",
     "**/*.phtml",
     "**/*.twig",
-    "**/*.tpl",
+    "**/*.tpl"
   ],
-  "intelephense.files.exclude": [ //more specific excludes so Tests should be recognized
+  "intelephense.files.exclude": [
+    //more specific excludes so Tests should be recognized
     "**/.git/**",
     "**/.svn/**",
     "**/.hg/**",
@@ -85,13 +81,12 @@
   ],
   "intelephense.environment.shortOpenTag": true,
   "intelephense.telemetry.enabled": false,
-  "phpsab.standard": "Drupal,DrupalPractice",
+  "phpcs.standard": "Drupal,DrupalPractice",
   "[php]": {
-    "editor.defaultFormatter": "valeryanm.vscode-phpsab"
+    "editor.defaultFormatter": "johnrdorazio.vscode-phpcs",
+    "editor.formatOnSave": true
   },
-  "intelephense.environment.includePaths": [
-    "web/core/includes"
-  ],
+  "intelephense.environment.includePaths": ["web/core/includes"],
   "intelephense.files.associations": [
     "*.inc",
     "*.theme",
@@ -118,9 +113,7 @@
   "css.validate": true,
   "editor.formatOnPaste": false,
   "cSpell.workspaceRootPath": "./web/core",
-  "editor.rulers": [
-    80
-  ],
+  "editor.rulers": [80],
   "files.associations": {
     "*.inc": "php",
     "*.module": "php",
@@ -149,12 +142,13 @@
   "html.validate.scripts": false,
   "html.validate.styles": false,
   "[scss]": {
-    "editor.defaultFormatter":"esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[css]": {
-    "editor.defaultFormatter":"stylelint.vscode-stylelint"
+    "editor.defaultFormatter": "stylelint.vscode-stylelint"
   },
-  "stylelint.enable":true,
+  "stylelint.enable": true,
   "stylelint.configFile": "./web/core/.stylelintrc.json",
-  "chat.implicitContext.suggestedContext": false
+  "chat.disableAIFeatures": true,
+  "claudeCode.focusView": true
 }
