@@ -60,10 +60,10 @@ ddev composer require drush/drush drupal/backup_migrate drupal/admin_toolbar dru
 # drupal/devel drupal/devel_php drupal/stage_file_proxy
 
 # Add DEV dependencies (but no modules due to their database relationship)
-ddev composer require --dev drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
+ddev composer require --dev drupal/coder:^9 phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
 
 # PHP Codesniffer Setup:
-ddev composer require --dev squizlabs/php_codesniffer --no-audit
+ddev composer require --dev squizlabs/php_codesniffer:^4 --no-audit
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
 ddev exec chmod +x vendor/bin/phpcbf

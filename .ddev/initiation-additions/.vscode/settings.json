@@ -35,7 +35,7 @@
       "backgroundColor": "rgba(255, 252, 127)",
       "border": "none",
       "isWholeLine": false
-    },
+    }
   ],
   "todohighlight.include": [
     "**/*.js",
@@ -73,10 +73,12 @@
   ],
   "intelephense.environment.shortOpenTag": true,
   "intelephense.telemetry.enabled": false,
+  "phpsab.autoRulesetSearch": false,
   "phpsab.standard": "Drupal,DrupalPractice",
   "[php]": {
     "editor.defaultFormatter": "valeryanm.vscode-phpsab",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true
   },
   "intelephense.environment.includePaths": ["web/core/includes"],
   "intelephense.files.associations": [
@@ -141,6 +143,5 @@
   },
   "stylelint.enable": true,
   "stylelint.configFile": "./web/core/.stylelintrc.json",
-  "chat.disableAIFeatures": true,
-  "claudeCode.focusView": true
+  "chat.disableAIFeatures": true
 }

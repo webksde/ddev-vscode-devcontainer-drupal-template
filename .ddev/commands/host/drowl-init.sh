@@ -74,10 +74,10 @@ ddev composer require drupal/devel drupal/devel_php drupal/admin_toolbar drupal/
 # Add DEV dependencies (but no modules due to their database relationship)
 # Note, that "drupal/core-dev" contains dependencies like phpunit, phpstan, etc.
 ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION} --update-with-all-dependencies --no-audit
-ddev composer require --dev drush/drush drupal/coder phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
+ddev composer require --dev drush/drush drupal/coder:^9 phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
 
 # PHP Codesniffer Setup:
-ddev composer require --dev squizlabs/php_codesniffer --no-audit
+ddev composer require --dev squizlabs/php_codesniffer:^4 --no-audit
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
 ddev exec chmod +x vendor/bin/phpcbf
