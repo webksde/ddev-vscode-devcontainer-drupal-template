@@ -4,7 +4,7 @@
     "xdebug.php-debug",
     "neilbrayfield.php-docblocker",
     "bmewburn.vscode-intelephense-client",
-    "johnrdorazio.vscode-phpcs",
+    "valeryanm.vscode-phpsab",
     /*--------------------------------------------------Javascript Specific Extensions--------------------------------------------------*/
     "dbaeumer.vscode-eslint",
     /*--------------------------------------------------Drupal Specific Extensions--------------------------------------------------*/
