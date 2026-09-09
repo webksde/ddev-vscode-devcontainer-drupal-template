@@ -36,14 +36,6 @@
       "border": "none",
       "isWholeLine": false
     },
-    {
-      "text": "TODO LATER",
-      "color": "white",
-      "backgroundColor": "rgba(189, 195, 199)",
-      "border": "none",
-      "overviewRulerColor": "grey",
-      "isWholeLine": false
-    }
   ],
   "todohighlight.include": [
     "**/*.js",
@@ -81,9 +73,9 @@
   ],
   "intelephense.environment.shortOpenTag": true,
   "intelephense.telemetry.enabled": false,
-  "phpcs.standard": "Drupal,DrupalPractice",
+  "phpsab.standard": "Drupal,DrupalPractice",
   "[php]": {
-    "editor.defaultFormatter": "johnrdorazio.vscode-phpcs",
+    "editor.defaultFormatter": "valeryanm.vscode-phpsab",
     "editor.formatOnSave": true
   },
   "intelephense.environment.includePaths": ["web/core/includes"],
