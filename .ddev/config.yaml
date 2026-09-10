@@ -9,13 +9,13 @@ additional_hostnames: []
 additional_fqdns: []
 database:
     type: mariadb
-    version: "11.4"
+    version: "11.8"
 use_dns_when_possible: true
 timezone: Europe/Berlin
-composer_version: stable
+composer_version: "2"
 disable_settings_management: true
 web_environment: []
-nodejs_version: "20"
+nodejs_version: "24"
 corepack_enable: false
 
 # Key features of DDEV's config.yaml:
