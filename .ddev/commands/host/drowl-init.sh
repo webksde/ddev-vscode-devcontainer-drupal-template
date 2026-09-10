@@ -64,6 +64,7 @@ ddev composer config --no-plugins allow-plugins.cweagans/composer-patches true
 ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
 ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
 ddev composer config --no-plugins allow-plugins.tbachert/spi true
+ddev composer config --no-plugins allow-plugins.symfony/runtime true
 
 # Add general dependencies:
 ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender --no-audit
