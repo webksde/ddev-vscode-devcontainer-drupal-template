@@ -11,7 +11,7 @@ Quickly startup a **standard** dev environment using Drupal 11, meant to be used
 ~~~
 git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git standard-vscode-drupal && cd standard-vscode-drupal && ddev drowl-init
 ~~~
-or startup a **core** dev environment using gitified Drupal 11.x-dev, meant to be used for working on core issues:
+or startup a **core** dev environment using gitified Drupal 12.x-dev, meant to be used for working on core issues:
 ~~~
 git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git core-vscode-drupal && cd core-vscode-drupal && ddev drowl-init-dev
 ~~~
@@ -84,7 +84,7 @@ Beautifully packaged for easy project and environment switching.
 ## How to use
  1. Create a project folder and switch into it: `mkdir project-folder && cd project-folder`
  2. Clone the repository into the just created folder: `git clone git@github.com:webksde/ddev-vscode-devcontainer-drupal-template.git .`
- 3. Use `ddev drowl-init` to directly start up the environment using Drupal 10 with VSCode / Drupal Best Practice Tools
+ 3. Use `ddev drowl-init` to directly start up the environment using Drupal 11 with VSCode / Drupal Best Practice Tools (use `ddev drowl-init -v 9` or `-v 10` for older versions)
  4. You are ready to go! Use `ddev describe` to check the status & URLs of your Project and `ddev code` to run your prepared VSCode IDE!
     1. Note, when inside the attached VSCode go to "Extensions" and type in "@recommended" to reveal all the necessary Extensions. Installing them is recommended!
 
@@ -92,7 +92,7 @@ Beautifully packaged for easy project and environment switching.
  - Local Drupal development / testing / evaluation instance from scratch or existing with ready-to-go IDE
  - Module / Theme development or evaluation
  - Contrib module issue forks / merge requests / patch creation (Git clone / commit / push / ...)
- - Simple & quick Drupal 10 Sandbox for offline / local
+ - Simple & quick Drupal 11 Sandbox for offline / local
 
 ---
 
