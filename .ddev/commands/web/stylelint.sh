@@ -7,7 +7,7 @@
 
 if [ $# == 0 ]
 then
-  npx stylelint --config /var/www/html/web/core/.stylelintrc.json $PWD/**/*.css
+  npx stylelint --config /var/www/html/web/core/.stylelintrc.json "$PWD/**/*.css"
 else
-  npx stylelint --config /var/www/html/web/core/.stylelintrc.json $*/**/*.css
+  npx stylelint --config /var/www/html/web/core/.stylelintrc.json "$*/**/*.css"
 fi

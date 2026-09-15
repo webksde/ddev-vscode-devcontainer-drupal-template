@@ -196,7 +196,7 @@ function openTunnel() {
       printf "${successC}✓${endC}\n"
     else
       cursorBack 1
-      printf "${errorC}✓${endC}\n"
+      printf "${errorC}🞩${endC}\n"
       exit 1
     fi
 
@@ -252,7 +252,7 @@ eval "$findCommand -print0" |
     eval "$mysqlCommand < \"$_file\"&"
     if ! spinner $!; then
       echo $?
-      printf "${errorC}✓${endC}\n"
+      printf "${errorC}🞩${endC}\n"
       printf "Error\n"
       exit 1
     fi
