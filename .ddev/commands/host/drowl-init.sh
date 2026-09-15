@@ -14,21 +14,24 @@ DRUPAL_VERSION=11;
 PHP_VERSION=8.3
 
 if [[ $# = 1 ]]; then
-  echo "Missing parameter given. Use 'ddev drowl-init -v 10/11' instead";
+  echo "Missing parameter given. Use 'ddev drowl-init -v 10' instead";
   exit;
 fi
 
 if [[ $# = 2 && ( "$1" != "-v" && "$1" != "--version" )]]; then
-  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 10/11' instead";
+  echo "Unkown flag '$1' given. Use 'ddev drowl-init -v 10' instead";
   exit;
 fi
 
-if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" != "9" && "$2" != "10" && "$2" != "dev") ]]; then
-  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 10/11' instead";
+if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" != "9" && "$2" != "10") ]]; then
+  echo "Unkown parameter '$2' given. Use 'ddev drowl-init -v 10' instead";
   exit;
 fi
 
-if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && "$2" = 9 ]]; then
+# Drupal 9 has reached end-of-life, so requests for it are served the oldest
+# version we still support (10). "-v 10" explicitly installs Drupal 10 too;
+# for Drupal core development, use 'ddev drowl-init-dev' instead.
+if [[ $# = 2 && ( "$1" = "-v" || "$1" = "--version" ) && ( "$2" = "9" || "$2" = "10" ) ]]; then
   DRUPAL_VERSION=10;
   PHP_VERSION=8.3;
 fi
@@ -45,7 +48,7 @@ rm -r ./.git ./.gitignore ./.gitattributes -f
 ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="drupal" --disable-settings-management --auto
 
 # Create the composer create command:
-ddev composer create-project --stability RC "drupal/recommended-project:^${DRUPAL_VERSION}"
+ddev composer create-project "drupal/recommended-project:^${DRUPAL_VERSION}"
 
 # Update the config:
 ddev config --update
