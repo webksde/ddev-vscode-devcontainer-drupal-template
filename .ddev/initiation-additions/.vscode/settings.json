@@ -92,8 +92,6 @@
   ],
   "intelephense.phpdoc.returnVoid": false,
   "intelephense.format.braces": "k&r",
-  "phpstan.configFile": "phpstan.neon",
-  "phpstan.enabled": true,
   "breadcrumbs.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.tabSize": 2,

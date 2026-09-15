@@ -28,20 +28,21 @@ Provides a plug and play 🔌 DDEV (Docker) based development environment with a
 - VS-Code Extensions
   - [Intelephense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client)
   - [PHP Debug (Using XDebug)](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
-  - [PHP Getters & Setters](https://marketplace.visualstudio.com/items?itemName=cvergne.vscode-php-getters-setters-cv)
-  - [PHP Namespace Resolver](https://marketplace.visualstudio.com/items?itemName=MehediDracula.php-namespace-resolver)
   - [PHP DocBlocker](https://marketplace.visualstudio.com/items?itemName=neilbrayfield.php-docblocker)
-  - [PHPStan](https://marketplace.visualstudio.com/items?itemName=SanderRonde.phpstan-vscode)
   - [PHP Sniffer & Beautifier](https://marketplace.visualstudio.com/items?itemName=ValeryanM.vscode-phpsab)
   - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
   - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
   - [CSpell](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker)
   - [Twig Language 2](https://marketplace.visualstudio.com/items?itemName=mblode.twig-language-2)
+  - [Twig Code Snippets](https://marketplace.visualstudio.com/items?itemName=nadim-vscode.twig-code-snippets)
   - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
-  - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
+  - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=jgclark.vscode-todo-highlight)
   - [Apache Conf](https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-apache)
   - [Composer](https://marketplace.visualstudio.com/items?itemName=DEVSENSE.composer-php-vscode)
-  - [Peacock](https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock)
+  - [Empty Indent](https://marketplace.visualstudio.com/items?itemName=dmitrydorofeev.empty-indent)
+  - [Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint)
+  - [ShellCheck](https://marketplace.visualstudio.com/items?itemName=timonwong.shellcheck)
+  - [Claude Code](https://marketplace.visualstudio.com/items?itemName=Anthropic.claude-code)
 
 - VS-Code Launch configuration
   - Listen for XDebug

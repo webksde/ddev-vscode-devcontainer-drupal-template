@@ -19,8 +19,7 @@
         "name": "Debug Javascript",
         "type": "chrome",
         "request": "launch",
-        // @todo We should make this url dynamic, based on the ddev project name:
-        "url": "https://standard-vscode-drupal.ddev.site/",
+        "url": "${env:DDEV_PRIMARY_URL}",
         "webRoot": "/var/www/html/web"
     }
   ]
