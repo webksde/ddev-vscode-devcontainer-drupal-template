@@ -17,6 +17,29 @@ disable_settings_management: true
 web_environment: []
 nodejs_version: "24"
 corepack_enable: false
+# The web container's home directory is not persisted across "ddev restart"
+# (it lives in the container's throwaway writable layer, not in a mounted
+# volume), so tools that store their login/session state there - like the
+# Claude Code CLI ("~/.claude" and "~/.claude.json") - force a re-login every
+# time the container is recreated. To avoid that, we relocate that state into
+# "/mnt/ddev-global-cache", which IS a persistent Docker volume (the same one
+# already used for the composer/npm/yarn caches), and symlink it back into
+# place on every start.
+hooks:
+  post-start:
+    - exec: |
+        CACHE_DIR="/mnt/ddev-global-cache/claude-code"
+        mkdir -p "$CACHE_DIR/.claude"
+        if [ -d "$HOME/.claude" ] && [ ! -L "$HOME/.claude" ]; then
+          cp -an "$HOME/.claude/." "$CACHE_DIR/.claude/" 2>/dev/null || true
+          rm -rf "$HOME/.claude"
+        fi
+        if [ -f "$HOME/.claude.json" ] && [ ! -L "$HOME/.claude.json" ]; then
+          [ -f "$CACHE_DIR/.claude.json" ] || cp -a "$HOME/.claude.json" "$CACHE_DIR/.claude.json"
+          rm -f "$HOME/.claude.json"
+        fi
+        ln -sfn "$CACHE_DIR/.claude" "$HOME/.claude"
+        ln -sfn "$CACHE_DIR/.claude.json" "$HOME/.claude.json"
 
 # Key features of DDEV's config.yaml:
 
