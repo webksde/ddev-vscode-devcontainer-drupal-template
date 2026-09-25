@@ -6,6 +6,7 @@
 
 ## PHP Guidelines
 - **Conditional Checks:** Use `empty()` inside `if` statements where evaluating falsy/empty values is appropriate.
+- Do not run tests yourself unless explicitly told.
 
 ## Vue Guidelines
 - **Single File Component Structure:** In `.vue` files, always place the `<template>` block at the top, preceding `<script>` and `<style>` blocks.
