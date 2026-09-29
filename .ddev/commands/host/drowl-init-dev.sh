@@ -55,7 +55,7 @@ ddev composer config --no-plugins allow-plugins.symfony/runtime true
 ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender --no-audit
 
 # Add drupal dependencies:
-ddev composer require drush/drush drupal/backup_migrate drupal/admin_toolbar drupal/examples drupal/config_inspector --no-audit
+ddev composer require drush/drush drupal/backup_migrate drupal/coffee drupal/examples drupal/config_inspector --no-audit
 
 # @todo These modules are currently not Drupal 12 compatible. Activate them in the future:
 # drupal/devel drupal/devel_php drupal/stage_file_proxy
@@ -161,7 +161,7 @@ echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
 # Acitvate drupal development modules:
 ddev drush en config_inspector -y
 # @todo These modules are currently not Drupal 12 compatible. Activate them in the future:
-# devel devel_generate devel_php admin_toolbar admin_toolbar_tools admin_toolbar_search stage_file_proxy
+# devel devel_generate devel_php stage_file_proxy
 
 # Activate kint as default devel variables dumper
 # @todo Enable again, once support is added:
@@ -200,7 +200,7 @@ ddev describe
 # Notice about debugging inside attached VS-Code:
 echo -e $'\e\n[33mNOTE: To debug inside the attached VS-Code instance, run `ddev config global --xdebug-ide-location=container`\n\e[0m'
 
-echo -e $'\e\n[33mSome dev modules like examples, admin_toolbar or backup_migrate are not installed, as they have no official Drupal 12 support. But you can try tinkering with their respective `core_version_requirement` entry to make them work for Drupal 12.\n\e[0m'
+echo -e $'\e\n[33mSome dev modules like examples or backup_migrate are not installed, as they have no official Drupal 12 support. But you can try tinkering with their respective `core_version_requirement` entry to make them work for Drupal 12.\n\e[0m'
 
 # Helper Messages
 echo "Use 'ddev code' to attach VSCode to your running Container."
