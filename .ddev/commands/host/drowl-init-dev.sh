@@ -61,7 +61,7 @@ ddev composer require drush/drush drupal/backup_migrate drupal/coffee drupal/exa
 # drupal/devel drupal/devel_php drupal/stage_file_proxy
 
 # Add DEV dependencies (but no modules due to their database relationship)
-ddev composer require --dev drupal/coder:^9 phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
+ddev composer require --dev drupal/coder:^8 phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
 
 # PHP Codesniffer Setup:
 ddev composer require --dev squizlabs/php_codesniffer:^4 --no-audit
