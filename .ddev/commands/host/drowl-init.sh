@@ -81,7 +81,7 @@ ddev composer require --dev drupal/core-dev:^${DRUPAL_VERSION} --update-with-all
 ddev composer require --dev drush/drush drupal/coder:^8 phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
 
 # PHP Codesniffer Setup:
-ddev composer require --dev squizlabs/php_codesniffer:^4 --no-audit
+ddev composer require --dev squizlabs/php_codesniffer:^3 --no-audit
 # Initialize development environment tools:
 ddev exec chmod +x vendor/bin/phpcs
 ddev exec chmod +x vendor/bin/phpcbf
