@@ -3,19 +3,10 @@ The tools inside this repository will create a modified Drupal environment, focu
 
 **DO NOT USE IN PRODUCTION - This is a local development tool!**
 
+## Quick-Start
 **Spin up a ready-to-code Drupal 10/11 CMS DDEV based development container with preconfigured Drupal Best-Practice Dev-Modules and Visual Studio Code Settings/Extensions in three commands!** 🚀
 
----
-
-## Prerequisites
-1. Up to date versions of [DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/), Docker and Chrome/Firefox
-2. VSCode installed on your machine locally
-3. The [Remote Development Extension Pack for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) (`ms-vscode-remote.vscode-remote-extensionpack`)
-4. (Optional) To debug inside the attached VSCode instance, run `ddev config global --xdebug-ide-location=container`
-   - This option is only available globally, so you need to adjust it again when working with other DDEV projects where VSCode is not attached to the web container (e.g. when running the IDE in WSL, use `ddev config global --xdebug-ide-location=wsl2`).
-
-## Quick-Start
-Initialization takes about 5 minutes and is only needed once.
+Initialization takes about 5 minutes and is only needed once. Make sure you meet the [prerequisites](#prerequisites) first.
 
 Start a **standard** dev environment using Drupal 11, meant for testing and working on contrib modules / issues:
 ```
@@ -41,6 +32,13 @@ Afterwards:
 - Contrib module issue forks / merge requests / patch creation (Git clone / commit / push / ...)
 - Drupal core development
 - Simple & quick Drupal sandbox for offline / local use
+
+## Prerequisites
+1. Up to date versions of [DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/), Docker and Chrome/Firefox
+2. VSCode installed on your machine locally
+3. The [Remote Development Extension Pack for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) (`ms-vscode-remote.vscode-remote-extensionpack`)
+4. (Optional) To debug inside the attached VSCode instance, run `ddev config global --xdebug-ide-location=container`
+   - This option is only available globally, so you need to adjust it again when working with other DDEV projects where VSCode is not attached to the web container (e.g. when running the IDE in WSL, use `ddev config global --xdebug-ide-location=wsl2`).
 
 ---
 
@@ -74,7 +72,8 @@ A launch configuration for "Listen for XDebug" is included.
 - [PHPUnit](https://phpunit.de/) (incl. [code coverage](https://docs.phpunit.de/en/main/code-coverage.html))
 - [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer) (PHPCS / PHPCBF) with [Drupal Coder](https://www.drupal.org/project/coder) standards
 - [PHPStan](https://phpstan.org/) with deprecation rules
-- [ESLint](https://eslint.org/) and [Stylelint](https://stylelint.io/)
+- [ESLint](https://eslint.org/), [Stylelint](https://stylelint.io/) and [CSpell](https://cspell.org/)
+- All linters behave like the drupal.org GitLab CI jobs (see [below](#linting-like-the-drupalorg-gitlab-ci))
 - [XDebug](https://xdebug.org/) and [Kint](https://kint-php.github.io/kint/)
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) (see [below](#claude-code-in-the-web-container))
 - [DDEV Tooling](https://ddev.readthedocs.io/en/stable/users/usage/cli/)
@@ -105,12 +104,18 @@ Beautifully packaged for easy project and environment switching.
 - `ddev code`: attach VSCode to your running container.
 - `ddev phpunit path/to/tests`: run tests using PHPUnit.
 - `ddev phpunit-coverage path/to/cover`: create a test coverage report of the given directory.
-- `ddev phpcs path/to/sniff`: check your code against the Drupal coding standards.
-- `ddev phpcbf path/to/fix`: auto-fix your code according to the Drupal coding standards.
-- `ddev phpstan path/to/check`: look for deprecated and 'dirty' code.
-- `ddev eslint path/to/sniff (--fix)`: lint / auto-fix JavaScript code based on the Drupal coding standards.
-- `ddev stylelint web/modules/custom/my_module`: lint CSS files based on the Drupal coding standards.
 - `ddev xdebug on`: turn on XDebug, then in VSCode go to "Run and Debug", start "Listen for XDebug" and open your project in the browser.
+
+### Linting like the drupal.org GitLab CI
+The linters behave like the validate jobs of the [drupal.org GitLab CI templates](https://git.drupalcode.org/project/gitlab_templates): every path is checked as part of its project (module, theme, profile or recipe), from the project's root, with the project's own config files (`phpcs.xml.dist`, `phpstan.neon`, `.eslintrc.json`, `.stylelintrc.json`, `.cspell.json`, `.cspell-project-words.txt`, ...), and the CI defaults where it has none. The JS tools come from core's `node_modules`, installed with yarn like in CI.
+- `ddev phpcs web/modules/custom/my_module`: check PHP code against the Drupal coding standards (`ddev phpcbf ...` to autofix).
+- `ddev phpstan web/modules/custom/my_module`: static analysis with PHPStan.
+- `ddev eslint web/modules/custom/my_module (--fix)`: lint / autofix JavaScript and YAML.
+- `ddev stylelint web/modules/custom/my_module (--fix)`: lint / autofix CSS.
+- `ddev cspell web/modules/custom/my_module`: check spelling (`--words-only --unique` lists only the unknown words).
+- `ddev drupal-ci-setup`: install core's node modules and link core's configs into `web/*/custom` (fallback for projects without their own config, also used by the VSCode extensions), and generate the `cspell.json` for the VSCode CSpell extension. Run it again after adding a custom module or theme, or after updating core.
+
+Paths can also be single files, or folders containing several projects (e.g. `web/modules/custom`). Without a path, the current directory is checked. Inside the container (VSCode terminal, Claude Code), the same runners are available as `.ddev/drupal-ci/bin/<tool>`; the VSCode extensions use the same configs. The CI default configs are vendored in `.ddev/drupal-ci/` at a pinned gitlab_templates version; update them with `.ddev/drupal-ci/update.sh <tag>`.
 
 ### Database
 - `ddev import-db --database=db --file=db.sql.gz`: import a database file.
@@ -128,7 +133,19 @@ The Claude Code CLI is built into the web image (`.ddev/web-build/Dockerfile.cla
 Personal settings are configured in `.ddev/.env.web` (gitignored). Create it yourself with the variables you need; [`.ddev/.example.env.web`](.ddev/.example.env.web) lists all available ones. Run `ddev restart` (and `ddev code` again) after changing it. Note: DDEV only loads env files from `.ddev/`, not a `.env` in the project root.
 - **Git identity** (`GIT_AUTHOR_*` / `GIT_COMMITTER_*`): used for commits inside the container (VSCode Source Control, terminal, Claude Code). Without it, commits are authored by "DDEV User".
 - **`DRUPALCODE_TOKEN`**: enables the drupalcode GitLab MCP server (e.g. for creating issues on git.drupalcode.org):
-  1. Create a personal access token on git.drupalcode.org (scope `api`, or `mcp` if offered) and put it into `DRUPALCODE_TOKEN=`.
+  1. Create a **fine-grained** personal access token on git.drupalcode.org. The GitLab MCP server only accepts fine-grained tokens; *legacy* tokens are rejected with `403 insufficient_scope`, even with the `api` scope.
+     1. Log in at [git.drupalcode.org](https://git.drupalcode.org) (with your drupal.org account).
+     2. Click your avatar (upper-right corner) → **Edit profile**.
+     3. In the left sidebar, go to **Access** → **Personal access tokens** (direct link: [git.drupalcode.org/-/user_settings/personal_access_tokens](https://git.drupalcode.org/-/user_settings/personal_access_tokens)).
+     4. Open the **Generate token** dropdown and select **Fine-grained token** (not "Legacy token").
+     5. Enter a **name** (e.g. `ddev-claude-mcp`) and optionally a description.
+     6. Set an **expiration date** (max. 365 days; empty = 365 days from today). You will have to create a new token once it expires.
+     7. Under **Group and project access**, choose access to the groups and projects you are a member of (or select specific projects, e.g. your issue forks), so the token can work with project resources.
+     8. Under **Add resource permissions**, select the resources in the left panel and a permission for each in the right panel (use the **Group and project** / **User** / **Global** tabs to find them):
+        - **MCP tool** → **Execute** (required, otherwise the MCP server rejects the token)
+        - Additionally the resources the MCP tools should be allowed to access, e.g. **Issue** (Read / Create), **Merge request** (Read / Create), **Repository** / **Project** (Read). Only grant what you need.
+     9. Click **Generate token** and **copy the token immediately** (it starts with `glpat-`). It is shown only once; after leaving or reloading the page, you have to create a new one.
+     10. Put it into `.ddev/.env.web`: `DRUPALCODE_TOKEN="glpat-..."`. Never commit it (the file is gitignored).
   2. Make sure `.mcp.json` exists in the project root (copied from `.ddev/initiation-additions/` on initialization).
   3. `ddev restart`, then `ddev code` and use the Claude extension normally.
 
