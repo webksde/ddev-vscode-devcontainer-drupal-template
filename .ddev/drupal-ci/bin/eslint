@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# ESLint, like the "eslint" job of the drupal.org GitLab CI templates.
+#
+# Usage: eslint [--fix] [--option=value ...] [path ...] [-- tool args]
+#
+# Uses core's node modules and core's .eslintrc.passing.json (which includes
+# .eslintrc.json and .eslintrc.jquery.json) as the base config, which the
+# project's own .eslintrc.json extends. Lints .js and .yml files and uses
+# core's .prettierrc.json unless the project has its own.
+
+# shellcheck source-path=SCRIPTDIR source=../lib/common.sh
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../lib/common.sh"
+
+run() {
+  local project="$1"
+  shift
+  ci_link_parent_configs "$(dirname "$project")"
+  # shellcheck disable=SC2054 # "--ext=.js,.yml" is one argument.
+  local -a opts=(
+    --no-error-on-unmatched-pattern
+    --ignore-pattern="*.es6.js"
+    # CI adds this to the project's .eslintignore if it has minified files.
+    --ignore-pattern="*.min.js"
+    --resolve-plugins-relative-to="$CORE_DIR"
+    --ext=.js,.yml
+  )
+  ci_is_tty && opts+=(--color)
+  if [[ ! -e .prettierignore && ! -L .prettierignore ]]; then
+    # Like CI, which writes this into projects without a .prettierignore.
+    # eslint-plugin-prettier only reads the one in the working directory, so
+    # it has to be in the project; it is removed again afterwards.
+    echo '*.yml' >.prettierignore
+    trap 'rm -f "$project/.prettierignore"' EXIT
+    trap 'exit 130' INT TERM
+  fi
+  "$NODE_BIN/eslint" "${opts[@]}" "${CI_OPTS[@]}" "$@"
+}
+
+ci_parse_args "$@"
+ci_require_node_modules
+ci_for_each_project run

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="drupal-contrib-project">
+  <!-- Change the name and description if you copy this file to your project to make customizations. -->
+  <description>Default PHP CodeSniffer configuration for a Drupal contrib project.</description>
+
+  <!-- Include all rules in the Drupal ruleset. -->
+  <rule ref="Drupal"/>
+
+  <!-- Include all rules in the DrupalPractice ruleset. Uncomment if required -->
+  <!-- <rule ref="DrupalPractice"/> -->
+
+  <!-- Keep the extensions in alphabetic order like Core. -->
+  <arg name="extensions" value="engine,inc,info,install,module,php,profile,test,theme,yml"/>
+
+</ruleset>

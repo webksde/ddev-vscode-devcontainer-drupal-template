@@ -76,15 +76,9 @@ ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admi
 chmod 0755 ./web/sites/default
 chmod 0644 ./web/sites/default/settings.php
 
-# Copy all initiation additions (VSCode settings, phpunit.xml, phpstan.neon, cspell.json,
-# .mcp.json, AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...):
+# Copy all initiation additions (VSCode settings, phpunit.xml, .mcp.json,
+# AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...):
 cp -R .ddev/initiation-additions/. .
-
-# Get the .prettierrc.json from core, if it exists:
-test -e web/core/.prettierrc.json && cp web/core/.prettierrc.json web
-
-# Get the cspell.json from core, if it exists:
-test -e web/core/cspell.json && cp web/core/cspell.json .
 
 # Ensure PHPUnit/Functional test filesystem targets exist.
 #
@@ -110,10 +104,11 @@ fi
 chmod 0777 ./web/sites/default/files ./web/sites/default/files/simpletest
 chmod 0777 ./web/sites/simpletest ./web/sites/simpletest/browser_output
 
-# Get packages for eslint and JS code completion:
-echo 'Requiring npm dev packages... (This might take a bit)'
-cp web/core/package.json .
-ddev npm install --no-audit
+# Set up the linters like the drupal.org GitLab CI: install core's node modules
+# (eslint, stylelint, prettier, cspell) and link core's configs as fallbacks:
+echo 'Installing core node modules for the linters... (This might take a bit)'
+mkdir -p web/modules/custom
+ddev drupal-ci-setup
 
 # Add "patches" and "minimum-stability" section in composer.json:
 ddev composer config extra.composer-exit-on-patch-failure true
@@ -194,10 +189,9 @@ echo -e $'\e\n[33mSome dev modules like examples or backup_migrate are not insta
 echo "Use 'ddev code' to attach VSCode to your running Container."
 echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit."
 echo "Use 'ddev phpunit-coverage path/to/cover' to create a test coverage of the given file-directory."
-echo "Use 'ddev phpcs path/to/sniff' to check your Code using Drupal Coding Standards."
-echo "Use 'ddev phpstan path/to/execute' to look for deprecated and 'dirty' code."
-echo "Use 'ddev eslint path/to/sniff (--fix)' for linting / auto-fixing javascript code based on Drupal Coding Standards."
-echo "Use 'ddev stylelint web/modules/custom/my_module' for linting css files based on Drupal Coding Standards."
+echo "Use 'ddev phpcs web/modules/custom/my_module' (or phpcbf, phpstan, eslint, stylelint, cspell) to check a project like the drupal.org GitLab CI does."
+echo "Use 'ddev eslint --fix path' or 'ddev stylelint --fix path' to autofix JavaScript / CSS."
+echo "Use 'ddev drupal-ci-setup' after adding a custom module or theme, or after updating core."
 echo "Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser."
 echo "Use 'ddev drowl-reset-db' to reset the database to its state after initial startup."
 echo "Use 'ddev import-db --target-db=db --src=db.sql.gz' to import a database file."

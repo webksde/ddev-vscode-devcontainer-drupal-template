@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# PHP Code Beautifier, with the same ruleset selection as the "phpcs" job of
+# the drupal.org GitLab CI templates.
+#
+# Usage: phpcbf [--option=value ...] [path ...] [-- tool args]
+
+# shellcheck source-path=SCRIPTDIR source=../lib/common.sh
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../lib/common.sh"
+
+run() {
+  local project="$1"
+  shift
+  "$COMPOSER_BIN/phpcbf" --standard="$(ci_phpcs_standard "$project")" --basepath="$project" "${CI_OPTS[@]}" "$@"
+}
+
+ci_parse_args "$@"
+ci_for_each_project run
