@@ -89,18 +89,13 @@ ddev exec chmod +x vendor/bin/phpcbf
 # Drush and Site initialisation:
 ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
 
-# Get VSCode Settings:
-cp -R .ddev/initiation-additions/.vscode/ .
+# Set the permission for the default folder:
+chmod 0755 ./web/sites/default
+chmod 0644 ./web/sites/default/settings.php
 
-# Get PHPUnit.xml:
-# @improve: It might make sense to get the phpunit.xml from core, if it exists:
-cp .ddev/initiation-additions/phpunit.xml .
-
-# Get phpstan.neon:
-cp .ddev/initiation-additions/phpstan.neon .
-
-# Get cspell.json:
-cp .ddev/initiation-additions/cspell.json .
+# Copy all initiation additions (VSCode settings, phpunit.xml, phpstan.neon, cspell.json,
+# .mcp.json, AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...):
+cp -R .ddev/initiation-additions/. .
 
 # Get the .prettierrc.json from core, if it exists:
 test -e web/core/.prettierrc.json && cp web/core/.prettierrc.json web
@@ -108,21 +103,10 @@ test -e web/core/.prettierrc.json && cp web/core/.prettierrc.json web
 # Get the cspell.json from core, if it exists:
 test -e web/core/cspell.json && cp web/core/cspell.json .
 
-# Set the permission for the default folder:
-chmod 0755 ./web/sites/default
-chmod 0644 ./web/sites/default/settings.php
-
-# Get settings.php, settings.local.php and services.local.yml:
-cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
-cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
-cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
-
 # Get packages for eslint and JS code completion:
 echo 'Requiring npm dev packages... (This might take a bit)'
 cp web/core/package.json .
 ddev npm install --no-audit
-# Get jsconfig.json from initiation additions:
-cp .ddev/initiation-additions/jsconfig.json .
 
 # @todo Remove "raw" for all --json config calls (current workaround for https://github.com/ddev/ddev/issues/6628):
 # Add "patches" and "minimum-stability" section in composer.json:
@@ -195,3 +179,6 @@ echo "Use 'ddev import-db --target-db=db --src=db.sql.gz' to import a database f
 
 printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
 printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"
+
+# Notice about Claude Code + drupalcode GitLab MCP:
+echo -e $'\e\n[33mNOTE: To let Claude Code access git.drupalcode.org (issues, merge requests), create .ddev/.env.web containing "DRUPALCODE_TOKEN=<your drupalcode access token>" and run `ddev restart`\n\e[0m'

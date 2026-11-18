@@ -85,3 +85,7 @@ node_modules
 # Ignore personal ddev config overrides (copy config.local.yaml.example to create one)
 .ddev/config.local.yaml
 
+
+# Personal ddev env files (e.g. .ddev/.env.web with DRUPALCODE_TOKEN) and Claude Code state
+.ddev/.env*
+.ddev/.claude-config/

@@ -63,32 +63,19 @@ if [ $# -eq 0 ]; then
       # Initialize development environment tools:
       ddev exec chmod +x vendor/bin/phpcs
       ddev exec chmod +x vendor/bin/phpcbf
-      # Get VSCode Settings:
-      cp -R .ddev/initiation-additions/.vscode/ .
-      # Get phpstan.neon:
-      cp .ddev/initiation-additions/phpstan.neon .
-      # Get cspell.json:
-      cp .ddev/initiation-additions/cspell.json .
-      # get PHPUnit.xml:
-      cp .ddev/initiation-additions/phpunit.xml .
       # Set the permission for the default folder:
       if [ -d "./web/sites/default" ] && [ -f "./web/sites/default/settings.php" ]; then
         chmod 0755 ./web/sites/default
         chmod 0644 ./web/sites/default/settings.php
       fi
-      # Get settings.php, settings.local.php and services.local.yml:
+      # Copy all initiation additions (VSCode settings, phpunit.xml, phpstan.neon, cspell.json,
+      # .mcp.json, AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...):
       mkdir -p ./web/sites/default
-      cp .ddev/initiation-additions/settings.php web/sites/default/settings.php
-      cp .ddev/initiation-additions/settings.local.php web/sites/default/settings.local.php
-      cp .ddev/initiation-additions/services.local.yml web/sites/default/services.local.yml
-      # Get the phpstan.neon:
-      cp .ddev/initiation-additions/phpstan.neon .
+      cp -R .ddev/initiation-additions/. .
       # Get packages for eslint and JS code completion:
       echo 'Requiring npm dev packages... (This might take a bit)'
       cp web/core/package.json .
       ddev npm install
-      # Get jsconfig.json from initiation additions:
-      cp .ddev/initiation-additions/jsconfig.json .
       # Create temp folder and custom module folder and private folder:
       mkdir -p ./files/private
       mkdir -p web/modules/custom
@@ -160,3 +147,6 @@ while getopts r flag; do
   *) echo "Invalid option: -$flag" ;;
   esac
 done
+
+# Notice about Claude Code + drupalcode GitLab MCP:
+echo -e $'\e\n[33mNOTE: To let Claude Code access git.drupalcode.org (issues, merge requests), create .ddev/.env.web containing "DRUPALCODE_TOKEN=<your drupalcode access token>" and run `ddev restart`\n\e[0m'

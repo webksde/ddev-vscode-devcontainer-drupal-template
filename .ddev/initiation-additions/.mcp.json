@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "drupalcode": {
+      "type": "http",
+      "url": "https://git.drupalcode.org/api/v4/mcp",
+      "headers": {
+        "Authorization": "Bearer ${DRUPALCODE_TOKEN}"
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# Claude Code CLI (native build), baked into this project's web image only (binary in /usr/local/bin).
+# State is kept per project via CLAUDE_CONFIG_DIR (see config.yaml).
+# Update by rebuilding the image: ddev debug rebuild
+RUN curl -fsSL https://claude.ai/install.sh | bash \
+ && install -m 0755 "$(readlink -f /root/.local/bin/claude)" /usr/local/bin/claude \
+ && rm -rf /root/.local/share/claude /root/.local/bin/claude /root/.claude*
+ENV DISABLE_AUTOUPDATER=1

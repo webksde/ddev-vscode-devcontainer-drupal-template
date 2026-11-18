@@ -112,6 +112,15 @@ Beautifully packaged for easy project and environment switching.
  - Use `ddev deploy-db ddev` to import your tablewise dump.
   - Note: You can additionally add remote SSH projects under .ddev/commands/web/db-targets
 
+### Claude Code in the web container
+The Claude Code CLI is built into the web image (`.ddev/web-build/Dockerfile.claude-code`). Its state (login, settings) is kept per project in `.ddev/.claude-config/` (gitignored).
+
+To use the drupalcode GitLab MCP server (e.g. for creating issues on git.drupalcode.org):
+ 1. Create a personal access token on git.drupalcode.org (scope `api`, or `mcp` if offered).
+ 2. Create `.ddev/.env.web` (gitignored) containing `DRUPALCODE_TOKEN=glpat-...`. Note: DDEV only loads env files from `.ddev/`, not a `.env` in the project root.
+ 3. Make sure `.mcp.json` exists in the project root (copied from `.ddev/initiation-additions/` on initiation).
+ 4. `ddev restart`, then `ddev code` and use the Claude extension normally.
+
 ### Delete the environment:
  1. `ddev delete -y` deletes the container and unlists the project.
  2. Delete the project folder
