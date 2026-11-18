@@ -140,10 +140,21 @@ Personal settings are configured in `.ddev/.env.web` (gitignored). Create it you
      4. Open the **Generate token** dropdown and select **Fine-grained token** (not "Legacy token").
      5. Enter a **name** (e.g. `ddev-claude-mcp`) and optionally a description.
      6. Set an **expiration date** (max. 365 days; empty = 365 days from today). You will have to create a new token once it expires.
-     7. Under **Group and project access**, choose access to the groups and projects you are a member of (or select specific projects, e.g. your issue forks), so the token can work with project resources.
-     8. Under **Add resource permissions**, select the resources in the left panel and a permission for each in the right panel (use the **Group and project** / **User** / **Global** tabs to find them):
-        - **MCP tool** → **Execute** (required, otherwise the MCP server rejects the token)
-        - Additionally the resources the MCP tools should be allowed to access, e.g. **Issue** (Read / Create), **Merge request** (Read / Create), **Repository** / **Project** (Read). Only grant what you need.
+     7. Under **Group and project access**, select **All groups and projects I have access to**.
+     8. In the **Resource and permission selector**, pick the **Resource access** tab, check a category, then check the resources and their permissions within it (or type the resource name into "Search for resources to add"). To read and create work items (issues) and merge requests, check:
+
+        | Tab | Category | Resource | Permissions |
+        |---|---|---|---|
+        | **User** | Duo | MCP tool | **Execute** (required, otherwise the MCP server rejects the token) |
+        | **Group and project** | Project Planning | Work Item | **Read**, **Create** (+ **Update** to edit work items or comment on them) |
+        | **Group and project** | Project Planning | Label | **Read**, **Create**, **Update** (to set and manage labels on work items) |
+        | **Group and project** | Repository | Merge Request | **Read**, **Create** (+ **Update** to edit merge requests) |
+        | **Group and project** | Repository | Branch | **Read**, **Create** |
+        | **Group and project** | Repository | Commit | **Read**, **Create** |
+        | **Group and project** | Repository | Repository | **Read** (to read files and the repository tree) |
+        | **Group and project** | Projects | Project | **Read** |
+
+        The **Global** tab is not needed.
      9. Click **Generate token** and **copy the token immediately** (it starts with `glpat-`). It is shown only once; after leaving or reloading the page, you have to create a new one.
      10. Put it into `.ddev/.env.web`: `DRUPALCODE_TOKEN="glpat-..."`. Never commit it (the file is gitignored).
   2. Make sure `.mcp.json` exists in the project root (copied from `.ddev/initiation-additions/` on initialization).
