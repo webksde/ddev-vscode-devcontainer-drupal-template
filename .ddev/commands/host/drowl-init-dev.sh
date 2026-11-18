@@ -206,4 +206,4 @@ printf "\nNote, that most of the linting services are also available in the atta
 printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"
 
 # Notice about Claude Code + drupalcode GitLab MCP:
-echo -e $'\e\n[33mNOTE: To let Claude Code access git.drupalcode.org (issues, merge requests), create .ddev/.env.web containing "DRUPALCODE_TOKEN=<your drupalcode access token>" and run `ddev restart`\n\e[0m'
+echo -e $'\e\n[33mNOTE: Personal settings (git identity for commits, DRUPALCODE_TOKEN for Claude Code access to git.drupalcode.org) can be set in .ddev/.env.web (gitignored). See .ddev/.example.env.web for all available variables, then run `ddev restart`.\n\e[0m'
