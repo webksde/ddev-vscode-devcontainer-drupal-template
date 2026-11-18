@@ -1,7 +1,19 @@
 # Claude Code CLI (native build), baked into this project's web image only (binary in /usr/local/bin).
 # State is kept per project via CLAUDE_CONFIG_DIR (see config.yaml).
 # Update by rebuilding the image: ddev debug rebuild
+#
+# Note: The VSCode extension ships its own Claude Code binary and does not need this.
+# This CLI is for using `claude` in the container terminal (e.g. `ddev ssh`, VSCode terminal).
+
+# 1) Run the official native installer. As root during the build it installs to
+#    /root/.local/share/claude/versions/<version> with a symlink at /root/.local/bin/claude.
 RUN curl -fsSL https://claude.ai/install.sh | bash \
+ # 2) Resolve the symlink and copy the real binary to /usr/local/bin, which is on every user's PATH.
+ #    Needed because DDEV runs the container as the host user, who cannot reach /root.
  && install -m 0755 "$(readlink -f /root/.local/bin/claude)" /usr/local/bin/claude \
+ # 3) Remove installer leftovers (version store, symlink, root's config) to keep the image small and clean.
  && rm -rf /root/.local/share/claude /root/.local/bin/claude /root/.claude*
+
+# Disable self-updates: /usr/local/bin is root-owned, so the updater would fail anyway,
+# and the version should only change via an image rebuild.
 ENV DISABLE_AUTOUPDATER=1

@@ -115,6 +115,8 @@ Beautifully packaged for easy project and environment switching.
 ### Claude Code in the web container
 The Claude Code CLI is built into the web image (`.ddev/web-build/Dockerfile.claude-code`). Its state (login, settings) is kept per project in `.ddev/.claude-config/` (gitignored).
 
+**Updating the CLI:** Auto-updates are disabled inside the container. To get the latest version, rebuild the web image with `ddev debug rebuild` (your login and settings are kept). The VSCode extension is not affected by this; it updates through VSCode as usual.
+
 Personal settings are configured in `.ddev/.env.web` (gitignored). Create it yourself with the variables you need; [`.ddev/.example.env.web`](.ddev/.example.env.web) lists all available ones. Run `ddev restart` (and `ddev code` again) after changing it. Note: DDEV only loads env files from `.ddev/`, not a `.env` in the project root.
  - **Git identity** (`GIT_AUTHOR_*` / `GIT_COMMITTER_*`): used for commits inside the container (VSCode Source Control, terminal, Claude Code). Without it, commits are authored by "DDEV User".
  - **`DRUPALCODE_TOKEN`**: enables the drupalcode GitLab MCP server (e.g. for creating issues on git.drupalcode.org):
