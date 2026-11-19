@@ -125,7 +125,10 @@ Paths can also be single files, or folders containing several projects (e.g. `we
   - Remote SSH projects can be added as additional targets under `.ddev/commands/web/db-targets/` (see the README there).
 
 ### Claude Code in the web container
-The Claude Code CLI is built into the web image (`.ddev/web-build/Dockerfile.claude-code`). Its state (login, settings) is kept per project in `.ddev/.claude-config/` (gitignored). On initialization, a `CLAUDE.md` / `AGENTS.md` with project instructions and a `.mcp.json` are copied into the project root.
+The Claude Code CLI is built into the web image (`.ddev/web-build/Dockerfile.claude-code`). Its state (login, settings) is kept per project in `.ddev/.claude-config/` (gitignored). On initialization, a `CLAUDE.md` / `AGENTS.md` with project instructions, a `.mcp.json` and project skills in `.claude/skills/` are copied into the project root.
+
+**Skills:**
+- `drupal-issue-workflow`: works on drupal.org issues through the drupalcode MCP server (see `DRUPALCODE_TOKEN` below). It checks whether a problem is already reported or fixed upstream, creates issues from the Drupal template, and handles issue branches, MRs and review comments. Claude uses it on its own when asked to create a Drupal issue, or call it with `/drupal-issue-workflow`.
 
 **Updating the CLI:** Auto-updates are disabled inside the container. To get the latest version, rebuild the web image with `ddev debug rebuild` (your login and settings are kept). The VSCode extension is not affected by this; it updates through VSCode as usual.
 
@@ -146,7 +149,7 @@ Personal settings are configured in `.ddev/.env.web` (gitignored). Create it you
         | Tab | Category | Resource | Permissions |
         |---|---|---|---|
         | **User** | Duo | MCP tool | **Execute** (required, otherwise the MCP server rejects the token) |
-        | **Group and project** | Project Planning | Work Item | **Read**, **Create** (+ **Update** to edit work items or comment on them) |
+        | **Group and project** | Project Planning | Work Item | **Read**, **Create**, **Update** (Update is needed to comment, e.g. `/do:fork` to create the issue fork) |
         | **Group and project** | Project Planning | Label | **Read**, **Create**, **Update** (to set and manage labels on work items) |
         | **Group and project** | Repository | Merge Request | **Read**, **Create** (+ **Update** to edit merge requests) |
         | **Group and project** | Repository | Branch | **Read**, **Create** |
