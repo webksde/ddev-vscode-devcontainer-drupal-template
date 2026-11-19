@@ -128,7 +128,7 @@ Paths can also be single files, or folders containing several projects (e.g. `we
 The Claude Code CLI is built into the web image (`.ddev/web-build/Dockerfile.claude-code`). Its state (login, settings) is kept per project in `.ddev/.claude-config/` (gitignored). On initialization, a `CLAUDE.md` / `AGENTS.md` with project instructions, a `.mcp.json` and project skills in `.claude/skills/` are copied into the project root.
 
 **Skills:**
-- `drupal-issue-workflow`: works on drupal.org issues through the drupalcode MCP server (see `DRUPALCODE_TOKEN` below). It checks whether a problem is already reported or fixed upstream, creates issues from the Drupal template, and handles issue branches, MRs and review comments. Claude uses it on its own when asked to create a Drupal issue, or call it with `/drupal-issue-workflow`.
+- `working-on-drupal-issues`: works on new or existing drupal.org issues through the drupalcode MCP server (see `DRUPALCODE_TOKEN` below). It creates issues from the Drupal template, implements the fix locally with tests, creates the issue fork, pushes the branch and opens the MR. Claude uses it on its own when asked to create or work on a Drupal issue, or call it with `/working-on-drupal-issues`.
 
 **Updating the CLI:** Auto-updates are disabled inside the container. To get the latest version, rebuild the web image with `ddev debug rebuild` (your login and settings are kept). The VSCode extension is not affected by this; it updates through VSCode as usual.
 
