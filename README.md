@@ -160,8 +160,8 @@ Personal settings are configured in `.ddev/.env.web` (gitignored). The `drowl-in
         | **Group and project** | Repository | Commit | **Read**, **Create** |
         | **Group and project** | Repository | Repository | **Read** (to read files and the repository tree) |
         | **Group and project** | Projects | Project | **Read** |
+        | **Global** | System Access | User | **Read** (to look up your own user, e.g. for assigning issues and MRs to you) |
 
-        The **Global** tab is not needed.
      9. Click **Generate token** and **copy the token immediately**. It is shown only once; after leaving or reloading the page, you have to create a new one.
      10. Put it into `.ddev/.env.web`: `DRUPALCODE_TOKEN="your-fine-grained-token"`. Never commit it (the file is gitignored).
   2. Make sure `.mcp.json` exists in the project root (copied from `.ddev/initiation-additions/` on initialization).
