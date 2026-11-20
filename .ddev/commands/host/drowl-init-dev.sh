@@ -14,6 +14,10 @@ echo -e $"\e\n[32mInitialising a Drupal DEV environment! This will take about ~5
 PHP_VERSION=8.5
 PROJECT_TYPE="drupal12"
 
+# Ask for the personal settings (git identity, DRUPALCODE_TOKEN), written to
+# .ddev/.env.web before the containers start:
+bash .ddev/drowl-init/ask-personal-settings.sh
+
 # Remove README.md:
 rm ./README.md
 
@@ -199,5 +203,5 @@ echo "Use 'ddev import-db --target-db=db --src=db.sql.gz' to import a database f
 printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
 printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"
 
-# Notice about Claude Code + drupalcode GitLab MCP:
-echo -e $'\e\n[33mNOTE: Personal settings (git identity for commits, DRUPALCODE_TOKEN for Claude Code access to git.drupalcode.org) can be set in .ddev/.env.web (gitignored). See .ddev/.example.env.web for all available variables, then run `ddev restart`.\n\e[0m'
+# Notice about the personal settings:
+echo -e $'\e\n[33mNOTE: Personal settings (git identity, DRUPALCODE_TOKEN) are stored in .ddev/.env.web. Edit it (see .ddev/.example.env.web for all available variables), then run `ddev restart`.\n\e[0m'

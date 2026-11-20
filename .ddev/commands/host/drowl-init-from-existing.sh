@@ -19,6 +19,10 @@ rm ./README.md
 # Remove all git files, to ensure nothing gets pushed:
 rm -r ./.git ./.gitignore ./.gitattributes -f
 
+# Ask for the personal settings (git identity, DRUPALCODE_TOKEN), written to
+# .ddev/.env.web before the containers start:
+bash .ddev/drowl-init/ask-personal-settings.sh
+
 # Create the config.yaml:
 ddev config --composer-version="stable" --php-version="8.2" --docroot="web" --create-docroot --webserver-type="apache-fpm" --project-type="drupal10" --disable-settings-management --auto
 
@@ -149,5 +153,5 @@ while getopts r flag; do
   esac
 done
 
-# Notice about Claude Code + drupalcode GitLab MCP:
-echo -e $'\e\n[33mNOTE: Personal settings (git identity for commits, DRUPALCODE_TOKEN for Claude Code access to git.drupalcode.org) can be set in .ddev/.env.web (gitignored). See .ddev/.example.env.web for all available variables, then run `ddev restart`.\n\e[0m'
+# Notice about the personal settings:
+echo -e $'\e\n[33mNOTE: Personal settings (git identity, DRUPALCODE_TOKEN) are stored in .ddev/.env.web. Edit it (see .ddev/.example.env.web for all available variables), then run `ddev restart`.\n\e[0m'
