@@ -13,9 +13,10 @@
   "editor.inlayHints.enabled": "off",
   "eslint.enable": true,
   // Linters behave like the drupal.org GitLab CI (see .ddev/drupal-ci): tools
-  // come from core's node_modules ("ddev drupal-ci-setup" installs them), and
-  // core's configs are linked into web/*/custom as fallback for projects
-  // without their own config.
+  // come from core's node_modules, and core's configs are provided site-wide
+  // (web/.eslintrc.json, .stylelintrc.json, .prettierrc.json) as fallback for
+  // projects without their own config. cspell.json is generated as well. All
+  // of this is set up by drowl-init and refreshed by "ddev drupal-ci-update".
   "prettier.prettierPath": "./web/core/node_modules/prettier",
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"

@@ -19,4 +19,5 @@ run() {
 }
 
 ci_parse_args "$@"
+ci_require_ci_files
 ci_for_each_project run

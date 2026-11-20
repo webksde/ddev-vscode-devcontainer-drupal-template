@@ -34,13 +34,49 @@ ci_info() {
   echo "drupal-ci: $*" >&2
 }
 
-# The CI default configs and scripts are not part of the template, they are
-# downloaded from gitlab_templates by "ddev drupal-ci-update" (drowl-init does).
-for file in assets/.cspell.json assets/phpcs.xml.dist assets/phpstan.neon scripts/prepare-cspell.php; do
-  [[ -f $DRUPAL_CI_DIR/$file ]] ||
-    ci_die "$DRUPAL_CI_DIR/$file is missing, download the CI files with \"ddev drupal-ci-update\"."
-done
-unset file
+# The CI default configs and scripts the runners use. They are not part of the
+# template, but downloaded from gitlab_templates by setup.sh (on drowl-init),
+# or on first use if missing. "ddev drupal-ci-update" updates them.
+CI_FILES_REF="1.x-latest"
+CI_FILES=(
+  assets/.cspell.json
+  assets/phpcs.xml.dist
+  assets/phpstan.neon
+  scripts/prepare-cspell.php
+)
+
+# Downloads the CI files from gitlab_templates. Contrib projects use the
+# "1.x-latest" ref, which points to the newest 1.x tag. Everything is
+# downloaded first, so a failed download leaves the old files intact.
+ci_download_ci_files() {
+  local base="https://git.drupalcode.org/project/gitlab_templates/-/raw/$CI_FILES_REF"
+  local tmp file
+  tmp="$(mktemp -d)"
+  for file in "${CI_FILES[@]}"; do
+    ci_info "Downloading $file ($CI_FILES_REF)"
+    mkdir -p "$tmp/$(dirname "$file")"
+    if ! curl -fsSL "$base/$file" -o "$tmp/$file"; then
+      rm -rf "$tmp"
+      ci_die "Downloading $base/$file failed."
+    fi
+  done
+  for file in "${CI_FILES[@]}"; do
+    mkdir -p "$DRUPAL_CI_DIR/$(dirname "$file")"
+    mv "$tmp/$file" "$DRUPAL_CI_DIR/$file"
+  done
+  rm -rf "$tmp"
+}
+
+# Downloads the CI files, if any of them is missing.
+ci_require_ci_files() {
+  local file
+  for file in "${CI_FILES[@]}"; do
+    if [[ ! -f $DRUPAL_CI_DIR/$file ]]; then
+      ci_download_ci_files
+      return
+    fi
+  done
+}
 
 # Prints the root of the project a path belongs to: the topmost ancestor (below
 # the app root) containing a *.info.yml or recipe.yml file. Prints nothing if
@@ -165,30 +201,52 @@ ci_require_node_modules() {
     ci_die "yarn install failed in $CORE_DIR."
 }
 
-# Like the CI eslint and stylelint jobs, provide core's configs to projects
-# without their own. CI symlinks them into the project or its parent folder;
-# here they always go into the parent folder (e.g. web/modules/custom), so the
-# project itself stays untouched and the VSCode extensions find them as well.
-ci_link_parent_configs() {
-  local parent="$1"
-  [[ $parent == "$WEB_ROOT"/* && $parent != "$CORE_DIR" && $parent != "$CORE_DIR"/* ]] || return 0
-  [[ -w $parent ]] || return 0
-  _ci_link "$CORE_DIR/.eslintrc.passing.json" "$parent/.eslintrc.json"
-  _ci_link "$CORE_DIR/.eslintrc.jquery.json" "$parent/.eslintrc.jquery.json"
-  _ci_link "$CORE_DIR/.prettierrc.json" "$parent/.prettierrc.json"
-  # Stylelint resolves "extends" relative to a symlink, so it gets a real file.
-  if [[ -f $CORE_DIR/.stylelintrc.json && ! -e $parent/.stylelintrc.json && ! -L $parent/.stylelintrc.json ]]; then
-    printf '{\n  "extends": "%s"\n}\n' "$(realpath -ms --relative-to="$parent" "$CORE_DIR/.stylelintrc.json")" >"$parent/.stylelintrc.json"
-  fi
-  # CI writes this into projects without a .prettierignore.
-  [[ -e $parent/.prettierignore ]] || echo '*.yml' >"$parent/.prettierignore"
+# The site-wide ESLint config. Core scaffolds a web/.eslintrc.json that extends
+# core's strict .eslintrc.json, and ESLint stops looking further up there. CI
+# uses core's .eslintrc.passing.json instead (linked into the folder above the
+# project), so the scaffolded file is replaced by this one.
+CI_ESLINT_CONFIG='{
+  "root": true,
+  "extends": "./core/.eslintrc.passing.json"
+}'
+
+# Returns whether web/.eslintrc.json is the one ci_write_configs writes.
+ci_has_eslint_config() {
+  [[ -f $WEB_ROOT/.eslintrc.json && "$(cat "$WEB_ROOT/.eslintrc.json")" == "$CI_ESLINT_CONFIG" ]]
 }
 
-_ci_link() {
-  local target="$1" link="$2"
-  [[ -e $target ]] || return 0
-  [[ -e $link || -L $link ]] && return 0
-  ln -sr "$target" "$link"
+# Like the CI eslint, stylelint and prettier steps, provides core's configs to
+# all projects (custom and contrib) without their own, once for the whole site:
+# - ESLint: web/.eslintrc.json (see above), excluded from core's scaffolding so
+#   composer doesn't restore the original.
+# - Stylelint and Prettier: .stylelintrc.json and .prettierrc.json in the app
+#   root, where both tools find them by searching up from the checked file.
+# - .prettierignore with "*.yml" (which CI writes into projects without one) in
+#   the app root and the web root (the VSCode ESLint extension's working
+#   directory).
+# Existing files that differ are only replaced if they are core's scaffold.
+ci_write_configs() {
+  local file="$WEB_ROOT/.eslintrc.json"
+  if [[ ! -f $CORE_DIR/.eslintrc.passing.json ]]; then
+    # Core 12+ uses ESLint's flat config (eslint.config.mjs), which the CI
+    # templates and the eslint runner don't support yet.
+    ci_info "Skipped the ESLint config: core has no .eslintrc.passing.json."
+  elif ! ci_has_eslint_config; then
+    if [[ ! -e $file ]] || cmp -s "$file" "$CORE_DIR/assets/scaffold/files/eslintrc.json"; then
+      (cd "$APP_ROOT" && composer config --json --merge extra.drupal-scaffold.file-mapping '{"[web-root]/.eslintrc.json": false}') ||
+        ci_die "Excluding [web-root]/.eslintrc.json from the scaffolding in composer.json failed."
+      echo "$CI_ESLINT_CONFIG" >"$file"
+      ci_info "Wrote $file (core's .eslintrc.passing.json, like CI)."
+    else
+      ci_info "Kept the custom $file. CI uses core's .eslintrc.passing.json."
+    fi
+  fi
+  [[ -e $APP_ROOT/.stylelintrc.json ]] ||
+    printf '{\n  "extends": "./%s/.stylelintrc.json"\n}\n' "${CORE_DIR#"$APP_ROOT"/}" >"$APP_ROOT/.stylelintrc.json"
+  [[ -e $APP_ROOT/.prettierrc.json || -L $APP_ROOT/.prettierrc.json ]] ||
+    ln -sr "$CORE_DIR/.prettierrc.json" "$APP_ROOT/.prettierrc.json"
+  [[ -e $APP_ROOT/.prettierignore ]] || echo '*.yml' >"$APP_ROOT/.prettierignore"
+  [[ -e $WEB_ROOT/.prettierignore ]] || echo '*.yml' >"$WEB_ROOT/.prettierignore"
 }
 
 # Prints the PHPCS ruleset CI would use for a project: the project's own

@@ -90,6 +90,6 @@ node_modules
 .ddev/.env*
 .ddev/.claude-config/
 
-# drupal.org GitLab CI files, downloaded by "ddev drupal-ci-update"
+# drupal.org GitLab CI files, downloaded by .ddev/drupal-ci/setup.sh / "ddev drupal-ci-update"
 .ddev/drupal-ci/assets/
 .ddev/drupal-ci/scripts/

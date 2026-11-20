@@ -121,8 +121,7 @@ mkdir -p web/modules/custom
 # Set up the linters like the drupal.org GitLab CI: install core's node modules
 # (eslint, stylelint, prettier, cspell) and link core's configs as fallbacks:
 echo 'Installing core node modules for the linters... (This might take a bit)'
-ddev drupal-ci-update
-ddev drupal-ci-setup
+ddev exec /var/www/html/.ddev/drupal-ci/setup.sh
 # Create temp folder:
 mkdir -p ./tmp
 
@@ -166,8 +165,7 @@ echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit."
 echo "Use 'ddev phpunit-coverage path/to/cover' to create a test coverage of the given file-directory."
 echo "Use 'ddev phpcs web/modules/custom/my_module' (or phpcbf, phpstan, eslint, stylelint, cspell) to check a project like the drupal.org GitLab CI does."
 echo "Use 'ddev eslint --fix path' or 'ddev stylelint --fix path' to autofix JavaScript / CSS."
-echo "Use 'ddev drupal-ci-setup' after adding a custom module or theme, or after updating core."
-echo "Use 'ddev drupal-ci-update' to update the drupal.org GitLab CI default configs to the latest gitlab_templates 1.x release."
+echo "Use 'ddev drupal-ci-update' to update the drupal.org GitLab CI default configs to the latest gitlab_templates 1.x release and refresh the linter setup."
 echo "Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser."
 echo "Use 'ddev drowl-reset-db' to reset the database to its state after initial startup."
 echo "Use 'ddev import-db --target-db=db --src=db.sql.gz' to import a database file."

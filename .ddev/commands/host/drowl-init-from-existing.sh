@@ -79,8 +79,7 @@ if [ $# -eq 0 ]; then
       # Set up the linters like the drupal.org GitLab CI: install core's node
       # modules (eslint, stylelint, prettier, cspell) and link core's configs:
       echo 'Installing core node modules for the linters... (This might take a bit)'
-      ddev drupal-ci-update
-      ddev drupal-ci-setup
+      ddev exec /var/www/html/.ddev/drupal-ci/setup.sh
       define_stage_file_proxy=1
       bool=0
       ;;

@@ -13,7 +13,6 @@ source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../lib/common.sh"
 run() {
   local project="$1"
   shift
-  ci_link_parent_configs "$(dirname "$project")"
   local -a opts=(--ignore-path=./.stylelintignore --allow-empty-input)
   ci_is_tty && opts+=(--color)
   if ! compgen -G ".stylelintrc*" >/dev/null && ! compgen -G "stylelint.config.*" >/dev/null; then
