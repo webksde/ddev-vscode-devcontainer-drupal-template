@@ -153,14 +153,14 @@ Personal settings are configured in `.ddev/.env.web` (gitignored). The `drowl-in
         | Tab | Category | Resource | Permissions |
         |---|---|---|---|
         | **User** | Duo | MCP tool | **Execute** (required, otherwise the MCP server rejects the token) |
-        | **Group and project** | Project Planning | Work Item | **Read**, **Create**, **Update** (Update is needed to comment, e.g. `/do:fork` to create the issue fork) |
+        | **User** | System Access | User | **Read** (to look up your own user, e.g. for assigning issues and MRs to you) |
+        | **Grop and project** | Project Planning | Work Item | **Read**, **Create**, **Update** (Update is needed to comment, e.g. `/do:fork` to create the issue fork) |
         | **Group and project** | Project Planning | Label | **Read**, **Create**, **Update** (to set and manage labels on work items) |
         | **Group and project** | Repository | Merge Request | **Read**, **Create** (+ **Update** to edit merge requests) |
         | **Group and project** | Repository | Branch | **Read**, **Create** |
         | **Group and project** | Repository | Commit | **Read**, **Create** |
         | **Group and project** | Repository | Repository | **Read** (to read files and the repository tree) |
         | **Group and project** | Projects | Project | **Read** |
-        | **Global** | System Access | User | **Read** (to look up your own user, e.g. for assigning issues and MRs to you) |
 
      9. Click **Generate token** and **copy the token immediately**. It is shown only once; after leaving or reloading the page, you have to create a new one.
      10. Put it into `.ddev/.env.web`: `DRUPALCODE_TOKEN="your-fine-grained-token"`. Never commit it (the file is gitignored).
