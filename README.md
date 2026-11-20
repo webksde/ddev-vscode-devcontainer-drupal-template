@@ -160,6 +160,7 @@ Personal settings are configured in `.ddev/.env.web` (gitignored). The `drowl-in
         | **Group and project** | Repository | Branch | **Read**, **Create** |
         | **Group and project** | Repository | Commit | **Read**, **Create** |
         | **Group and project** | Repository | Repository | **Read** (to read files and the repository tree) |
+        | **Group and project** | Repository | Code | **Push** (to push commits to branches) |
         | **Group and project** | Projects | Project | **Read** |
 
      9. Click **Generate token** and **copy the token immediately**. It is shown only once; after leaving or reloading the page, you have to create a new one.
