@@ -838,6 +838,9 @@ $settings["file_temp_path"] = "../tmp";
 // Sync directory path:
 $settings['config_sync_directory'] = '../files/sync';
 
+// Interface translations directory path (translations://):
+$config['locale.settings']['translation']['path'] = '../files/translations';
+
 // ----------------------------- Environment indicator ------------------------
 if(!empty($_SERVER['HTTP_HOST'])){
   // Only use on webserver, not bash:

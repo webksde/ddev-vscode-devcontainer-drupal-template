@@ -132,8 +132,8 @@ mkdir -p web/modules/custom
 # Create temp folder:
 mkdir -p ./tmp
 
-# Create private files directory:
-mkdir -p ./files/private
+# Create private files, config sync and translations directories:
+mkdir -p ./files/private ./files/sync ./files/translations
 
 # Export a DB-Dump to "data/sql", BEFORE enabling contrib modules, in cases,
 # where they break:

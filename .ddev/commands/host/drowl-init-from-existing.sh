@@ -72,8 +72,9 @@ if [ $# -eq 0 ]; then
       # AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...):
       mkdir -p ./web/sites/default
       cp -R .ddev/initiation-additions/. .
-      # Create temp folder and custom module folder and private folder:
-      mkdir -p ./files/private
+      # Create temp, custom module, private files, config sync and
+      # translations folders:
+      mkdir -p ./files/private ./files/sync ./files/translations
       mkdir -p web/modules/custom
       mkdir -p ./tmp
       # Set up the linters like the drupal.org GitLab CI: install core's node
