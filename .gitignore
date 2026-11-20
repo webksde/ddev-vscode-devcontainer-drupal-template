@@ -89,3 +89,7 @@ node_modules
 # Personal ddev env files (e.g. .ddev/.env.web with DRUPALCODE_TOKEN) and Claude Code state
 .ddev/.env*
 .ddev/.claude-config/
+
+# drupal.org GitLab CI files, downloaded by "ddev drupal-ci-update"
+.ddev/drupal-ci/assets/
+.ddev/drupal-ci/scripts/

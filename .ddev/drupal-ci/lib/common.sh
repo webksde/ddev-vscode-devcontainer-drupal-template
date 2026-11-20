@@ -34,6 +34,14 @@ ci_info() {
   echo "drupal-ci: $*" >&2
 }
 
+# The CI default configs and scripts are not part of the template, they are
+# downloaded from gitlab_templates by "ddev drupal-ci-update" (drowl-init does).
+for file in assets/.cspell.json assets/phpcs.xml.dist assets/phpstan.neon scripts/prepare-cspell.php; do
+  [[ -f $DRUPAL_CI_DIR/$file ]] ||
+    ci_die "$DRUPAL_CI_DIR/$file is missing, download the CI files with \"ddev drupal-ci-update\"."
+done
+unset file
+
 # Prints the root of the project a path belongs to: the topmost ancestor (below
 # the app root) containing a *.info.yml or recipe.yml file. Prints nothing if
 # the path is not part of a project.

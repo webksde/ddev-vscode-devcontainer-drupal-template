@@ -114,8 +114,9 @@ The linters behave like the validate jobs of the [drupal.org GitLab CI templates
 - `ddev stylelint web/modules/custom/my_module (--fix)`: lint / autofix CSS.
 - `ddev cspell web/modules/custom/my_module`: check spelling (`--words-only --unique` lists only the unknown words).
 - `ddev drupal-ci-setup`: install core's node modules and link core's configs into `web/*/custom` (fallback for projects without their own config, also used by the VSCode extensions), and generate the `cspell.json` for the VSCode CSpell extension. Run it again after adding a custom module or theme, or after updating core.
+- `ddev drupal-ci-update`: download the CI default configs (`phpcs.xml.dist`, `phpstan.neon`, `.cspell.json`) and helper scripts from the latest gitlab_templates 1.x release (`1.x-latest`, like contrib projects use) into `.ddev/drupal-ci/`. `drowl-init` runs it once; run it again to update them, then run `ddev drupal-ci-setup`.
 
-Paths can also be single files, or folders containing several projects (e.g. `web/modules/custom`). Without a path, the current directory is checked. Inside the container (VSCode terminal, Claude Code), the same runners are available as `.ddev/drupal-ci/bin/<tool>`; the VSCode extensions use the same configs. The CI default configs are vendored in `.ddev/drupal-ci/` at a pinned gitlab_templates version; update them with `.ddev/drupal-ci/update.sh <tag>`.
+Paths can also be single files, or folders containing several projects (e.g. `web/modules/custom`). Without a path, the current directory is checked. Inside the container (VSCode terminal, Claude Code), the same runners are available as `.ddev/drupal-ci/bin/<tool>`; the VSCode extensions use the same configs.
 
 ### Database
 - `ddev import-db --database=db --file=db.sql.gz`: import a database file.
