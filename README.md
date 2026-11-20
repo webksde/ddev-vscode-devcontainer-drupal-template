@@ -22,7 +22,7 @@ git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.gi
 Afterwards:
 - Use `ddev describe` to check the status & URLs of your project.
 - Log in with `admin` / `admin` (an additional user `max` / `max` is created as well).
-- Use `ddev code` to open your prepared VSCode IDE attached to the web container. Inside VSCode, go to "Extensions" and search for `@recommended` to reveal and install the recommended extensions.
+- Use `ddev code` to open your prepared VSCode IDE attached to the web container. The recommended extensions (`.vscode/extensions.json`) are installed automatically on attach. If that does not work in your setup, go to "Extensions" in VSCode and search for `@recommended` to install them manually.
 
 **Project names:** "standard-vscode-drupal" / "core-vscode-drupal" can be replaced with any name you like. The DDEV containers are named after it (e.g. "ddev-standard-vscode-drupal-web"). Names must be valid: "no-spaces-but-hyphens", "UpperAndLower" and "should.work.with.dots" work, **underscores are not allowed**.
 
@@ -102,7 +102,7 @@ Beautifully packaged for easy project and environment switching.
 ## Documentation
 
 ### Tooling
-- `ddev code`: attach VSCode to your running container.
+- `ddev code`: attach VSCode to your running container. It first writes a Dev Containers "named container configuration" for the web container (from `.vscode/extensions.json`), so VSCode installs the recommended extensions automatically, also after the container was recreated. The file is regenerated on every run, so edit the recommendations in `.vscode/extensions.json` rather than in VSCode's "Open Named Container Configuration File".
 - `ddev phpunit path/to/tests`: run tests using PHPUnit.
 - `ddev phpunit-coverage path/to/cover`: create a test coverage report of the given directory.
 - `ddev xdebug on`: turn on XDebug, then in VSCode go to "Run and Debug", start "Listen for XDebug" and open your project in the browser.
@@ -162,8 +162,8 @@ Personal settings are configured in `.ddev/.env.web` (gitignored). The `drowl-in
         | **Group and project** | Projects | Project | **Read** |
 
         The **Global** tab is not needed.
-     9. Click **Generate token** and **copy the token immediately** (it starts with `glpat-`). It is shown only once; after leaving or reloading the page, you have to create a new one.
-     10. Put it into `.ddev/.env.web`: `DRUPALCODE_TOKEN="glpat-..."`. Never commit it (the file is gitignored).
+     9. Click **Generate token** and **copy the token immediately**. It is shown only once; after leaving or reloading the page, you have to create a new one.
+     10. Put it into `.ddev/.env.web`: `DRUPALCODE_TOKEN="your-fine-grained-token"`. Never commit it (the file is gitignored).
   2. Make sure `.mcp.json` exists in the project root (copied from `.ddev/initiation-additions/` on initialization).
   3. `ddev restart`, then `ddev code` and use the Claude extension normally.
 

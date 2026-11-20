@@ -43,17 +43,20 @@ set_env_value() {
   mv "$tmp" "$ENV_FILE"
 }
 
-# Defaults: existing values from the env file, then the host git config:
+# Defaults: existing values from the env file (ignoring the placeholders of
+# .example.env.web), then the host git config:
 default_name="$(get_env_value GIT_AUTHOR_NAME)"
+[ "$default_name" = "Your Name" ] && default_name=""
 default_name="${default_name:-$(git config --global user.name 2>/dev/null || true)}"
 default_mail="$(get_env_value GIT_AUTHOR_EMAIL)"
+[ "$default_mail" = "you@example.com" ] && default_mail=""
 default_mail="${default_mail:-$(git config --global user.email 2>/dev/null || true)}"
 existing_token="$(get_env_value DRUPALCODE_TOKEN)"
-if [ "$existing_token" = "glpat-..." ]; then
+if [ "$existing_token" = "your-fine-grained-token" ]; then
   existing_token=""
 fi
 
-echo -e $'\e[36mPersonal settings (saved to .ddev/.env.web, gitignored). Leave empty to skip.\e[0m'
+echo -e $'\e[36mPersonal settings (saved to .ddev/.env.web). Leave empty to skip.\e[0m'
 
 read -r -p "Git name${default_name:+ [$default_name]}: " git_name
 git_name="${git_name:-$default_name}"
@@ -84,9 +87,6 @@ if [ -n "$git_mail" ]; then
   set_env_value GIT_COMMITTER_EMAIL "$git_mail"
 fi
 if [ -n "$drupalcode_token" ]; then
-  if [[ "$drupalcode_token" != glpat-* ]]; then
-    echo -e $'\e[33mWARNING: The token does not start with "glpat-". Make sure it is a fine-grained personal access token.\e[0m'
-  fi
   set_env_value DRUPALCODE_TOKEN "$drupalcode_token"
 fi
 

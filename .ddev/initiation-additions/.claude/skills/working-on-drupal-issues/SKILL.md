@@ -11,7 +11,7 @@ Drupal.org issues are GitLab **work items** on git.drupalcode.org. Use the `mcp_
 
 The drupalcode MCP server (`.mcp.json`) authenticates with `DRUPALCODE_TOKEN`, a fine-grained personal access token from git.drupalcode.org, set in `.ddev/.env.web`.
 
-Check before doing anything else: if ToolSearch finds no `mcp__drupalcode__*` tools, or `get_user(me: true)` fails (401/403, `insufficient_scope`), stop. Tell the user to set `DRUPALCODE_TOKEN="glpat-..."` in `.ddev/.env.web`.
+Check before doing anything else: if ToolSearch finds no `mcp__drupalcode__*` tools, or `get_user(me: true)` fails (401/403, `insufficient_scope`), stop. Tell the user to set `DRUPALCODE_TOKEN="your-fine-grained-token"` in `.ddev/.env.web`.
 
 ## Basics
 
