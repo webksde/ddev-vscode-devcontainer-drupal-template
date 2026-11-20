@@ -16,8 +16,8 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 # Remove README.md:
 rm ./README.md
 
-# Remove all git files, to ensure nothing gets pushed:
-rm -r ./.git ./.gitignore ./.gitattributes -f
+# Remove all git files, to ensure nothing gets pushed (keep .gitignore, it ignores personal settings, secrets and generated files):
+rm -r ./.git ./.gitattributes -f
 
 # Ask for the personal settings (git identity, DRUPALCODE_TOKEN), written to
 # .ddev/.env.web before the containers start:

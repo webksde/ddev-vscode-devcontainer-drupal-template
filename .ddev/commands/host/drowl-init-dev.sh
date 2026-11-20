@@ -21,14 +21,19 @@ bash .ddev/drowl-init/ask-personal-settings.sh
 # Remove README.md:
 rm ./README.md
 
-# Remove git files:
-rm -r ./.git ./.gitignore ./.gitattributes -f
+# Remove git files (keep .gitignore, it ignores personal settings, secrets and generated files):
+rm -r ./.git ./.gitattributes -f
 
 # Create the config.yaml:
 ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="${PROJECT_TYPE}" --disable-settings-management --auto
 
 # For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
+# "ddev composer create-project" refuses to run with a .gitignore in the project
+# root, so park it in .ddev/ meanwhile:
+mv ./.gitignore ./.ddev/.drowl-init.gitignore
 ddev composer create-project "joachim-n/drupal-core-development-project"
+# Restore the .gitignore (appended, in case the created project brought its own):
+cat ./.ddev/.drowl-init.gitignore >> ./.gitignore && rm ./.ddev/.drowl-init.gitignore
 
 # Fix autoload path for PHPUnit testing:
 # Create a symlink to the vendor directory so phpunit can find the autoloader
