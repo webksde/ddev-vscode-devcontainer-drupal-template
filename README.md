@@ -39,6 +39,7 @@ Afterwards:
 3. The [Remote Development Extension Pack for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) (`ms-vscode-remote.vscode-remote-extensionpack`)
 4. (Optional) To debug inside the attached VSCode instance, run `ddev config global --xdebug-ide-location=container`
    - This option is only available globally, so you need to adjust it again when working with other DDEV projects where VSCode is not attached to the web container (e.g. when running the IDE in WSL, use `ddev config global --xdebug-ide-location=wsl2`).
+5. (Optional) To let Claude Code work on drupal.org issues and merge requests, generate a fine-grained personal access token on git.drupalcode.org **before** running `drowl-init*`, which asks for it at the start (see [Personal settings](#personal-settings-ddevenvweb) for the step-by-step guide). You can also skip it and add it to `.ddev/.env.web` later.
 
 ---
 
