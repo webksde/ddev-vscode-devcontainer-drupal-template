@@ -1,13 +1,10 @@
 #!/bin/bash
 
 ## HostWorkingDir: true
-## Description: Use stylelint on a Folder for checking Drupal CSS coding standards.
-## Usage: stylelint [path]
+## Description: Lint CSS like the drupal.org GitLab CI stylelint job. Add --fix to autofix.
+## Usage: stylelint [--fix] [--option=value ...] [path ...] [-- tool args]
 ## Example: "ddev stylelint web/modules/custom/my_module"
 
-if [ $# == 0 ]
-then
-  npx stylelint --config /var/www/html/web/core/.stylelintrc.json "$PWD/**/*.css"
-else
-  npx stylelint --config /var/www/html/web/core/.stylelintrc.json "$*/**/*.css"
-fi
+# Paths default to the current directory. Each path is checked as part of its
+# project (module, theme, profile or recipe), see .ddev/drupal-ci/lib/common.sh.
+exec /var/www/html/.ddev/drupal-ci/bin/stylelint "$@"

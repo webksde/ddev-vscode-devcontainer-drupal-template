@@ -1,15 +1,10 @@
 #!/bin/bash
 
 ## HostWorkingDir: true
-## Description: Use phpcbf on a Folder for fixing Code using Drupal and DrupalPractice Coding standards
-## Usage: phpcbf [path]
-## Example: "ddev phpcbf web/modules/contrib/devel"
+## Description: Fix PHP coding standard violations, using the same ruleset as the drupal.org GitLab CI phpcs job.
+## Usage: phpcbf [--option=value ...] [path ...] [-- tool args]
+## Example: "ddev phpcbf web/modules/custom/my_module"
 
-if [ $# == 0 ]
-then
-  phpcbf -p --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml,phtml --standard=Drupal,DrupalPractice "$PWD"
-else
-  phpcbf -p --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml,phtml --standard=Drupal,DrupalPractice "$@"
-fi
-
-
+# Paths default to the current directory. Each path is checked as part of its
+# project (module, theme, profile or recipe), see .ddev/drupal-ci/lib/common.sh.
+exec /var/www/html/.ddev/drupal-ci/bin/phpcbf "$@"

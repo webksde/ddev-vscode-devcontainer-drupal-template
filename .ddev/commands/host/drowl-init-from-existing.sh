@@ -68,18 +68,18 @@ if [ $# -eq 0 ]; then
         chmod 0755 ./web/sites/default
         chmod 0644 ./web/sites/default/settings.php
       fi
-      # Copy all initiation additions (VSCode settings, phpunit.xml, phpstan.neon, cspell.json,
-      # .mcp.json, AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...):
+      # Copy all initiation additions (VSCode settings, phpunit.xml, .mcp.json,
+      # AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...):
       mkdir -p ./web/sites/default
       cp -R .ddev/initiation-additions/. .
-      # Get packages for eslint and JS code completion:
-      echo 'Requiring npm dev packages... (This might take a bit)'
-      cp web/core/package.json .
-      ddev npm install
       # Create temp folder and custom module folder and private folder:
       mkdir -p ./files/private
       mkdir -p web/modules/custom
       mkdir -p ./tmp
+      # Set up the linters like the drupal.org GitLab CI: install core's node
+      # modules (eslint, stylelint, prettier, cspell) and link core's configs:
+      echo 'Installing core node modules for the linters... (This might take a bit)'
+      ddev exec /var/www/html/.ddev/drupal-ci/setup.sh
       define_stage_file_proxy=1
       bool=0
       ;;

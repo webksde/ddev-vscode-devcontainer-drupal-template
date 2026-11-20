@@ -1,22 +1,10 @@
 #!/bin/bash
 
 ## HostWorkingDir: true
-## Description: Use phpstan on a Folder for checking deprecated and dirty code.
-## Usage: phpstan [path]
-## Example: "ddev phpstan web/modules/contrib/devel"
+## Description: Run PHPStan like the drupal.org GitLab CI phpstan job (uses the project's own phpstan.neon, else the CI default: level 0).
+## Usage: phpstan [--option=value ...] [path ...] [-- tool args]
+## Example: "ddev phpstan web/modules/custom/my_module"
 
-# Determine the primary target directory (defaults to current directory if no arguments are passed)
-TARGET_DIR="${1:-$PWD}"
-
-# Check if phpstan.neon exists in the target directory; fallback to default if not
-if [ -f "$TARGET_DIR/phpstan.neon" ]; then
-  CONFIG_FILE="$TARGET_DIR/phpstan.neon"
-else
-  CONFIG_FILE="/var/www/html/phpstan.neon"
-fi
-
-if [ $# -eq 0 ]; then
-  phpstan analyse -c "$CONFIG_FILE" "$PWD"
-else
-  phpstan analyse -c "$CONFIG_FILE" "$@"
-fi
+# Paths default to the current directory. Each path is checked as part of its
+# project (module, theme, profile or recipe), see .ddev/drupal-ci/lib/common.sh.
+exec /var/www/html/.ddev/drupal-ci/bin/phpstan "$@"

@@ -12,14 +12,26 @@
   "eslint.format.enable": true,
   "editor.inlayHints.enabled": "off",
   "eslint.enable": true,
-  "prettier.configPath": "web/core/.prettierrc.json",
+  // Linters behave like the drupal.org GitLab CI (see .ddev/drupal-ci): tools
+  // come from core's node_modules, and core's configs are provided site-wide
+  // (web/.eslintrc.json, .stylelintrc.json, .prettierrc.json) as fallback for
+  // projects without their own config. cspell.json is generated as well. All
+  // of this is set up by drowl-init and refreshed by "ddev drupal-ci-update".
+  "prettier.prettierPath": "./web/core/node_modules/prettier",
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "never"
   },
-  "eslint.workingDirectories": ["./web"],
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.nodePath": "./web/core/node_modules",
+  "eslint.useFlatConfig": false,
+  "eslint.validate": ["javascript", "yaml"],
+  "eslint.options": {
+    "resolvePluginsRelativeTo": "/var/www/html/web/core",
+    "overrideConfig": { "ignorePatterns": ["*.es6.js", "*.min.js"] }
+  },
   "php.suggest.basic": false, //disable basic php suggests for better Intelephense Suggestions
   "terminal.integrated.defaultProfile.linux": "bash",
   "emptyIndent.removeIndent": true, //Automatically remove indentation in empty lines on save
@@ -73,8 +85,9 @@
   ],
   "intelephense.environment.shortOpenTag": true,
   "intelephense.telemetry.enabled": false,
-  "phpsab.autoRulesetSearch": false,
-  "phpsab.standard": "Drupal,DrupalPractice",
+  // The project's own (.)phpcs.xml(.dist), else the drupal.org GitLab CI default:
+  "phpsab.autoRulesetSearch": true,
+  "phpsab.standard": "/var/www/html/.ddev/drupal-ci/assets/phpcs.xml.dist",
   "[php]": {
     "editor.defaultFormatter": "valeryanm.vscode-phpsab",
     "editor.formatOnSave": true,
@@ -104,7 +117,6 @@
   "html.suggest.html5": true,
   "css.validate": true,
   "editor.formatOnPaste": false,
-  "cSpell.workspaceRootPath": "./web/core",
   "editor.rulers": [80],
   "files.associations": {
     "*.inc": "php",
@@ -140,6 +152,6 @@
     "editor.defaultFormatter": "stylelint.vscode-stylelint"
   },
   "stylelint.enable": true,
-  "stylelint.configFile": "./web/core/.stylelintrc.json",
+  "stylelint.stylelintPath": "./web/core/node_modules/stylelint",
   "chat.disableAIFeatures": true
 }
