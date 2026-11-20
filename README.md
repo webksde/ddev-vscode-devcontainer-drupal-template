@@ -73,7 +73,7 @@ A launch configuration for "Listen for XDebug" is included.
 - [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer) (PHPCS / PHPCBF) with [Drupal Coder](https://www.drupal.org/project/coder) standards
 - [PHPStan](https://phpstan.org/) with deprecation rules
 - [ESLint](https://eslint.org/), [Stylelint](https://stylelint.io/) and [CSpell](https://cspell.org/)
-- All linters behave like the drupal.org GitLab CI jobs (see [below](#linting-like-the-drupalorg-gitlab-ci))
+- All linters and PHPUnit behave like the drupal.org GitLab CI jobs, `ddev drupal-ci` runs them all at once (see [below](#linting-like-the-drupalorg-gitlab-ci))
 - [XDebug](https://xdebug.org/) and [Kint](https://kint-php.github.io/kint/)
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) (see [below](#claude-code-in-the-web-container))
 - [DDEV Tooling](https://ddev.readthedocs.io/en/stable/users/usage/cli/)
@@ -108,6 +108,7 @@ Beautifully packaged for easy project and environment switching.
 
 ### Linting like the drupal.org GitLab CI
 The linters behave like the validate jobs of the [drupal.org GitLab CI templates](https://git.drupalcode.org/project/gitlab_templates): every path is checked as part of its project (module, theme, profile or recipe), from the project's root, with the project's own config files (`phpcs.xml.dist`, `phpstan.neon`, `.eslintrc.json`, `.stylelintrc.json`, `.cspell.json`, `.cspell-project-words.txt`, ...), and the CI defaults where it has none. The JS tools come from core's `node_modules`, installed with yarn like in CI.
+- `ddev drupal-ci web/modules/custom/my_module`: run all checks like the CI pipeline (phpcs, phpstan, eslint, stylelint, cspell and PHPUnit, which runs the project's `tests/` folder), with a summary at the end. `--fix` autofixes first (phpcbf, eslint / stylelint `--fix`), `--only=` / `--skip=` select tools, e.g. `--skip=phpunit` to only lint. Use the single commands below for tool options.
 - `ddev phpcs web/modules/custom/my_module`: check PHP code against the Drupal coding standards (`ddev phpcbf ...` to autofix).
 - `ddev phpstan web/modules/custom/my_module`: static analysis with PHPStan.
 - `ddev eslint web/modules/custom/my_module (--fix)`: lint / autofix JavaScript and YAML.
@@ -115,7 +116,7 @@ The linters behave like the validate jobs of the [drupal.org GitLab CI templates
 - `ddev cspell web/modules/custom/my_module`: check spelling (`--words-only --unique` lists only the unknown words).
 - `ddev drupal-ci-update`: update the CI default configs (`phpcs.xml.dist`, `phpstan.neon`, `.cspell.json`) and helper scripts in `.ddev/drupal-ci/` to the newest gitlab_templates 1.x release (`1.x-latest`, like contrib projects use), and refresh the linter setup (see below).
 
-Paths can also be single files, or folders containing several projects (e.g. `web/modules/custom`). Without a path, the current directory is checked. Inside the container (VSCode terminal, Claude Code), the same runners are available as `.ddev/drupal-ci/bin/<tool>`; the VSCode extensions use the same configs.
+Paths can also be single files, or folders containing several projects (e.g. `web/modules/custom`). Without a path, the current directory is checked. Inside the container (VSCode terminal, Claude Code), the same runners are available as `.ddev/drupal-ci/bin/<tool>` (incl. `drupal-ci` and `phpunit`); the VSCode extensions use the same configs.
 
 `drowl-init` sets up the linters once (`.ddev/drupal-ci/setup.sh`): it downloads the CI default configs, installs core's node modules, provides core's configs site-wide as the fallback for projects without their own (`web/.eslintrc.json` extending core's `.eslintrc.passing.json` like CI, excluded from core's scaffolding in `composer.json`; `.stylelintrc.json` and `.prettierrc.json` in the project root), and generates the `cspell.json` for the VSCode CSpell extension (CI defaults plus each custom and contrib project's `.cspell-project-words.txt`). Run `ddev drupal-ci-update` to refresh all of it, e.g. after adding a project with its own `.cspell-project-words.txt`.
 

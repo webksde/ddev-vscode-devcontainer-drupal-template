@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+# PHPUnit, like the "phpunit" job of the drupal.org GitLab CI templates.
+#
+# Usage: phpunit [--option=value ...] [path ...] [-- tool args]
+#   e.g. "phpunit --filter=testFoo web/modules/custom/foo" or
+#   "phpunit web/modules/custom/foo -- --testsuite=unit".
+#
+# Runs the tests of each project (its tests/ folder) with the site's
+# phpunit.xml. Projects without a tests/ folder are skipped. Paths inside a
+# project (e.g. a single test file) are run as given.
+
+# shellcheck source-path=SCRIPTDIR source=../lib/common.sh
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../lib/common.sh"
+
+run() {
+  local project="$1"
+  shift
+  local -a targets=("$@")
+  if [[ ${targets[*]} == "." ]]; then
+    if [[ ! -d tests ]]; then
+      ci_info "Skipped ${project#"$APP_ROOT"/}: no tests/ folder."
+      return 0
+    fi
+    targets=(tests)
+  fi
+  local -a opts=()
+  ci_is_tty && opts+=(--colors=always)
+  "$COMPOSER_BIN/phpunit" -c "$APP_ROOT/phpunit.xml" "${opts[@]}" "${CI_OPTS[@]}" "${targets[@]}"
+}
+
+ci_parse_args "$@"
+[[ -f $APP_ROOT/phpunit.xml ]] || ci_die "No $APP_ROOT/phpunit.xml found."
+ci_for_each_project run

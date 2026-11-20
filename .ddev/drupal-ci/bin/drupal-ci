@@ -1,0 +1,89 @@
+#!/bin/bash
+#
+# Runs all checks of the drupal.org GitLab CI templates on the given paths:
+# phpcs, phpstan, eslint, stylelint, cspell and phpunit (in this order), using
+# the single runners in this folder. Continues after failures, prints a summary
+# at the end and exits with the highest exit code of the tools.
+#
+# Usage: drupal-ci [--fix] [--only=tool,...] [--skip=tool,...] [path ...]
+#   --fix   Autofix first: runs phpcbf before phpcs, and eslint and stylelint
+#           with --fix.
+#   --only  Run only these tools, e.g. --only=phpcs,phpstan.
+#   --skip  Skip these tools, e.g. --skip=phpunit for a quick lint.
+#
+# Tool specific options aren't supported here, use the single runners for them
+# (e.g. "phpcs --report=emacs <path>").
+
+# shellcheck source-path=SCRIPTDIR source=../lib/common.sh
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../lib/common.sh"
+
+BIN_DIR="$DRUPAL_CI_DIR/bin"
+ALL_TOOLS=(phpcs phpstan eslint stylelint cspell phpunit)
+
+# Splits a comma separated tool list into the array named $3 and validates it.
+read_tools() {
+  local option="$1" list="$2" tool
+  local -n result="$3"
+  IFS=',' read -ra result <<<"$list"
+  [[ ${#result[@]} -gt 0 ]] || ci_die "$option needs a comma separated list of tools (${ALL_TOOLS[*]})."
+  for tool in "${result[@]}"; do
+    [[ " ${ALL_TOOLS[*]} " == *" $tool "* ]] ||
+      ci_die "Unknown tool \"$tool\" in $option. Available: ${ALL_TOOLS[*]}."
+  done
+}
+
+fix=0
+only=()
+skip=()
+paths=()
+for arg in "$@"; do
+  case "$arg" in
+    --fix) fix=1 ;;
+    --only=*) read_tools --only "${arg#--only=}" only ;;
+    --skip=*) read_tools --skip "${arg#--skip=}" skip ;;
+    -*) ci_die "Unknown option: $arg. Usage: drupal-ci [--fix] [--only=tool,...] [--skip=tool,...] [path ...]. Use the single runners in $BIN_DIR for tool options." ;;
+    *)
+      [[ -e $arg ]] || ci_die "Path not found: $arg"
+      paths+=("$arg")
+      ;;
+  esac
+done
+
+tools=()
+for tool in "${ALL_TOOLS[@]}"; do
+  if [[ ${#only[@]} -gt 0 && " ${only[*]} " != *" $tool "* ]] || [[ " ${skip[*]} " == *" $tool "* ]]; then
+    continue
+  fi
+  tools+=("$tool")
+done
+[[ ${#tools[@]} -gt 0 ]] || ci_die "No tools left to run."
+
+rc=0
+summary=()
+for tool in "${tools[@]}"; do
+  args=()
+  case "$tool" in
+    phpcs)
+      if [[ $fix == 1 ]]; then
+        echo "=== phpcbf ===" >&2
+        # phpcbf exits non-zero when it fixed something, phpcs reports the rest.
+        "$BIN_DIR/phpcbf" "${paths[@]}" || true
+      fi
+      ;;
+    eslint | stylelint) [[ $fix == 1 ]] && args+=(--fix) ;;
+  esac
+  echo "=== $tool ===" >&2
+  code=0
+  "$BIN_DIR/$tool" "${args[@]}" "${paths[@]}" || code=$?
+  if [[ $code == 0 ]]; then
+    summary+=("$tool ok")
+  else
+    summary+=("$tool FAILED ($code)")
+  fi
+  [[ $code -gt $rc ]] && rc=$code
+done
+
+echo "=== summary ===" >&2
+printf -v line '%s, ' "${summary[@]}"
+ci_info "${line%, }"
+exit $rc

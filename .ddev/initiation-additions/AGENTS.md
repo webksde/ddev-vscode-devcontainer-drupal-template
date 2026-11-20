@@ -18,6 +18,18 @@ Always lint with the runners in `.ddev/drupal-ci/bin/`. They behave like the val
 part of its module / theme.
 Do **not** call `vendor/bin/phpcs`, `vendor/bin/phpstan`, `eslint`, `stylelint` or `cspell` directly.
 
+Run all checks at once with `drupal-ci` (phpcs, phpstan, eslint, stylelint, cspell and phpunit, like the MR
+pipeline). It continues after failures and prints a summary at the end:
+
+```bash
+.ddev/drupal-ci/bin/drupal-ci <paths>                  # everything, incl. the module's tests
+.ddev/drupal-ci/bin/drupal-ci --skip=phpunit <paths>   # lint only (while iterating)
+.ddev/drupal-ci/bin/drupal-ci --fix <paths>            # autofix first (phpcbf, eslint/stylelint --fix)
+.ddev/drupal-ci/bin/drupal-ci --only=phpcs,cspell <paths>
+```
+
+You can also run the single runners via:
+
 ```bash
 .ddev/drupal-ci/bin/phpcs     <paths>   # PHP_CodeSniffer
 .ddev/drupal-ci/bin/phpcbf    <paths>   # PHP_CodeSniffer autofix
@@ -25,6 +37,7 @@ Do **not** call `vendor/bin/phpcs`, `vendor/bin/phpstan`, `eslint`, `stylelint` 
 .ddev/drupal-ci/bin/eslint    <paths>   # JavaScript + YAML; add --fix to autofix
 .ddev/drupal-ci/bin/stylelint <paths>   # CSS; add --fix to autofix
 .ddev/drupal-ci/bin/cspell    <paths>   # Spelling
+.ddev/drupal-ci/bin/phpunit   <paths>   # PHPUnit: a module's tests/ folder, or single test files
 ```
 
 - `<paths>` are files or folders, e.g. `web/modules/custom/my_module` or the
@@ -45,5 +58,6 @@ Do **not** call `vendor/bin/phpcs`, `vendor/bin/phpstan`, `eslint`, `stylelint` 
 - **Single File Component Structure:** In `.vue` files, always place the `<template>` block at the top, preceding `<script>` and `<style>` blocks.
 
 ## Testing Strategy
-- Tests: `vendor/bin/phpunit -c phpunit.xml <path>`.
+- Tests: `.ddev/drupal-ci/bin/phpunit <path>` (a module path runs its `tests/` folder, like CI; also accepts
+  test files and `--filter=<name>`).
 - Run **only relevant or newly created tests** during iteration. Do NOT run full test suites on minor changes.

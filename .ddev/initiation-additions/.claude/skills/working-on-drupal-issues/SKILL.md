@@ -39,7 +39,7 @@ Check the points below while working, but don't stop to ask about them. Stay in 
 
 - Always add a test that checks the originally reported issue, if not told otherwise.
 - Make sure all of the module's tests pass, but run them only AFTER everything is implemented.
-- Lint locally with the CI runners instead of waiting for the MR pipeline: `.ddev/drupal-ci/bin/<tool> <module path>` for `phpcs`, `phpstan`, `eslint`, `stylelint` and `cspell`. They use the same configs as the drupal.org CI. Findings in code you didn't touch fall under "Unrelated CI failures" above.
+- Lint locally with the CI runners instead of waiting for the MR pipeline: `.ddev/drupal-ci/bin/drupal-ci --skip=phpunit <module path>` runs `phpcs`, `phpstan`, `eslint`, `stylelint` and `cspell` with a summary (`--fix` autofixes first). Rerun a single tool with `.ddev/drupal-ci/bin/<tool> <module path>`. They use the same configs as the drupal.org CI. Findings in code you didn't touch fall under "Unrelated CI failures" above.
 
 ## Issue → branch → MR flow
 
