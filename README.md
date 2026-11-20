@@ -8,9 +8,9 @@ The tools inside this repository will create a modified Drupal environment, focu
 
 Initialization takes about 5 minutes and is only needed once. Make sure you meet the [prerequisites](#prerequisites) first.
 
-Start a **standard** dev environment using Drupal 11, meant for testing and working on contrib modules / issues:
+Start a **contrib** dev environment using Drupal 11, meant for testing and working on contrib modules / issues:
 ```
-git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git standard-vscode-drupal && cd standard-vscode-drupal && ddev drowl-init
+git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git contrib-vscode-drupal && cd contrib-vscode-drupal && ddev drowl-init
 ```
 Use `ddev drowl-init -v 10` to install Drupal 10 instead.
 
