@@ -30,16 +30,15 @@ Check before doing anything else: if ToolSearch finds no `mcp__drupalcode__*` to
 
 ## Follow-up questions in the final reply
 
-Check the points below while working, but don't stop to ask about them. Stay in scope, finish the task, and then list what you found as questions at the end of your final reply, e.g. "I finished the fix and opened !12. I noticed that the module still supports Drupal 9, which is end-of-life. Should I drop support for it as well?" Only ask about points that apply; skip the rest.
+Check the points below at the end, once the task is finished. Stay in scope, then list what you found as questions at the end of your final reply. Only ask about points that apply; skip the rest.
 
-- **Unrelated CI failures:** if linters (phpcs, ESLint, Stylelint, cspell, etc.) report problems in code you didn't touch, don't fix them. Ask "Should we address the unrelated CI failures as well?" and name the affected tools/files. PHPUnit is handled separately (see Tests).
+- **Unrelated CI failures:** run all CI checks on the whole module with `.ddev/drupal-ci/bin/drupal-ci <module path>`. If it reports problems in code you didn't touch, including failing PHPUnit tests unrelated to your change, don't fix them. Ask "Should we address the unrelated CI failures as well?" and name the affected tools, files and tests.
 - **Drupal core EOL versions:** check the Drupal core versions the module supports (`core_version_requirement` in the `.info.yml`) against the official release schedule (https://www.drupal.org/about/core/policies/core-release-cycles/schedule); don't rely on what you remember. Only if a supported version is already end-of-life, ask whether to drop support for it. If your fix needed a workaround only for that EOL version, say so, as dropping support would remove it. If no supported version is EOL, don't mention it.
 
 ## Tests
 
 - Always add a test that checks the originally reported issue, if not told otherwise.
-- Make sure all of the module's tests pass, but run them only AFTER everything is implemented.
-- Lint locally with the CI runners instead of waiting for the MR pipeline: `.ddev/drupal-ci/bin/drupal-ci --skip=phpunit <module path>` runs `phpcs`, `phpstan`, `eslint`, `stylelint` and `cspell` with a summary (`--fix` autofixes first). Rerun a single tool with `.ddev/drupal-ci/bin/<tool> <module path>`. They use the same configs as the drupal.org CI. Findings in code you didn't touch fall under "Unrelated CI failures" above.
+- Make sure the module's tests related to the fixed issue (new and existing ones covering the changed code) pass.
 
 ## Issue → branch → MR flow
 
