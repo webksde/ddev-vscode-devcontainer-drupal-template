@@ -126,8 +126,8 @@ ddev drush config-set system.logging error_level verbose -y
 # Created authenticated test user:
 ddev drush user:create max --mail='max@example.com' --password='max' -y
 
-# Create custom module folder:
-mkdir -p web/modules/custom
+# Create the custom module, theme and profile folders:
+mkdir -p web/modules/custom web/themes/custom web/profiles/custom
 
 # Set up the linters like the drupal.org GitLab CI: install core's node modules
 # (eslint, stylelint, prettier, cspell) and link core's configs as fallbacks:

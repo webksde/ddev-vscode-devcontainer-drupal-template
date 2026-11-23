@@ -309,6 +309,15 @@ echo "root=1"
 [ -x vendor/bin/drush ] && echo "drush=1"
 [ -d "$2" ] && echo "web=1"
 [ -f "$2/sites/default/settings.php" ] && echo "settings=1"
+# Multisite: further sites with a settings.php, or a sites.php with entries.
+# (An unmatched glob stays literal, so it is skipped like default/simpletest.)
+for f in "$2"/sites/*/settings.php; do
+  case "$f" in
+  "$2/sites/default/settings.php" | "$2/sites/simpletest/settings.php" | "$2/sites/*/settings.php") ;;
+  *) echo "multisite=1" ;;
+  esac
+done
+[ -f "$2/sites/sites.php" ] && grep -Eq '^[[:space:]]*\$sites\[' "$2/sites/sites.php" && echo "multisite=1"
 command -v php >/dev/null 2>&1 && echo "php=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')"
 command -v rsync >/dev/null 2>&1 && echo "rsync=1"
 command -v gzip >/dev/null 2>&1 && echo "gzip=1"
@@ -327,8 +336,8 @@ probe() {
 [ "$(probe composer_json)" = 1 ] || die "No composer.json found in '${REMOTE_ROOT}'."
 [ "$(probe web)" = 1 ] || die "The web directory '${REMOTE_WEB}' does not exist in '${REMOTE_ROOT}'."
 [ "$(probe settings)" = 1 ] || die "No '${REMOTE_WEB}/sites/default/settings.php' found in '${REMOTE_ROOT}'."
-[ "$(probe drush)" = 1 ] || die "'vendor/bin/drush' is missing on the remote. It is required to dump the database."
-[ -n "$(probe php)" ] || die "No PHP CLI found on the remote. It is required to read the settings.php."
+[ "$(probe drush)" = 1 ] || die "'vendor/bin/drush' is missing on the remote. It is required to read the settings and dump the database."
+[ -n "$(probe php)" ] || die "No PHP CLI found on the remote. It is required to run drush."
 [ "$(probe rsync)" = 1 ] || die "rsync is missing on the remote."
 [ "$(probe gzip)" = 1 ] || die "gzip is missing on the remote."
 [ "$(probe mysqldump)" = 1 ] || die "Neither mysqldump nor mariadb-dump was found on the remote. It is required by 'drush sql:dump'."
@@ -549,6 +558,7 @@ if [ "$CLEANUP_COMPOSER" != 1 ]; then
     warn "The remote has no composer.lock, so 'composer install' resolved new package versions."
   fi
   ddev composer install --no-interaction
+# Cleanup composer case:
 else
   # Build our default composer.json exactly like drowl-init, but without
   # installing it:
@@ -601,92 +611,35 @@ fi
 
 step "3/11 Reading the remote settings.php"
 
-# The script is sent via stdin, so nothing is written on the remote. The
-# database password is never printed:
-cat >"$TMP_DIR/read-settings.php" <<'PHP'
-<?php
-error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED & ~E_NOTICE & ~E_WARNING);
-ini_set('display_errors', 'stderr');
-$drowl_project_root = getcwd();
-$drowl_web_dir = $argv[1] ?? 'web';
-$drowl_print = function (array $data) {
-  while (ob_get_level() > 0) {
-    ob_end_clean();
-  }
-  fwrite(STDOUT, 'DROWL_JSON:' . json_encode($data, JSON_UNESCAPED_SLASHES) . "\n");
-};
-$app_root = $drowl_project_root . '/' . $drowl_web_dir;
-$site_path = 'sites/default';
-$drowl_settings_file = $app_root . '/' . $site_path . '/settings.php';
-if (!is_file($drowl_settings_file)) {
-  $drowl_print(['error' => "No settings.php found at $drowl_settings_file."]);
-  exit(0);
+# Read the values through a full Drupal bootstrap (drush php:eval), so all
+# includes and conditions of the remote settings.php apply. The database
+# password is never printed. The result is marked with "DROWL_JSON:", so any
+# other output (notices, echo in the settings.php) is ignored:
+read -r -d '' READ_SETTINGS_PHP <<'PHP' || true
+$db = \Drupal\Core\Database\Database::getConnectionInfo()['default'] ?? [];
+$prefix = $db['prefix'] ?? '';
+$prefixArray = is_array($prefix);
+if ($prefixArray) {
+  $prefix = $prefix['default'] ?? '';
 }
-if (is_file($drowl_project_root . '/vendor/autoload.php')) {
-  $class_loader = require $drowl_project_root . '/vendor/autoload.php';
-}
-$settings = [];
-$databases = [];
-$config = [];
-$_SERVER += [
-  'HTTP_HOST' => 'localhost',
-  'SERVER_NAME' => 'localhost',
-  'SERVER_PORT' => '80',
-  'REQUEST_URI' => '/',
-  'SCRIPT_NAME' => '/index.php',
-  'REMOTE_ADDR' => '127.0.0.1',
-];
-chdir($app_root);
-ob_start();
-include $drowl_settings_file;
-$drowl_db = $databases['default']['default'] ?? NULL;
-if (!is_array($drowl_db)) {
-  $drowl_print(['error' => "No \$databases['default']['default'] defined in $drowl_settings_file."]);
-  exit(0);
-}
-$drowl_prefix = $drowl_db['prefix'] ?? '';
-$drowl_prefix_array = is_array($drowl_prefix);
-if ($drowl_prefix_array) {
-  $drowl_prefix = $drowl_prefix['default'] ?? '';
-}
-// Multisite: a sites.php with entries, or further sites with a settings.php:
-$drowl_multisite = FALSE;
-if (is_file($app_root . '/sites/sites.php')) {
-  $sites = [];
-  include $app_root . '/sites/sites.php';
-  $drowl_multisite = !empty($sites);
-}
-foreach (glob($app_root . '/sites/*/settings.php') ?: [] as $drowl_file) {
-  if (!in_array(basename(dirname($drowl_file)), ['default', 'simpletest'], TRUE)) {
-    $drowl_multisite = TRUE;
-  }
-}
-$drowl_print([
-  'error' => NULL,
-  'driver' => (string) ($drowl_db['driver'] ?? ''),
-  'host' => (string) ($drowl_db['host'] ?? ''),
-  'port' => (string) ($drowl_db['port'] ?? ''),
-  'database' => (string) ($drowl_db['database'] ?? ''),
-  'username' => (string) ($drowl_db['username'] ?? ''),
-  'prefix' => (string) $drowl_prefix,
-  'prefix_array' => $drowl_prefix_array,
-  'file_public_path' => (string) ($settings['file_public_path'] ?? 'sites/default/files'),
-  'multisite' => $drowl_multisite,
-]);
+echo 'DROWL_JSON:' . json_encode([
+  'driver' => (string) ($db['driver'] ?? ''),
+  'host' => (string) ($db['host'] ?? ''),
+  'database' => (string) ($db['database'] ?? ''),
+  'username' => (string) ($db['username'] ?? ''),
+  'prefix' => (string) $prefix,
+  'prefix_array' => $prefixArray,
+  'file_public_path' => (string) \Drupal\Core\Site\Settings::get('file_public_path', 'sites/default/files'),
+], JSON_UNESCAPED_SLASHES) . "\n";
 PHP
-SETTINGS_OUTPUT="$(rssh "cd $R_ROOT && php -- $R_WEB" <"$TMP_DIR/read-settings.php")" || die "Reading the remote settings.php failed."
+SETTINGS_OUTPUT="$(rssh "cd $R_ROOT && vendor/bin/drush php:eval $(rq "$READ_SETTINGS_PHP")" </dev/null)" || die "Reading the remote settings via 'drush php:eval' failed."
 
-# The PHP script prints its result with a "DROWL_JSON:" marker, so any other
-# output of the remote settings.php (notices, echo) is ignored:
 SETTINGS_JSON="$(printf '%s\n' "$SETTINGS_OUTPUT" | sed -n 's/^DROWL_JSON://p' | tail -n 1)"
-[ -n "$SETTINGS_JSON" ] || die "Reading the remote settings.php failed (no result). Output was: ${SETTINGS_OUTPUT}"
+[ -n "$SETTINGS_JSON" ] || die "Reading the remote settings failed (no result). Output was: ${SETTINGS_OUTPUT}"
 
 setting() {
   printf '%s' "$SETTINGS_JSON" | jq -r ".$1 // empty"
 }
-
-SETTINGS_ERROR="$(setting error)"
-[ -z "$SETTINGS_ERROR" ] || die "$SETTINGS_ERROR"
 
 DB_DRIVER="$(setting driver)"
 if [ "$DB_DRIVER" != "mysql" ]; then
@@ -701,7 +654,7 @@ fi
 
 FILE_PUBLIC_PATH="$(setting file_public_path)"
 
-if [ "$(setting multisite)" = "true" ]; then
+if [ "$(probe multisite)" = 1 ]; then
   warn "The remote is a multisite. Only sites/default was used (settings, database, custom code of the default site)."
 fi
 
@@ -796,8 +749,8 @@ for dir in modules/custom themes/custom profiles/custom; do
     info "No ${REMOTE_WEB}/${dir} on the remote, skipping."
   fi
 done
-# Like drowl-init, there is always a custom module folder:
-mkdir -p "./$LOCAL_WEB/modules/custom"
+# Like drowl-init, there are always custom module, theme and profile folders:
+mkdir -p "./$LOCAL_WEB/modules/custom" "./$LOCAL_WEB/themes/custom" "./$LOCAL_WEB/profiles/custom"
 
 # ------------------------------------------------------------------------------
 # 6. Database dump
@@ -840,8 +793,6 @@ success "Database dumped to ${DUMP_FILE} ($(du -h "$DUMP_FILE" | cut -f1))."
 
 step "7/11 Starting DDEV and importing the database"
 
-ddev config --disable-settings-management --auto
-
 # Require the "PHPMyAdmin" plugin:
 echo 'Requiring the "ddev-phpmyadmin" plugin...'
 ddev get ddev/ddev-phpmyadmin
@@ -879,7 +830,11 @@ SETTINGS_PHP="./$LOCAL_WEB/sites/default/settings.php"
 chmod 0755 "./$LOCAL_WEB/sites/default"
 chmod 0644 "$SETTINGS_PHP"
 
-# Replaces a line in the local settings.php (portable, no "sed -i"):
+# Applies a sed expression to the local settings.php. It is used below to
+# replace the default "prefix" and "file_public_path" lines of the template
+# settings.php. Works through a temp file, as "sed -i" differs between
+# GNU/Linux and macOS:
+# Usage: replace_in_settings 'SED_EXPRESSION'
 replace_in_settings() {
   sed "$1" "$SETTINGS_PHP" >"$TMP_DIR/settings.php"
   cat "$TMP_DIR/settings.php" >"$SETTINGS_PHP"
@@ -996,7 +951,7 @@ echo -e $'\e\n[33mNOTE: Personal settings (git identity, DRUPALCODE_TOKEN) are s
 step "11/11 Done! Manual follow-ups"
 
 printf '\n\e[1;33mTo do:\e[0m\n'
-printf -- '- Take a look at the composer.json: remove production-only packages (devel and stage_file_proxy were added to require-dev, the dev stack as in drowl-init).\n'
+printf -- '- Take a look at the composer.json!\n'
 if [ "$CLEANUP_COMPOSER" = 1 ]; then
   printf -- '- --cleanup-composer: check the merged keys (require, require-dev, patches, repositories; the remote allow-plugins were added) and the package versions that moved (compare with the remote composer.lock).\n'
 fi
