@@ -19,6 +19,11 @@ Or start a **core** dev environment using gitified Drupal 12.x-dev, meant for wo
 git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git core-vscode-drupal && cd core-vscode-drupal && ddev drowl-init-dev
 ```
 
+Or create a local development copy of an **existing** Drupal site, straight from its server over SSH (see [below](#development-copy-of-an-existing-site-via-ssh)):
+```
+git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git my-site && cd my-site && ddev drowl-init-from-ssh
+```
+
 Afterwards:
 - Use `ddev describe` to check the status & URLs of your project.
 - Log in with `admin` / `admin` (an additional user `max` / `max` is created as well).
@@ -120,6 +125,32 @@ The linters behave like the validate jobs of the [drupal.org GitLab CI templates
 Paths can also be single files, or folders containing several projects (e.g. `web/modules/custom`). Without a path, the current directory is checked. Inside the container (VSCode terminal, Claude Code), the same runners are available as `.ddev/drupal-ci/bin/<tool>` (incl. `drupal-ci` and `phpunit`); the VSCode extensions use the same configs.
 
 `drowl-init` sets up the linters once (`.ddev/drupal-ci/setup.sh`): it downloads the CI default configs, installs core's node modules, provides core's configs site-wide as the fallback for projects without their own (`web/.eslintrc.json` extending core's `.eslintrc.passing.json` like CI, excluded from core's scaffolding in `composer.json`; `.stylelintrc.json` and `.prettierrc.json` in the project root), and generates the `cspell.json` for the VSCode CSpell extension (CI defaults plus each custom and contrib project's `.cspell-project-words.txt`). Run `ddev drupal-ci-update` to refresh all of it, e.g. after adding a project with its own `.cspell-project-words.txt`.
+
+### Development copy of an existing site via SSH
+`ddev drowl-init-from-ssh [--cleanup-composer]` builds a local development copy of an existing Drupal site from its server. Like `drowl-init`, run it once in a freshly cloned copy of this repository.
+
+**Requirements:** `ssh`, `rsync`, `jq` and `gzip` on the host, PHP CLI, `rsync` and `vendor/bin/drush` on the remote. It is a host command, so it uses your host's SSH setup (ssh-agent, `~/.ssh/config`). The connection is opened once and reused, so you enter a passphrase / password only once. Nothing is written on the server.
+
+All questions are asked up front: SSH target and port (default `22`), remote project root (the folder with the `composer.json`), web directory (default `web`), stage_file_proxy origin, a confirmation and the personal settings. Then it runs unattended:
+1. **Connects** and checks the remote. It uses the remote PHP version and the remote database type and version locally. If DDEV does not ship that database version, it uses the next higher one that DDEV supports.
+2. **Composer:** fetches `composer.json` / `composer.lock`, plus the local patches, patches files, scaffold files and path repositories they reference, and runs `composer install`. The remote web directory is kept.
+3. **Reads the remote `settings.php`** (table prefix, public files path). The database password never leaves the server. Multisites are not supported: only the default site (`sites/default/settings.php` and its database) is copied. The other sites are ignored, with a warning, if the remote has further `sites/*/settings.php` files or a `sites/sites.php` with entries.
+4. **Adds the dev stack** of `drowl-init`: core-dev in the remote core version, drush, coder, phpstan rules, kint, devel and stage_file_proxy. Packages the project already requires are left as they are.
+5. **Copies the custom modules, themes and profiles** via rsync (without `node_modules` and `.git`).
+6. **Streams the database dump** (`drush sql:dump`) over SSH into `data/sql/remote-dump-<date>.sql.gz`, then checks that it is complete. The tables `cache`, `cache_*`, `sessions` and `watchdog` (with the table prefix, if there is one) are dumped without data, only their structure.
+7. **Sets up DDEV:** adds phpMyAdmin and copies the initiation additions (VSCode settings, `phpunit.xml`, `settings.php`, ...). If the web directory is not `web`, it rewrites their `web/` paths. Then it sets the table prefix and public files path in `settings.php` and imports the dump.
+8. **Post-setup:** runs `drush updb`, enables devel and stage_file_proxy and sets up the linters. The stage_file_proxy origin is added at the end of the local `settings.php` (`$config['stage_file_proxy.settings']['origin']`), so it stays set after a config import, and also saved in the database. With `drush config-set`, it sets Kint as the devel dumper, disables CSS / JS aggregation and enables verbose errors. These changes are saved in the database only. The copied `settings.local.php` (included by `settings.php`) also forces verbose errors and disables the render, page and dynamic page caches. Public files are fetched from the origin on demand. Private files are not copied.
+9. **Saves a dump** in `data/sql/db-complete-dump.sql.gz` for `ddev drowl-reset-db`, and removes `README.md` and `.git` like `drowl-init`.
+10. **Prints** a to-do list, all warnings of the run and a login link. Log in with the site's own users, as no `admin` / `max` users are created.
+
+**`--cleanup-composer`** replaces the remote `composer.json` with a clean one, based on our default:
+- Taken over from the remote: `require`, `require-dev`, patches, repositories and allowed plugins.
+- Everything else comes from our default `composer.json`. The web directory is always `web`.
+- The remote `composer.lock` is not used. Instead, `composer update -W` installs the newest package versions the constraints allow, so they can differ from the remote.
+
+Only use it if you know what you are doing.
+
+For CI, pass all values as options and add `--non-interactive`. This skips all prompts, confirmations and personal settings, and fails instead of asking for an SSH password. `--ssh-target`, `--remote-root` and `--origin` are required, `--ssh-port` (default `22`) and `--web-dir` (default `web`) are optional: `ddev drowl-init-from-ssh --non-interactive --ssh-target=user@example.com --ssh-port=22 --remote-root=/var/www/example.com --web-dir=web --origin=https://www.example.com`.
 
 ### Database
 - `ddev import-db --database=db --file=db.sql.gz`: import a database file.

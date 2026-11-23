@@ -76,10 +76,10 @@ if [ $# -eq 0 ]; then
       # AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...):
       mkdir -p ./web/sites/default
       cp -R .ddev/initiation-additions/. .
-      # Create temp, custom module, private files, config sync and
-      # translations folders:
+      # Create temp, custom module / theme / profile, private files, config
+      # sync and translations folders:
       mkdir -p ./files/private ./files/sync ./files/translations
-      mkdir -p web/modules/custom
+      mkdir -p web/modules/custom web/themes/custom web/profiles/custom
       mkdir -p ./tmp
       # Set up the linters like the drupal.org GitLab CI: install core's node
       # modules (eslint, stylelint, prettier, cspell) and link core's configs:
