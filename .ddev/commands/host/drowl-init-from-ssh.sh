@@ -496,9 +496,12 @@ filter_local_paths() {
 fetch_paths() {
   local list="$1" existing="$TMP_DIR/existing.txt" p
   [ -s "$list" ] || return 0
-  # The list is sent via stdin, the remote prints the paths that exist. Only
-  # paths from our own (filtered) list are kept, so the remote can not add
-  # further paths (e.g. "../..") to the rsync file list:
+  # 1. Ask the remote which of the paths exist: $list is sent via stdin, the
+  #    remote prints every path that exists.
+  # 2. Do not trust that answer: keep only the lines that exactly match a line
+  #    of $list. $list is our own list, already cleaned by filter_local_paths
+  #    (no "..", see the callers). So a compromised remote can not add other
+  #    paths (e.g. "../../.bashrc") to the rsync file list below:
   rssh "cd $R_ROOT && while IFS= read -r f; do [ -e \"\$f\" ] && printf '%s\n' \"\$f\"; done; exit 0" <"$list" >"$existing.raw"
   grep -Fx -f "$list" -- "$existing.raw" >"$existing" || true
   while IFS= read -r p; do
@@ -1028,7 +1031,8 @@ fi
 )
 echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 
-# One-time login link (the imported users' passwords stay unchanged):
+# One-time login link (the users' passwords are random after sanitizing, and
+# unchanged with --no-sanitize):
 LOGIN_LINK="$(ddev drush uli 2>/dev/null | tail -n 1 || true)"
 
 # ------------------------------------------------------------------------------
