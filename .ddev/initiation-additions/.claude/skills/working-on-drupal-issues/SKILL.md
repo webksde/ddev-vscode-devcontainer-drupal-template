@@ -35,7 +35,7 @@ Drupal.org's custom commands (https://new.drupal.org/drupalorg/gitlab-custom-com
 
 ```bash
 curl -sS --fail-with-body -w '\nHTTP %{http_code}\n' \
-  -H "PRIVATE-TOKEN: $DRUPALCODE_TOKEN" --data-urlencode "body=/do:label ~state::needsReview" \
+  -H "PRIVATE-TOKEN: $DRUPALCODE_TOKEN" --data-urlencode 'body=/do:label ~"state::needsReview"' \
   "https://git.drupalcode.org/api/v4/projects/project%2F<project>/issues/<iid>/notes"
 ```
 
@@ -48,7 +48,7 @@ Expect `HTTP 201`. DrupalBot acts asynchronously: check the result with `get_wor
 | `/do:assign @username @username` | Add assignees |
 | `/do:unassign @username` / `/do:reassign @username` | Remove assignees / replace all assignees |
 
-- Whether `/do:label` replaces another label of the same scope (e.g. an existing `state::needsWork`) is not documented. Check the labels afterwards and remove the old one with `/do:unlabel` if it is still there.
+- `/do:label` takes labels in the form `~"scope::value"`, e.g. `/do:label ~"state::needsWork"`. It replaces an existing label of the same scope automatically, so there is no need to remove the old one.
 
 ## Follow-up questions in the final reply
 
@@ -70,7 +70,7 @@ Check the points below at the end, once the task is finished. Stay in scope, the
 Drupal does not use personal forks or branches in the project repo. Each issue gets a dedicated **issue fork** (`issue/<project>-<iid>`); the branch lives there and the MR goes from the fork to the project. Use the issue fork even if the user is a maintainer of the project, so others can collaborate on the branch. Commit to the project repo (`project/<project>`) only if the user explicitly asks for it.
 
 1. **Issue:**
-   - New issue: create it with `save_work_item` (`type_name: "Issue"`), description from the template below. Then set the labels (`/do:label ~category::… ~priority::…`) and assign yourself (`/do:assign @<your username>`) with `/do:` commands (see above).
+   - New issue: create it with `save_work_item` (`type_name: "Issue"`), description from the template below. Then set the labels (`/do:label ~"category::…" ~"priority::…"`) and assign yourself (`/do:assign @<your username>`) with `/do:` commands (see above).
    - Existing issue: skip creating it. Read its description and all comments first (`get_work_item` with its notes and related merge requests), and check for an existing issue fork. If a maintainer questioned or rejected the approach, you may still implement it locally, but ask the user before pushing or opening an MR.
 2. **Local checkout:** work in a local git checkout of the project, so you can run tests and linters.
    - Module already a git checkout of `project/<module>` (anywhere under `web/modules/`): use it.
@@ -97,7 +97,7 @@ Drupal does not use personal forks or branches in the project repo. Each issue g
    - `Permission denied (publickey)`: the user's SSH key isn't loaded or registered on git.drupalcode.org. Tell the user and wait. Access denied to the fork: post `/do:access` (step 5) and retry.
 7. **MR**: `save_merge_request` with `project_id: "issue/<project>-<iid>"` (source), `target_project_id: <numeric id of project/<project>>` (from `get_project`), `target_branch: <dev branch>`, description `Closes #<iid>` (this links the MR to the issue's Development widget), `remove_source_branch: true`.
 8. **Comment** on the issue (`save_note` with `work_item_iid`) summarizing the changes and how to test them manually (see below).
-9. Assign yourself on the issue (`/do:assign @<your username>`) and set `state::needsReview` (`/do:label ~state::needsReview`), via `/do:` commands. Check the result with `get_work_item`: remove an old `state::` label with `/do:unlabel` if needed.
+9. Assign yourself on the issue (`/do:assign @<your username>`) and set `state::needsReview` (`/do:label ~"state::needsReview"`), via `/do:` commands. Check the result with `get_work_item`.
 
 ## Security check
 
