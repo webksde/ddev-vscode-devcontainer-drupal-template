@@ -968,7 +968,17 @@ fi
 # the raw dump:
 if [ "$SANITIZE" = 1 ]; then
   info "Sanitizing the database (drush sql:sanitize)..."
-  ddev drush sql:sanitize -y || die "'drush sql:sanitize' failed. The database still holds unsanitized production data, delete the project with 'ddev delete -Oy'."
+  # Users with the administrator role keep their email and password, so the
+  # site's admins can still log in as usual. "--ignored-roles" only exists in
+  # newer drush versions, older ones fail on unknown options, so check first:
+  SANITIZE_OPTS=()
+  if ddev drush sql:sanitize --help 2>/dev/null | grep -q -- '--ignored-roles'; then
+    # Ignore administrator roles
+    SANITIZE_OPTS=(--ignored-roles=administrator)
+  else
+    warn "This drush version does not support 'sql:sanitize --ignored-roles', so the administrator users were sanitized as well."
+  fi
+  ddev drush sql:sanitize "${SANITIZE_OPTS[@]}" -y || die "'drush sql:sanitize' failed. The database still holds unsanitized production data, delete the project with 'ddev delete -Oy'."
   rm -f "$DUMP_FILE"
   success "Sanitized the database, the raw remote dump was removed."
 else
@@ -1031,8 +1041,8 @@ fi
 )
 echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 
-# One-time login link (the users' passwords are random after sanitizing, and
-# unchanged with --no-sanitize):
+# One-time login link (after sanitizing, only administrators keep their
+# passwords, with --no-sanitize all users do):
 LOGIN_LINK="$(ddev drush uli 2>/dev/null | tail -n 1 || true)"
 
 # ------------------------------------------------------------------------------
@@ -1090,7 +1100,7 @@ printf -- '- Run "ddev drush cex" if the config should be versioned in files/syn
 printf -- '- The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
 printf -- '- Private files were not copied (stage_file_proxy only serves public files).\n'
 if [ "$SANITIZE" = 1 ]; then
-  printf -- '- The database was sanitized (user emails and passwords). Other personal data (e.g. webform submissions, orders, profile fields) is still in it.\n'
+  printf -- '- The database was sanitized (user emails and passwords, except for users with the administrator role). Other personal data (e.g. webform submissions, orders, profile fields) is still in it.\n'
 fi
 printf -- '- The database holds production data: never use "ddev share" or bind_all_interfaces. When done, remove it with "ddev delete -Oy" and delete data/sql.\n'
 printf -- '- This is NOT a production ready copy. DO NOT PUSH TO PRODUCTION!\n'
