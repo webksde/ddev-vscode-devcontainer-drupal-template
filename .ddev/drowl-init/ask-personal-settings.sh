@@ -11,12 +11,6 @@ set -e
 
 ENV_FILE=".ddev/.env.web"
 
-# Skip when not run interactively (e.g. CI):
-if [ ! -t 0 ]; then
-  echo "No interactive terminal, skipping personal settings. Set them in ${ENV_FILE} later (see .ddev/.example.env.web)."
-  exit 0
-fi
-
 # Reads the current value of a variable from the env file (without quotes):
 get_env_value() {
   [ -f "$ENV_FILE" ] || return 0

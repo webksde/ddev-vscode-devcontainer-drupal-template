@@ -139,7 +139,7 @@ All questions are asked up front (SSH target and port, remote project root, web 
 
 `--cleanup-composer` starts from our default `composer.json` and only takes over `require`, `require-dev`, the patches and the repositories from the remote, then runs `composer update -W`, so package versions can change. Only use it if you know what you are doing.
 
-For CI, pass all values as options: `ddev drowl-init-from-ssh --non-interactive --yes --ssh-target=user@example.com --ssh-port=22 --remote-root=/var/www/example.com --web-dir=web --origin=https://www.example.com`.
+For CI, pass all values as options (`--non-interactive` skips all prompts and confirmations). `--ssh-target`, `--remote-root` and `--origin` are required, `--ssh-port` (default `22`) and `--web-dir` (default `web`) are optional: `ddev drowl-init-from-ssh --non-interactive --ssh-target=user@example.com --ssh-port=22 --remote-root=/var/www/example.com --web-dir=web --origin=https://www.example.com`.
 
 Only `sites/default` is used, multisites are reported.
 

@@ -2,8 +2,22 @@
 
 ## Description: Builds a local DDEV development copy of an existing Drupal site from its server over SSH (composer files, custom code, database). Files are served via stage_file_proxy.
 ## Usage: drowl-init-from-ssh [flags]
-## Example: "ddev drowl-init-from-ssh", "ddev drowl-init-from-ssh --cleanup-composer", "ddev drowl-init-from-ssh --non-interactive --yes --ssh-target=user@example.com --remote-root=/var/www/example.com --origin=https://www.example.com"
-## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh-target","Type":"string","Usage":"SSH target, e.g. user@example.com"},{"Name":"ssh-port","Type":"string","Usage":"SSH port (default: 22)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, e.g. /var/www/example.com"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"stage_file_proxy origin, e.g. https://www.example.com"},{"Name":"yes","Shorthand":"y","Usage":"Answer all confirmations with yes"},{"Name":"non-interactive","Usage":"Never prompt: missing values fail, personal settings are skipped (implied without a terminal)"}]
+## Example: "ddev drowl-init-from-ssh", "ddev drowl-init-from-ssh --cleanup-composer", "ddev drowl-init-from-ssh --non-interactive --ssh-target=user@example.com --remote-root=/var/www/example.com --origin=https://www.example.com"
+## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh-target","Type":"string","Usage":"SSH target, e.g. user@example.com (required with --non-interactive)"},{"Name":"ssh-port","Type":"string","Usage":"SSH port (default: 22)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, e.g. /var/www/example.com (required with --non-interactive)"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"stage_file_proxy origin, e.g. https://www.example.com (required with --non-interactive)"},{"Name":"non-interactive","Usage":"Never prompt: confirmations are skipped, personal settings are skipped, --ssh-target, --remote-root and --origin are required"}]
+
+# The "## Flags:" line above is parsed by DDEV, which only accepts it as a
+# single line of JSON. DDEV generates "ddev drowl-init-from-ssh --help" from
+# it. Readable version (keep both in sync):
+#   --cleanup-composer   Start from our default composer.json, only take over the
+#                        dependency keys from the remote
+#   --ssh-target         SSH target, e.g. user@example.com (*)
+#   --ssh-port           SSH port (default: 22)
+#   --remote-root        Remote project root holding the composer.json (*)
+#   --web-dir            Web directory, relative to the project root (default: web)
+#   --origin             stage_file_proxy origin, e.g. https://www.example.com (*)
+#   --non-interactive    Never prompt: skip confirmations, missing values fail,
+#                        skip personal settings
+# (*) Required with --non-interactive. Without it, missing values are asked.
 
 # Builds a local DDEV development copy of an existing Drupal site straight from
 # its server over SSH:
@@ -53,31 +67,9 @@ step() {
   printf '\n\e[1;32m==> %s\e[0m\n' "$1"
 }
 
-usage() {
-  cat <<'USAGE'
-Usage: ddev drowl-init-from-ssh [--cleanup-composer] [options]
-
-Builds a local DDEV development copy of an existing Drupal site from its server
-over SSH. All values not given as options are asked up front, then the command
-runs unattended.
-
-Options:
-  --cleanup-composer       Start from our default composer.json and only take
-                           over the dependency keys from the remote.
-  --ssh-target=USER@HOST   SSH target.
-  --ssh-port=PORT          SSH port (default: 22).
-  --remote-root=PATH       Remote project root holding the composer.json
-                           (absolute, or relative to the remote home).
-  --web-dir=DIR            Web directory, relative to the project root
-                           (default: web).
-  --origin=URL             stage_file_proxy origin, e.g. https://www.example.com
-  -y, --yes                Answer all confirmations with yes.
-  --non-interactive        Never prompt (implied without a terminal). Missing
-                           values fail, personal settings are skipped.
-USAGE
-}
-
-# Quotes a value for a remote POSIX shell:
+# Quotes a value for a remote POSIX shell, as ssh passes the command as one
+# string to the remote shell: wraps it in single quotes and escapes contained
+# single quotes ('it'\''s'). E.g. a remote root with spaces stays one argument.
 rq() {
   printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"
 }
@@ -87,7 +79,6 @@ rq() {
 # ------------------------------------------------------------------------------
 
 CLEANUP_COMPOSER=0
-ASSUME_YES=0
 NON_INTERACTIVE=0
 SSH_TARGET=""
 SSH_PORT=""
@@ -108,12 +99,7 @@ set_option() {
 while [ $# -gt 0 ]; do
   case "$1" in
   --cleanup-composer) CLEANUP_COMPOSER=1 ;;
-  -y | --yes) ASSUME_YES=1 ;;
   --non-interactive) NON_INTERACTIVE=1 ;;
-  -h | --help)
-    usage
-    exit 0
-    ;;
   --ssh-target=* | --ssh-port=* | --remote-root=* | --web-dir=* | --origin=*)
     set_option "${1%%=*}" "${1#*=}"
     ;;
@@ -123,17 +109,11 @@ while [ $# -gt 0 ]; do
     shift
     ;;
   *)
-    usage >&2
-    die "Unknown argument '$1'."
+    die "Unknown argument '$1'. See 'ddev drowl-init-from-ssh --help'."
     ;;
   esac
   shift
 done
-
-# Without a terminal, nobody can answer the prompts:
-if [ ! -t 0 ]; then
-  NON_INTERACTIVE=1
-fi
 
 # ------------------------------------------------------------------------------
 # Cleanup trap
@@ -143,6 +123,8 @@ TMP_DIR=""
 SSH_OPTS=()
 SSH_STARTED=0
 DUMP_PART=""
+# Set once the first local file is written, so a failure hints how to start
+# over:
 LOCAL_CHANGED=0
 
 # Removes temp files and partial dumps, closes the SSH master connection and
@@ -168,6 +150,8 @@ cleanup() {
   fi
   exit "$status"
 }
+# EXIT passes the script's exit code. On Ctrl-C (INT) / kill (TERM), $? is not
+# meaningful, so the usual shell codes are passed (128 + signal number):
 trap 'cleanup $?' EXIT
 trap 'cleanup 130' INT
 trap 'cleanup 143' TERM
@@ -179,8 +163,6 @@ trap 'cleanup 143' TERM
 for cmd in ssh rsync jq gzip ddev sed; do
   command -v "$cmd" >/dev/null 2>&1 || die "'$cmd' is required on the host, but was not found. Please install it first."
 done
-
-[ -d .ddev/initiation-additions ] || die "Run this command from the root of the ddev-vscode-devcontainer-drupal-template project."
 
 # ------------------------------------------------------------------------------
 # Prompts (all asked up front, afterwards the command runs unattended)
@@ -205,14 +187,13 @@ ask() {
   printf -v "$var" '%s' "$value"
 }
 
-# Asks a y/n question, like drowl-init-from-existing. "n" aborts.
+# Asks a y/n question, like drowl-init-from-existing. "n" aborts. Skipped in
+# non-interactive mode.
 confirm_or_abort() {
   local question="$1" answer
-  if [ "$ASSUME_YES" = 1 ]; then
-    return 0
-  fi
+  # Non-interactive mode skips all confirmations:
   if [ "$NON_INTERACTIVE" = 1 ]; then
-    die "Confirmation required, pass --yes in non-interactive mode."
+    return 0
   fi
   while true; do
     read -r -p "$question"$'\n' answer
@@ -292,6 +273,8 @@ SSH_OPTS=(-p "$SSH_PORT" -o ControlMaster=auto -o "ControlPath=$TMP_DIR/cm-%C" -
 if [ "$NON_INTERACTIVE" = 1 ]; then
   SSH_OPTS+=(-o BatchMode=yes)
 fi
+# rsync takes the ssh command as a single string (-e), using the same options
+# reuses the multiplexed connection:
 RSYNC_RSH="ssh ${SSH_OPTS[*]}"
 
 # Runs a command on the remote:
@@ -313,7 +296,11 @@ if ! rssh true </dev/null; then
 fi
 success "Connected."
 
-# Check the remote project, in a single call:
+# Check the remote project in a single SSH call, before anything is changed
+# locally. The script is sent via stdin ("sh -s", nothing is written on the
+# remote) with the project root as $1 and the web directory as $2. It prints a
+# "key=value" line per found item (missing items print nothing) and always
+# exits with 0, so a missing item is not mistaken for an SSH error:
 cat >"$TMP_DIR/probe.sh" <<'SH'
 cd "$1" 2>/dev/null || { echo "root=0"; exit 0; }
 echo "root=1"
@@ -330,10 +317,12 @@ exit 0
 SH
 PROBE="$(rssh "sh -s -- $R_ROOT $R_WEB" <"$TMP_DIR/probe.sh")"
 
+# Prints the value of the given key from the probe output, e.g. "probe php":
 probe() {
   printf '%s\n' "$PROBE" | sed -n "s/^$1=//p" | tail -n 1
 }
 
+# Depending on the probe that failed, kill the script with the correct message:
 [ "$(probe root)" = 1 ] || die "The remote project root '${REMOTE_ROOT}' does not exist."
 [ "$(probe composer_json)" = 1 ] || die "No composer.json found in '${REMOTE_ROOT}'."
 [ "$(probe web)" = 1 ] || die "The web directory '${REMOTE_WEB}' does not exist in '${REMOTE_ROOT}'."
@@ -360,17 +349,37 @@ esac
 REMOTE_DRUPAL_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush status --field=drupal-version" </dev/null 2>/dev/null | tr -d '[:space:]' || true)"
 REMOTE_DB_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush sql:query 'SELECT VERSION()'" </dev/null 2>/dev/null | tail -n 1 | tr -d '[:space:]' || true)"
 
-# Use the same database type and version as the remote. The versions DDEV
-# supports (see "database:" in .ddev/config.yaml, update on DDEV upgrades):
-DDEV_MARIADB_VERSIONS="5.5 10.0 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.11 11.4 11.8 12.3"
-DDEV_MYSQL_VERSIONS="5.5 5.6 5.7 8.0 8.4 9.7"
+# Use the same database type and version as the remote. DDEV has no command
+# listing the database versions it supports (they differ per CPU
+# architecture), but its validation error for an unsupported version lists
+# them, without changing the config:
+#   "... only supports the following database types and versions:
+#    mariadb: [5.5 10.0 ... 11.8 12.3], mysql: [5.5 ... 8.4 9.7], postgres: [...]"
+DDEV_DB_SUPPORT="$(ddev config --database=mariadb:0.0 --auto 2>&1 || true)"
+ddev_db_versions() {
+  printf '%s' "$DDEV_DB_SUPPORT" | sed -n "s/.*$1: \[\([^]]*\)\].*/\1/p"
+}
+DDEV_MARIADB_VERSIONS="$(ddev_db_versions mariadb)"
+DDEV_MYSQL_VERSIONS="$(ddev_db_versions mysql)"
 
-# Prints the given major.minor version, if DDEV supports it, otherwise the next
-# higher supported one (a dump imports into a newer server), otherwise the
-# highest supported one.
+# Picks the local database version for the remote one. DDEV only ships images
+# for some versions (e.g. MariaDB 10.11 and 11.4, but not 11.2), and
+# "ddev config" fails for any other version. So:
+# - If DDEV supports the remote version, it is used as is (10.11 -> 10.11).
+# - Otherwise the next higher supported version is used (11.2 -> 11.4), as a
+#   dump from an older server imports into a newer one, but not always the
+#   other way round.
+# - If the remote is newer than all supported versions, the highest supported
+#   one is used (12.5 -> 12.3).
+# - If the supported versions could not be read from DDEV, the remote version
+#   is used as is.
 # Usage: pick_db_version VERSION SUPPORTED_VERSIONS
 pick_db_version() {
   local want_major="${1%%.*}" want_minor="${1#*.}" candidate major minor last=""
+  if [ -z "$2" ]; then
+    printf '%s' "$1"
+    return 0
+  fi
   for candidate in $2; do
     major="${candidate%%.*}"
     minor="${candidate#*.}"
@@ -384,7 +393,8 @@ pick_db_version() {
 }
 
 DB_FLAG=()
-# e.g. "10.11.6-MariaDB-0+deb12u1", "5.5.5-10.11.6-MariaDB", "8.0.36-0ubuntu0.22.04.1":
+# Old MariaDB versions report themselves with a "5.5.5-" prefix (MySQL
+# compatibility), which is stripped before reading major.minor. Examples: "10.11.6-MariaDB-0+deb12u1", "5.5.5-10.11.6-MariaDB", "8.0.36-0ubuntu0.22.04.1":
 REMOTE_DB_NUMBER="${REMOTE_DB_VERSION#5.5.5-}"
 if [[ "$REMOTE_DB_NUMBER" =~ ^([0-9]+)\.([0-9]+) ]]; then
   REMOTE_DB_MAJOR_MINOR="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
@@ -398,7 +408,9 @@ if [[ "$REMOTE_DB_NUMBER" =~ ^([0-9]+)\.([0-9]+) ]]; then
     LOCAL_DB_VERSION="$(pick_db_version "$REMOTE_DB_MAJOR_MINOR" "$DDEV_MYSQL_VERSIONS")"
     ;;
   esac
-  if [ "$LOCAL_DB_VERSION" != "$REMOTE_DB_MAJOR_MINOR" ]; then
+  if [ -z "$DDEV_MARIADB_VERSIONS" ] || [ -z "$DDEV_MYSQL_VERSIONS" ]; then
+    warn "Could not read the database versions DDEV supports, using ${LOCAL_DB_TYPE} ${LOCAL_DB_VERSION} as on the remote."
+  elif [ "$LOCAL_DB_VERSION" != "$REMOTE_DB_MAJOR_MINOR" ]; then
     warn "DDEV does not support ${LOCAL_DB_TYPE} ${REMOTE_DB_MAJOR_MINOR} (remote: ${REMOTE_DB_VERSION}), using ${LOCAL_DB_TYPE} ${LOCAL_DB_VERSION} locally."
   fi
   DB_FLAG=(--database="${LOCAL_DB_TYPE}:${LOCAL_DB_VERSION}")
@@ -436,16 +448,24 @@ filter_local_paths() {
 fetch_paths() {
   local list="$1" existing="$TMP_DIR/existing.txt" p
   [ -s "$list" ] || return 0
+  # The list is sent via stdin, the remote prints the paths that exist:
   rssh "cd $R_ROOT && while IFS= read -r f; do [ -e \"\$f\" ] && printf '%s\n' \"\$f\"; done; exit 0" <"$list" >"$existing"
   while IFS= read -r p; do
     grep -Fxq -- "$p" "$existing" || warn "'$p' is referenced by the remote composer setup, but does not exist on the remote."
   done <"$list"
   [ -s "$existing" ] || return 0
+  # --files-from keeps the relative paths, "-r" is needed for folders (it is
+  # not implied by "-a" together with --files-from):
   rsync -a -r --files-from="$existing" --exclude=node_modules --exclude=.git -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/" ./
 }
 
 # Lists the local files a composer.json / patches file references: patches,
 # the patches-file, scaffold file-mapping sources and path repositories:
+# "p" walks a patches definition and returns the patch paths / URLs. It covers
+# composer-patches 1 ({"package": {"description": "path"}}) and 2 (arrays,
+# objects with "url"). Path repository URLs are cut before the first wildcard
+# ("packages/*" -> "packages"). URLs and absolute paths are dropped, as they
+# are not fetched from the remote project:
 JQ_LOCAL_PATHS='
 def p: if type == "string" then .
   elif type == "array" then (.[] | p)
@@ -656,6 +676,8 @@ $drowl_print([
 PHP
 SETTINGS_OUTPUT="$(rssh "cd $R_ROOT && php -- $R_WEB" <"$TMP_DIR/read-settings.php")" || die "Reading the remote settings.php failed."
 
+# The PHP script prints its result with a "DROWL_JSON:" marker, so any other
+# output of the remote settings.php (notices, echo) is ignored:
 SETTINGS_JSON="$(printf '%s\n' "$SETTINGS_OUTPUT" | sed -n 's/^DROWL_JSON://p' | tail -n 1)"
 [ -n "$SETTINGS_JSON" ] || die "Reading the remote settings.php failed (no result). Output was: ${SETTINGS_OUTPUT}"
 
@@ -697,6 +719,7 @@ step "4/11 Dev stack"
 missing_packages() {
   local package
   for package in "$@"; do
+    # "${package%%:*}" strips the version constraint ("drupal/coder:^8"):
     jq -e --arg n "${package%%:*}" '((.require // {}) | has($n)) or ((.["require-dev"] // {}) | has($n))' composer.json >/dev/null || printf '%s\n' "$package"
   done
 }
@@ -801,7 +824,9 @@ if ! rssh "bash -o pipefail -c $(rq "$REMOTE_DUMP_CMD")" </dev/null >"$DUMP_PART
   die "The remote database dump failed."
 fi
 
-# Local integrity check, only then the .part file is renamed:
+# Local integrity check, only then the .part file is renamed. mysqldump ends
+# every complete dump with a "-- Dump completed" line, so a dump that was cut
+# off is detected:
 gzip -t "$DUMP_PART" || die "The database dump is corrupt (gzip -t failed)."
 DUMP_TAIL="$(gzip -dc "$DUMP_PART" | tail -n 3)"
 [[ "$DUMP_TAIL" == *"-- Dump completed"* ]] || die "The database dump is incomplete (no '-- Dump completed' trailer)."
@@ -828,6 +853,8 @@ ddev restart
 # AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...). The
 # web/ folder goes into the local docroot:
 chmod u+w "./$LOCAL_WEB/sites/default" 2>/dev/null || true
+# "*" and ".[!.]*" match all files incl. dotfiles (.vscode, .claude, ...), but
+# not "." and "..":
 for item in .ddev/initiation-additions/* .ddev/initiation-additions/.[!.]*; do
   [ -e "$item" ] || continue
   if [ "$(basename "$item")" = "web" ]; then
