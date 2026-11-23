@@ -242,7 +242,10 @@ REMOTE_WEB="${REMOTE_WEB%/}"
 if [ -z "$REMOTE_WEB" ] || [[ "$REMOTE_WEB" == /* ]] || [[ "/$REMOTE_WEB/" == */../* ]] || [[ ! "$REMOTE_WEB" =~ ^[A-Za-z0-9._/-]+$ ]]; then
   die "Invalid web directory '$REMOTE_WEB'. It must be relative to the project root, e.g. 'web'."
 fi
-[[ "$ORIGIN" =~ ^https?://[^[:space:]]+$ ]] || die "Invalid stage_file_proxy origin '$ORIGIN'. It must start with http:// or https://."
+# The origin is written into settings.php inside single quotes, so quotes and
+# backslashes are not allowed:
+ORIGIN_PATTERN="^https?://[^[:space:]'\"\\\\]+\$"
+[[ "$ORIGIN" =~ $ORIGIN_PATTERN ]] || die "Invalid stage_file_proxy origin '$ORIGIN'. It must start with http:// or https:// and must not contain spaces, quotes or backslashes."
 ORIGIN="${ORIGIN%/}"
 
 confirm_or_abort $'\n\e[33mThis command will NOT initialize a production ready copy of your Website! It will create a modified environment, focused on development and debugging.\n\nDO NOT PUSH TO PRODUCTION!\n\nContinue anyway (y/n)?\e[0m'
@@ -857,6 +860,16 @@ if [ "$FILE_PUBLIC_PATH" != "sites/default/files" ]; then
   fi
 fi
 
+# Set the stage_file_proxy origin in settings.php, so it stays set even if the
+# config is imported (the "drush config-set" below only sets it in the
+# database). The origin was validated above (no quotes or backslashes):
+{
+  printf '\n// Development copy (drowl-init-from-ssh): fetch missing public files from\n'
+  printf '// the remote site.\n'
+  printf "\$config['stage_file_proxy.settings']['origin'] = '%s';\n" "$ORIGIN"
+} >>"$SETTINGS_PHP"
+info "Set the stage_file_proxy origin '${ORIGIN}' in ${SETTINGS_PHP}."
+
 ddev import-db --file="$DUMP_FILE"
 
 # ------------------------------------------------------------------------------
@@ -958,6 +971,7 @@ fi
 printf -- '- Check that all patches applied (see the composer output above).\n'
 printf -- '- Compare the remote settings includes (e.g. Redis, Solr, environment settings) with the local %s.\n' "$SETTINGS_PHP"
 printf -- '- Run "ddev drush cex" if the config should be versioned in files/sync.\n'
+printf -- '- The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
 printf -- '- Private files were not copied (stage_file_proxy only serves public files).\n'
 printf -- '- This is NOT a production ready copy. DO NOT PUSH TO PRODUCTION!\n'
 
