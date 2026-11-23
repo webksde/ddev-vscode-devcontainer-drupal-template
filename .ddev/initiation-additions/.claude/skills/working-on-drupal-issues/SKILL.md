@@ -17,7 +17,7 @@ Check before doing anything else: if ToolSearch finds no `mcp__drupalcode__*` to
 
 - Project path: `project/<machine_name>` (e.g. `project/glossify`).
 - Issue fork path: `issue/<machine_name>-<iid>` (e.g. `issue/glossify-3609476`). Each issue gets its own fork; all code changes go there (see the flow below).
-- Current user: `get_user(me: true)` → your account is the one to assign: use its id for `assignee_ids`.
+- Current user: `get_user(me: true)` → your account (its `username`) is the one to assign.
 - Issue IDs (`iid`) are the work item IDs (e.g. `3609476`).
 - Some projects are not migrated yet and still use the legacy issue queue on www.drupal.org, which the MCP can't see. If `list_work_items` returns nothing for an obviously active project, tell the user instead of creating an issue on git.drupalcode.org.
 - Don't involve other people: no `@`-mentions, assignees or reviewers other than the current user, unless the user asks for it.
@@ -27,12 +27,37 @@ Check before doing anything else: if ToolSearch finds no `mcp__drupalcode__*` to
   - `category::bug|feature|task|support|plan`
   - `priority::critical|major|normal|minor`
   - `state::needsReview|needsWork|rtbc|fixed|postponed|...`
+- Assignees and labels: set them with the `/do:` commands (see below), not with the MCP. Without a project role, `save_work_item` and `save_merge_request` answer with success but silently drop `assignee_ids`, `labels`/`add_labels` and `reviewers`.
+
+## `/do:` commands (DrupalBot)
+
+Drupal.org's custom commands (https://new.drupal.org/drupalorg/gitlab-custom-commands) work without a project role. Post each one as its own comment on the issue. The MCP (`save_note`) rejects comments starting with `/`, so post them via the REST API (`$DRUPALCODE_TOKEN` is set in the container; URL-encode the `/` in the project path as `%2F`):
+
+```bash
+curl -sS --fail-with-body -w '\nHTTP %{http_code}\n' \
+  -H "PRIVATE-TOKEN: $DRUPALCODE_TOKEN" --data-urlencode "body=/do:label ~state::needsReview" \
+  "https://git.drupalcode.org/api/v4/projects/project%2F<project>/issues/<iid>/notes"
+```
+
+Expect `HTTP 201`. DrupalBot acts asynchronously: check the result with `get_work_item` after a few seconds.
+
+| Command | Effect |
+|---|---|
+| `/do:fork` | Create the issue fork |
+| `/do:access` | Get push access to an existing issue fork |
+| `/do:assign @username @username` | Add assignees |
+| `/do:unassign @username` / `/do:reassign @username` | Remove assignees / replace all assignees |
+
+- Whether `/do:label` replaces another label of the same scope (e.g. an existing `state::needsWork`) is not documented. Check the labels afterwards and remove the old one with `/do:unlabel` if it is still there.
 
 ## Follow-up questions in the final reply
 
 Check the points below at the end, once the task is finished. Stay in scope, then list what you found as questions at the end of your final reply. Only ask about points that apply; skip the rest.
 
-- **Unrelated CI failures:** run all CI checks on the whole module with `.ddev/drupal-ci/bin/drupal-ci <module path>`. If it reports problems in code you didn't touch, including failing PHPUnit tests unrelated to your change, don't fix them. Ask "Should we address the unrelated CI failures as well?" and name the affected tools, files and tests.
+- **Unrelated CI failures:** run all CI checks on the whole module with `.ddev/drupal-ci/bin/drupal-ci <module path>`. If it reports problems in code you didn't touch, including failing PHPUnit tests unrelated to your change, don't fix them. Sort each one into one of two groups:
+  - **Environment noise:** only caused by this local setup, e.g. phpstan `class.notFound` or tests failing with "missing modules" because a composer dependency of the module isn't installed here. Mention it in one line at most.
+  - **Real findings:** everything else. These also fail the MR pipeline on drupal.org. Ask "Should we address the unrelated CI failures as well?" and name the affected tools, files and tests. Say explicitly when a finding makes the MR pipeline fail.
+- These questions belong in **every** final reply that pushes or updates an MR, also in later turns of the same session. Don't drop a finding because you mentioned it in an earlier reply.
 - **Drupal core EOL versions:** check the Drupal core versions the module supports (`core_version_requirement` in the `.info.yml`) against the official release schedule (https://www.drupal.org/about/core/policies/core-release-cycles/schedule); don't rely on what you remember. Only if a supported version is already end-of-life, ask whether to drop support for it. If your fix needed a workaround only for that EOL version, say so, as dropping support would remove it. If no supported version is EOL, don't mention it.
 
 ## Tests
@@ -45,40 +70,34 @@ Check the points below at the end, once the task is finished. Stay in scope, the
 Drupal does not use personal forks or branches in the project repo. Each issue gets a dedicated **issue fork** (`issue/<project>-<iid>`); the branch lives there and the MR goes from the fork to the project. Use the issue fork even if the user is a maintainer of the project, so others can collaborate on the branch. Commit to the project repo (`project/<project>`) only if the user explicitly asks for it.
 
 1. **Issue:**
-   - New issue: create it with `save_work_item` (`type_name: "Issue"`, `labels`, `assignee_ids`), description from the template below.
+   - New issue: create it with `save_work_item` (`type_name: "Issue"`), description from the template below. Then set the labels (`/do:label ~category::… ~priority::…`) and assign yourself (`/do:assign @<your username>`) with `/do:` commands (see above).
    - Existing issue: skip creating it. Read its description and all comments first (`get_work_item` with its notes and related merge requests), and check for an existing issue fork. If a maintainer questioned or rejected the approach, you may still implement it locally, but ask the user before pushing or opening an MR.
 2. **Local checkout:** work in a local git checkout of the project, so you can run tests and linters.
    - Module already a git checkout of `project/<module>` (anywhere under `web/modules/`): use it.
    - Otherwise: clone `https://git.drupalcode.org/project/<module>.git` into `web/modules/custom/<module>`. If the module is also in `modules/contrib`, ask whether to replace the contrib copy before continuing. Never leave two copies of the module in place.
    - If the issue fork already exists (step 1), add it as a remote and fetch it:
      ```bash
-     git remote add <project>-<iid> git@git.drupalcode.org:issue/<project>-<iid>.git
+     git remote add <project>-<iid> git@git.drupal.org:issue/<project>-<iid>.git
      git fetch <project>-<iid>
      ```
      If it has a branch for this issue (usually the one of an open MR), continue on it: `git checkout -b <branch> <project>-<iid>/<branch>`.
    - Otherwise create the issue branch `<iid>-<slug-of-title>` from the current upstream dev branch (`git fetch origin`, `git checkout -b <branch> origin/<dev branch>`). Never commit to the dev branch.
 3. **Implement**, add tests and lint (see Tests). **Commit message / MR title** (conventional commits): `<type>: #<iid> <Issue title>`, e.g. `task: #3609476 Harden file relocation handling`. Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert, task.
 4. **Security check** before pushing (see below). Pushing publishes the code.
-5. **Issue fork:** check whether it exists with `get_project("issue/<project>-<iid>")`. If not, create it by posting a comment containing only `/do:fork` on the issue. The MCP (`save_note`) rejects comments starting with `/`, so post it via the REST API (`$DRUPALCODE_TOKEN` is set in the container; URL-encode the `/` in the project path as `%2F`):
-   ```bash
-   curl -sS --fail-with-body -w '\nHTTP %{http_code}\n' \
-     -H "PRIVATE-TOKEN: $DRUPALCODE_TOKEN" --data-urlencode "body=/do:fork" \
-     "https://git.drupalcode.org/api/v4/projects/project%2F<project>/issues/<iid>/notes"
-   ```
-   Expect `HTTP 201`. Drupal.org provisions the fork asynchronously, so check `get_project` again up to 5 times, about 10 seconds apart.
+5. **Issue fork:** check whether it exists with `get_project("issue/<project>-<iid>")`. If not, create it by posting `/do:fork` (see `/do:` commands above). Drupal.org provisions the fork asynchronously, so check `get_project` again up to 5 times, about 10 seconds apart.
    - The fork can NOT be created via `fork_repository` (`insufficient_granular_scope`) or by pushing. Don't try.
-   - Creating the fork gives you push access. If someone else created it, you usually have none (push is denied): post `/do:access` the same way (`body=/do:access`), then retry.
+   - Creating the fork gives you push access. If someone else created it you usually have none: post `/do:access` before pushing.
    - If the fork still doesn't show up, give the user the "Manage forks" link from the bot comment on the issue (`https://new.drupal.org/drupalorg/issue-fork/management?source_link=https://git.drupalcode.org/project/<project>/-/work_items/<iid>`), ask them to click "Create issue fork", and wait.
 6. **Push** the branch to the issue fork with git over SSH (the user's SSH agent is available in the container). Add the remote first if step 2 didn't:
    ```bash
-   git remote add <project>-<iid> git@git.drupalcode.org:issue/<project>-<iid>.git
+   git remote add <project>-<iid> git@git.drupal.org:issue/<project>-<iid>.git
    git push <project>-<iid> <branch>
    ```
    - Rejected because others pushed in the meantime: `git pull --rebase <project>-<iid> <branch>`, then push again. Never force-push over other people's commits.
    - `Permission denied (publickey)`: the user's SSH key isn't loaded or registered on git.drupalcode.org. Tell the user and wait. Access denied to the fork: post `/do:access` (step 5) and retry.
-7. **MR**: `save_merge_request` with `project_id: "issue/<project>-<iid>"` (source), `target_project_id: <numeric id of project/<project>>` (from `get_project`), `target_branch: <dev branch>`, description `Closes #<iid>` (this links the MR to the issue's Development widget), `assignee_ids`, `remove_source_branch: true`.
+7. **MR**: `save_merge_request` with `project_id: "issue/<project>-<iid>"` (source), `target_project_id: <numeric id of project/<project>>` (from `get_project`), `target_branch: <dev branch>`, description `Closes #<iid>` (this links the MR to the issue's Development widget), `remove_source_branch: true`.
 8. **Comment** on the issue (`save_note` with `work_item_iid`) summarizing the changes and how to test them manually (see below).
-9. Set `state::needsReview`.
+9. Assign yourself on the issue (`/do:assign @<your username>`) and set `state::needsReview` (`/do:label ~state::needsReview`), via `/do:` commands. Check the result with `get_work_item`: remove an old `state::` label with `/do:unlabel` if needed.
 
 ## Security check
 
