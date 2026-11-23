@@ -3,7 +3,7 @@
 ## Description: Builds a local DDEV development copy of an existing Drupal site from its server over SSH (composer files, custom code, database). Files are served via stage_file_proxy.
 ## Usage: drowl-init-from-ssh [flags]
 ## Example: "ddev drowl-init-from-ssh", "ddev drowl-init-from-ssh --cleanup-composer", "ddev drowl-init-from-ssh --non-interactive --ssh-target=user@example.com --remote-root=/var/www/example.com --origin=https://www.example.com"
-## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh-target","Type":"string","Usage":"SSH target, e.g. user@example.com (required with --non-interactive)"},{"Name":"ssh-port","Type":"string","Usage":"SSH port (default: 22)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, e.g. /var/www/example.com (required with --non-interactive)"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"stage_file_proxy origin, e.g. https://www.example.com (required with --non-interactive)"},{"Name":"non-interactive","Usage":"Never prompt: confirmations are skipped, personal settings are skipped, --ssh-target, --remote-root and --origin are required"}]
+## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh-target","Type":"string","Usage":"SSH target, e.g. user@example.com (required with --non-interactive)"},{"Name":"ssh-port","Type":"string","Usage":"SSH port (default: 22)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, e.g. /var/www/example.com (required with --non-interactive)"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"stage_file_proxy origin, e.g. https://www.example.com (required with --non-interactive)"},{"Name":"non-interactive","Usage":"Never prompt: confirmations are skipped, personal settings are skipped, --ssh-target, --remote-root and --origin are required"},{"Name":"no-sanitize","Usage":"Keep the personal data of the imported database (by default, it is sanitized with drush sql:sanitize and the raw remote dump is not kept)"}]
 
 # The "## Flags:" line above is parsed by DDEV, which only accepts it as a
 # single line of JSON. DDEV generates "ddev drowl-init-from-ssh --help" from
@@ -17,6 +17,8 @@
 #   --origin             stage_file_proxy origin, e.g. https://www.example.com (*)
 #   --non-interactive    Never prompt: skip confirmations, missing values fail,
 #                        skip personal settings
+#   --no-sanitize        Keep the personal data (user emails, passwords) of the
+#                        imported database and keep the raw remote dump
 # (*) Required with --non-interactive. Without it, missing values are asked.
 
 # Builds a local DDEV development copy of an existing Drupal site straight from
@@ -26,7 +28,10 @@
 # - the database (incl. table prefix), streamed over SSH, so no dump file ever
 #   lands on the server,
 # - the active config comes with the database, public files are served via
-#   stage_file_proxy, private files are not copied.
+#   stage_file_proxy, private files are not copied,
+# - the imported database is sanitized (drush sql:sanitize) unless
+#   --no-sanitize is given, and integrations that would act on production
+#   services (cron, SMTP, Search API) are disabled in the local settings.php.
 # On top of that, the same dev stack as "drowl-init" is set up.
 #
 # This is a host command, so it uses the host's ssh / rsync and the user's SSH
@@ -80,6 +85,7 @@ rq() {
 
 CLEANUP_COMPOSER=0
 NON_INTERACTIVE=0
+SANITIZE=1
 SSH_TARGET=""
 SSH_PORT=""
 REMOTE_ROOT=""
@@ -100,6 +106,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
   --cleanup-composer) CLEANUP_COMPOSER=1 ;;
   --non-interactive) NON_INTERACTIVE=1 ;;
+  --no-sanitize) SANITIZE=0 ;;
   --ssh-target=* | --ssh-port=* | --remote-root=* | --web-dir=* | --origin=*)
     set_option "${1%%=*}" "${1#*=}"
     ;;
@@ -489,8 +496,11 @@ filter_local_paths() {
 fetch_paths() {
   local list="$1" existing="$TMP_DIR/existing.txt" p
   [ -s "$list" ] || return 0
-  # The list is sent via stdin, the remote prints the paths that exist:
-  rssh "cd $R_ROOT && while IFS= read -r f; do [ -e \"\$f\" ] && printf '%s\n' \"\$f\"; done; exit 0" <"$list" >"$existing"
+  # The list is sent via stdin, the remote prints the paths that exist. Only
+  # paths from our own (filtered) list are kept, so the remote can not add
+  # further paths (e.g. "../..") to the rsync file list:
+  rssh "cd $R_ROOT && while IFS= read -r f; do [ -e \"\$f\" ] && printf '%s\n' \"\$f\"; done; exit 0" <"$list" >"$existing.raw"
+  grep -Fx -f "$list" -- "$existing.raw" >"$existing" || true
   while IFS= read -r p; do
     grep -Fxq -- "$p" "$existing" || warn "'$p' is referenced by the remote composer setup, but does not exist on the remote."
   done <"$list"
@@ -791,21 +801,44 @@ mkdir -p "./$LOCAL_WEB/modules/custom" "./$LOCAL_WEB/themes/custom" "./$LOCAL_WE
 step "6/11 Dumping the remote database (streamed, this can take a while)"
 
 mkdir -p ./data/sql
+# The dumps hold production data, only the current user may read them:
+chmod 0700 ./data/sql
 
-# Only the structure of cache, sessions and watchdog tables. drush drops
-# entries matching no table, so list them with and without the prefix:
-STRUCTURE_TABLES="cache,cache_*,sessions,watchdog"
-if [ -n "$DB_PREFIX" ]; then
-  STRUCTURE_TABLES="${STRUCTURE_TABLES},${DB_PREFIX}cache,${DB_PREFIX}cache_*,${DB_PREFIX}sessions,${DB_PREFIX}watchdog"
-fi
+# Only the structure of these tables, their data is not needed locally:
+# - cache, cache_*: rebuilt anyway,
+# - sessions: session tokens of the production users,
+# - watchdog, flood: logs, IP addresses,
+# - queue: pending production jobs (mails, newsletters, API syncs), which
+#   would otherwise be processed by the local cron,
+# - semaphore, batch, key_value_expire: locks, running batches, temp stores.
+# drush drops entries matching no table, so list them with and without the
+# prefix:
+# (Quoted, so "cache_*" is not expanded as a glob by the local shell.)
+STRUCTURE_TABLES=""
+for table in cache 'cache_*' sessions watchdog flood queue semaphore batch key_value_expire; do
+  STRUCTURE_TABLES="${STRUCTURE_TABLES:+$STRUCTURE_TABLES,}${table}"
+  if [ -n "$DB_PREFIX" ]; then
+    STRUCTURE_TABLES="${STRUCTURE_TABLES},${DB_PREFIX}${table}"
+  fi
+done
 
 # The dump is piped straight into the SSH channel, so the server never holds a
 # dump file that could be left behind. If the connection drops, the remote dump
 # gets SIGPIPE / SIGHUP and exits:
-DUMP_PART="data/sql/remote-dump.sql.gz.part"
-DUMP_FILE="data/sql/remote-dump-$(date +%Y-%m-%d_%H-%M-%S).sql.gz"
+# The raw (unsanitized) dump is only kept with --no-sanitize. Otherwise it goes
+# to the temp folder (mode 0700), which is removed at the end, also on errors:
+if [ "$SANITIZE" = 1 ]; then
+  DUMP_DIR="$TMP_DIR"
+else
+  DUMP_DIR="data/sql"
+fi
+DUMP_PART="$DUMP_DIR/remote-dump.sql.gz.part"
+DUMP_FILE="$DUMP_DIR/remote-dump-$(date +%Y-%m-%d_%H-%M-%S).sql.gz"
 REMOTE_DUMP_CMD="cd $R_ROOT && vendor/bin/drush sql:dump $(rq "--structure-tables-list=$STRUCTURE_TABLES") | gzip -c"
-if ! rssh "bash -o pipefail -c $(rq "$REMOTE_DUMP_CMD")" </dev/null >"$DUMP_PART"; then
+if ! (
+  umask 077
+  rssh "bash -o pipefail -c $(rq "$REMOTE_DUMP_CMD")" </dev/null >"$DUMP_PART"
+); then
   die "The remote database dump failed."
 fi
 
@@ -817,7 +850,11 @@ DUMP_TAIL="$(gzip -dc "$DUMP_PART" | tail -n 3)"
 [[ "$DUMP_TAIL" == *"-- Dump completed"* ]] || die "The database dump is incomplete (no '-- Dump completed' trailer)."
 mv "$DUMP_PART" "$DUMP_FILE"
 DUMP_PART=""
-success "Database dumped to ${DUMP_FILE} ($(du -h "$DUMP_FILE" | cut -f1))."
+if [ "$SANITIZE" = 1 ]; then
+  success "Database dumped ($(du -h "$DUMP_FILE" | cut -f1)), to a temp file that is removed after the import and sanitization."
+else
+  success "Database dumped to ${DUMP_FILE} ($(du -h "$DUMP_FILE" | cut -f1)). It holds unsanitized production data!"
+fi
 
 # ------------------------------------------------------------------------------
 # 7. Start and import
@@ -896,10 +933,51 @@ fi
   printf '\n// Development copy (drowl-init-from-ssh): fetch missing public files from\n'
   printf '// the remote site.\n'
   printf "\$config['stage_file_proxy.settings']['origin'] = '%s';\n" "$ORIGIN"
+  printf '\n// Development copy (drowl-init-from-ssh): the database comes from\n'
+  printf '// production, so do not let this copy act on production services:\n'
+  printf '// - no cron on page requests (it would process mails, syncs, ...),\n'
+  printf "\$config['automated_cron.settings']['interval'] = 0;\n"
+  printf '// - no mails via the smtp module (PHP mail() is caught by Mailpit).\n'
+  printf "\$config['smtp.settings']['smtp_on'] = FALSE;\n"
 } >>"$SETTINGS_PHP"
 info "Set the stage_file_proxy origin '${ORIGIN}' in ${SETTINGS_PHP}."
+info "Disabled automated_cron and the smtp module in ${SETTINGS_PHP}."
 
 ddev import-db --file="$DUMP_FILE"
+
+# Search API indexes would write to (or clear) the production search server
+# (e.g. Solr), so they are set to read-only in settings.php:
+SEARCH_INDEXES="$(ddev drush php:eval "echo 'DROWL_INDEXES:' . implode(',', \\Drupal::configFactory()->listAll('search_api.index.')) . PHP_EOL;" 2>/dev/null | sed -n 's/^DROWL_INDEXES://p' | tail -n 1 || true)"
+if [ -n "$SEARCH_INDEXES" ]; then
+  {
+    printf '// - Search API indexes are read-only (no indexing to / clearing of the\n'
+    printf '//   production search server):\n'
+  } >>"$SETTINGS_PHP"
+  for index in ${SEARCH_INDEXES//,/ }; do
+    [[ "$index" =~ ^search_api\.index\.[A-Za-z0-9_]+$ ]] || continue
+    printf "\$config['%s']['read_only'] = TRUE;\n" "$index" >>"$SETTINGS_PHP"
+  done
+  info "Set the Search API indexes read-only in ${SETTINGS_PHP}: ${SEARCH_INDEXES}"
+  warn "Search API indexes are read-only in ${SETTINGS_PHP}. Point the search servers to a local backend before re-enabling indexing."
+fi
+
+# Sanitize the personal data (user emails and passwords, sessions) and remove
+# the raw dump:
+if [ "$SANITIZE" = 1 ]; then
+  info "Sanitizing the database (drush sql:sanitize)..."
+  ddev drush sql:sanitize -y || die "'drush sql:sanitize' failed. The database still holds unsanitized production data, delete the project with 'ddev delete -Oy'."
+  rm -f "$DUMP_FILE"
+  success "Sanitized the database, the raw remote dump was removed."
+else
+  warn "--no-sanitize: the local database and ${DUMP_FILE} hold unsanitized production data (user emails, password hashes, ...)."
+fi
+
+# Warn about enabled modules that talk to external (production) services with
+# the credentials from the production database:
+RISKY_MODULES="$(ddev drush pm:list --status=enabled --type=module --format=json 2>/dev/null | jq -r 'keys[] | select(test("^(smtp|symfony_mailer|phpmailer_smtp|mailsystem|swiftmailer|search_api_solr|search_api_opensearch|elasticsearch_connector|s3fs|flysystem.*|commerce_payment|commerce_.*_gateway|mailchimp.*|simplenews|salesforce|hubspot.*|ultimate_cron|queue_ui|advancedqueue)$"))' 2>/dev/null | tr '\n' ' ' || true)"
+if [ -n "$RISKY_MODULES" ]; then
+  warn "These enabled modules may use production credentials / services from the database: ${RISKY_MODULES}. Check their config (and override it in ${SETTINGS_PHP}) before running cron or using them."
+fi
 
 # ------------------------------------------------------------------------------
 # 8. Directories
@@ -944,7 +1022,10 @@ if ! ddev exec /var/www/html/.ddev/drupal-ci/setup.sh; then
 fi
 
 # Create the "normal" db dump, used by "ddev drowl-reset-db":
-ddev export-db "$DDEV_PROJECT" >./data/sql/db-complete-dump.sql.gz
+(
+  umask 077
+  ddev export-db "$DDEV_PROJECT" >./data/sql/db-complete-dump.sql.gz
+)
 echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 
 # One-time login link (the imported users' passwords stay unchanged):
@@ -978,7 +1059,9 @@ echo "Use 'ddev eslint --fix path' or 'ddev stylelint --fix path' to autofix Jav
 echo "Use 'ddev drupal-ci-update' to update the drupal.org GitLab CI default configs to the latest gitlab_templates 1.x release and refresh the linter setup."
 echo "Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser."
 echo "Use 'ddev drowl-reset-db' to reset the database to its state after initial startup."
-echo "Use 'ddev import-db --file=${DUMP_FILE}' to import the original remote database dump again."
+if [ "$SANITIZE" != 1 ]; then
+  echo "Use 'ddev import-db --file=${DUMP_FILE}' to import the original remote database dump again."
+fi
 
 printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
 printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"
@@ -1002,6 +1085,10 @@ printf -- '- Compare the remote settings includes (e.g. Redis, Solr, environment
 printf -- '- Run "ddev drush cex" if the config should be versioned in files/sync.\n'
 printf -- '- The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
 printf -- '- Private files were not copied (stage_file_proxy only serves public files).\n'
+if [ "$SANITIZE" = 1 ]; then
+  printf -- '- The database was sanitized (user emails and passwords). Other personal data (e.g. webform submissions, orders, profile fields) is still in it.\n'
+fi
+printf -- '- The database holds production data: never use "ddev share" or bind_all_interfaces. When done, remove it with "ddev delete -Oy" and delete data/sql.\n'
 printf -- '- This is NOT a production ready copy. DO NOT PUSH TO PRODUCTION!\n'
 
 if [ ${#WARNINGS[@]} -gt 0 ]; then
