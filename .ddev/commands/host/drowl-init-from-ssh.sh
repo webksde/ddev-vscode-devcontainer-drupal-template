@@ -279,10 +279,23 @@ fi
 # rsync takes the ssh command as a single string (-e), using the same options
 # reuses the multiplexed connection:
 RSYNC_RSH="ssh ${SSH_OPTS[*]}"
+# Extra rsync options, set once the remote login PATH is known (see below):
+RSYNC_OPTS=()
 
-# Runs a command on the remote:
+# The PATH of a remote login shell. "ssh host cmd" runs cmd in a non-login,
+# non-interactive shell, which does not read the profile files. So on e.g.
+# Plesk, where PHP lives in /opt/plesk/php/X.Y/bin and is only added to the
+# PATH in the profile, "php" (and so "vendor/bin/drush") is not found. Set after
+# connecting, every remote command then runs with it:
+REMOTE_PATH=""
+
+# Runs a command (a single string, run by the remote shell) on the remote:
 rssh() {
-  ssh "${SSH_OPTS[@]}" "$SSH_TARGET" "$@"
+  if [ -n "$REMOTE_PATH" ]; then
+    ssh "${SSH_OPTS[@]}" "$SSH_TARGET" "PATH=$(rq "$REMOTE_PATH"); export PATH; $*"
+  else
+    ssh "${SSH_OPTS[@]}" "$SSH_TARGET" "$*"
+  fi
 }
 
 printf '\n\e[32mAlright! Initialising your project from %s:%s. This will take a while...\e[0m\n' "$SSH_TARGET" "$REMOTE_ROOT"
@@ -298,6 +311,22 @@ if ! rssh true </dev/null; then
   die "Could not connect to '${SSH_TARGET}' (port ${SSH_PORT}). Check the target, the port and your SSH key (ssh-agent / ~/.ssh/config)."
 fi
 success "Connected."
+
+# Read the PATH of a remote bash login shell, as a terminal session (e.g.
+# PuTTY) gets it ("bash -l" reads /etc/profile, ~/.bash_profile / ~/.profile).
+# Only the PATH is taken over, instead of running every command in a login
+# shell, as profiles may print text (which would end up in the composer.json or
+# the database dump). So the PATH is printed behind the marker
+# "LOGIN_SHELL_PATH:" and only that line is read:
+REMOTE_PATH="$(rssh "bash -lc $(rq 'printf "LOGIN_SHELL_PATH:%s\n" "$PATH"')" </dev/null 2>/dev/null | sed -n 's/^LOGIN_SHELL_PATH://p' | tail -n 1 || true)"
+if [ -n "$REMOTE_PATH" ]; then
+  info "Remote login PATH: ${REMOTE_PATH}"
+  # rsync starts "rsync --server" on the remote through the same non-login
+  # shell, so give it the PATH as well:
+  RSYNC_OPTS=(--rsync-path="PATH=$(rq "$REMOTE_PATH"); export PATH; rsync")
+else
+  warn "Could not read the PATH of a remote login shell (bash -l), using the default PATH of non-interactive SSH commands."
+fi
 
 # Check the remote project in a single SSH call, before anything is changed
 # locally. The script is sent via stdin ("sh -s", nothing is written on the
@@ -468,7 +497,7 @@ fetch_paths() {
   [ -s "$existing" ] || return 0
   # --files-from keeps the relative paths, "-r" is needed for folders (it is
   # not implied by "-a" together with --files-from):
-  rsync -a -r --files-from="$existing" --exclude=node_modules --exclude=.git -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/" ./
+  rsync -a -r "${RSYNC_OPTS[@]}" --files-from="$existing" --exclude=node_modules --exclude=.git -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/" ./
 }
 
 # Lists the local files a composer.json / patches file references: patches,
@@ -747,7 +776,7 @@ for dir in modules/custom themes/custom profiles/custom; do
   if rssh "test -d $R_ROOT/$R_WEB/$dir" </dev/null; then
     info "Fetching ${REMOTE_WEB}/${dir}..."
     mkdir -p "./$LOCAL_WEB/$dir"
-    rsync -a --exclude=node_modules --exclude=.git -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/$REMOTE_WEB/$dir/" "./$LOCAL_WEB/$dir/"
+    rsync -a "${RSYNC_OPTS[@]}" --exclude=node_modules --exclude=.git -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/$REMOTE_WEB/$dir/" "./$LOCAL_WEB/$dir/"
   else
     info "No ${REMOTE_WEB}/${dir} on the remote, skipping."
   fi
