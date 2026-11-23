@@ -19,6 +19,11 @@ Or start a **core** dev environment using gitified Drupal 12.x-dev, meant for wo
 git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git core-vscode-drupal && cd core-vscode-drupal && ddev drowl-init-dev
 ```
 
+Or create a local development copy of an **existing** Drupal site, straight from its server over SSH (see [below](#development-copy-of-an-existing-site-via-ssh)):
+```
+git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git my-site && cd my-site && ddev drowl-init-from-ssh
+```
+
 Afterwards:
 - Use `ddev describe` to check the status & URLs of your project.
 - Log in with `admin` / `admin` (an additional user `max` / `max` is created as well).
@@ -120,6 +125,23 @@ The linters behave like the validate jobs of the [drupal.org GitLab CI templates
 Paths can also be single files, or folders containing several projects (e.g. `web/modules/custom`). Without a path, the current directory is checked. Inside the container (VSCode terminal, Claude Code), the same runners are available as `.ddev/drupal-ci/bin/<tool>` (incl. `drupal-ci` and `phpunit`); the VSCode extensions use the same configs.
 
 `drowl-init` sets up the linters once (`.ddev/drupal-ci/setup.sh`): it downloads the CI default configs, installs core's node modules, provides core's configs site-wide as the fallback for projects without their own (`web/.eslintrc.json` extending core's `.eslintrc.passing.json` like CI, excluded from core's scaffolding in `composer.json`; `.stylelintrc.json` and `.prettierrc.json` in the project root), and generates the `cspell.json` for the VSCode CSpell extension (CI defaults plus each custom and contrib project's `.cspell-project-words.txt`). Run `ddev drupal-ci-update` to refresh all of it, e.g. after adding a project with its own `.cspell-project-words.txt`.
+
+### Development copy of an existing site via SSH
+`ddev drowl-init-from-ssh [--cleanup-composer]` builds a local development copy of an existing Drupal site from its server. It is a host command, so it uses your host's `ssh` / `rsync` and your active SSH key (ssh-agent / `~/.ssh/config`); `jq` is required on the host, PHP CLI, rsync and `vendor/bin/drush` on the remote.
+
+All questions are asked up front (SSH target and port, remote project root, web directory, stage_file_proxy origin, confirmation, personal settings), then it runs unattended:
+- Fetches `composer.json` / `composer.lock` (plus referenced local patches, patches files, scaffold files and path repositories) and runs `composer install`. Matches the remote PHP and MySQL / MariaDB version.
+- Reads the database settings (incl. table prefix) from the remote `settings.php`; the password never leaves the server.
+- Adds the dev stack of `drowl-init` (core-dev, drush, coder, phpstan rules, kint, devel, stage_file_proxy, linter setup).
+- Copies the custom modules, themes and profiles via rsync.
+- Streams the database dump (`drush sql:dump`, cache / sessions / watchdog structure-only) over SSH into `data/sql/`, so no dump file is ever written on the server, and imports it.
+- Enables devel and stage_file_proxy (public files are fetched from the origin on demand, private files are not copied) and prints a login link and a to-do list.
+
+`--cleanup-composer` starts from our default `composer.json` and only takes over `require`, `require-dev`, the patches and the repositories from the remote, then runs `composer update -W`, so package versions can change. Only use it if you know what you are doing.
+
+For CI, pass all values as options: `ddev drowl-init-from-ssh --non-interactive --yes --ssh-target=user@example.com --ssh-port=22 --remote-root=/var/www/example.com --web-dir=web --origin=https://www.example.com`.
+
+Only `sites/default` is used, multisites are reported.
 
 ### Database
 - `ddev import-db --database=db --file=db.sql.gz`: import a database file.
