@@ -397,75 +397,32 @@ esac
 REMOTE_DRUPAL_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush status --field=drupal-version" </dev/null 2>/dev/null | tr -d '[:space:]' || true)"
 REMOTE_DB_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush sql:query 'SELECT VERSION()'" </dev/null 2>/dev/null | tail -n 1 | tr -d '[:space:]' || true)"
 
-# Use the same database type and version as the remote. DDEV has no command
-# listing the database versions it supports (they differ per CPU
-# architecture), but its validation error for an unsupported version lists
-# them, without changing the config:
-#   "... only supports the following database types and versions:
-#    mariadb: [5.5 10.0 ... 11.8 12.3], mysql: [5.5 ... 8.4 9.7], postgres: [...]"
-DDEV_DB_SUPPORT="$(ddev config --database=mariadb:0.0 --auto 2>&1 || true)"
-ddev_db_versions() {
-  printf '%s' "$DDEV_DB_SUPPORT" | sed -n "s/.*$1: \[\([^]]*\)\].*/\1/p"
+# The local database always comes from .ddev/config.yaml, the remote version
+# is only displayed for comparison.
+# Prints a key of the "database:" block in .ddev/config.yaml, e.g.
+# "config_db version" (quotes stripped):
+config_db() {
+  awk -v key="$1:" '
+    /^database:/ { in_db = 1; next }
+    in_db && /^[^[:space:]#]/ { in_db = 0 }
+    in_db && $1 == key { gsub(/["\047]/, "", $2); print $2; exit }
+  ' .ddev/config.yaml 2>/dev/null
 }
-DDEV_MARIADB_VERSIONS="$(ddev_db_versions mariadb)"
-DDEV_MYSQL_VERSIONS="$(ddev_db_versions mysql)"
+LOCAL_DB_TYPE="$(config_db type)"
+LOCAL_DB_VERSION="$(config_db version)"
 
-# Picks the local database version for the remote one. DDEV only ships images
-# for some versions (e.g. MariaDB 10.11 and 11.4, but not 11.2), and
-# "ddev config" fails for any other version. So:
-# - If DDEV supports the remote version, it is used as is (10.11 -> 10.11).
-# - Otherwise the next higher supported version is used (11.2 -> 11.4), as a
-#   dump from an older server imports into a newer one, but not always the
-#   other way round.
-# - If the remote is newer than all supported versions, the highest supported
-#   one is used (12.5 -> 12.3).
-# - If the supported versions could not be read from DDEV, the remote version
-#   is used as is.
-# Usage: pick_db_version VERSION SUPPORTED_VERSIONS
-pick_db_version() {
-  local want_major="${1%%.*}" want_minor="${1#*.}" candidate major minor last=""
-  if [ -z "$2" ]; then
-    printf '%s' "$1"
-    return 0
-  fi
-  for candidate in $2; do
-    major="${candidate%%.*}"
-    minor="${candidate#*.}"
-    last="$candidate"
-    if [ "$major" -gt "$want_major" ] || { [ "$major" -eq "$want_major" ] && [ "$minor" -ge "$want_minor" ]; }; then
-      printf '%s' "$candidate"
-      return 0
-    fi
-  done
-  printf '%s' "$last"
-}
-
-DB_FLAG=()
-# Old MariaDB versions report themselves with a "5.5.5-" prefix (MySQL
-# compatibility), which is stripped before reading major.minor. Examples: "10.11.6-MariaDB-0+deb12u1", "5.5.5-10.11.6-MariaDB", "8.0.36-0ubuntu0.22.04.1":
-REMOTE_DB_NUMBER="${REMOTE_DB_VERSION#5.5.5-}"
-if [[ "$REMOTE_DB_NUMBER" =~ ^([0-9]+)\.([0-9]+) ]]; then
-  REMOTE_DB_MAJOR_MINOR="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
-  case "$REMOTE_DB_VERSION" in
-  *[Mm]aria[Dd][Bb]*)
-    LOCAL_DB_TYPE="mariadb"
-    LOCAL_DB_VERSION="$(pick_db_version "$REMOTE_DB_MAJOR_MINOR" "$DDEV_MARIADB_VERSIONS")"
-    ;;
-  *)
-    LOCAL_DB_TYPE="mysql"
-    LOCAL_DB_VERSION="$(pick_db_version "$REMOTE_DB_MAJOR_MINOR" "$DDEV_MYSQL_VERSIONS")"
-    ;;
-  esac
-  if [ -z "$DDEV_MARIADB_VERSIONS" ] || [ -z "$DDEV_MYSQL_VERSIONS" ]; then
-    warn "Could not read the database versions DDEV supports, using ${LOCAL_DB_TYPE} ${LOCAL_DB_VERSION} as on the remote."
-  elif [ "$LOCAL_DB_VERSION" != "$REMOTE_DB_MAJOR_MINOR" ]; then
-    warn "DDEV does not support ${LOCAL_DB_TYPE} ${REMOTE_DB_MAJOR_MINOR} (remote: ${REMOTE_DB_VERSION}), using ${LOCAL_DB_TYPE} ${LOCAL_DB_VERSION} locally."
-  fi
-  DB_FLAG=(--database="${LOCAL_DB_TYPE}:${LOCAL_DB_VERSION}")
+# The local PHP version: the remote one if DDEV supports it (see above),
+# otherwise the one from .ddev/config.yaml:
+if [ ${#PHP_FLAG[@]} -gt 0 ]; then
+  LOCAL_PHP="$REMOTE_PHP"
 else
-  warn "Could not detect the remote database server version ('${REMOTE_DB_VERSION}'), using the database from .ddev/config.yaml."
+  LOCAL_PHP="$(awk '$1 == "php_version:" { gsub(/["\047]/, "", $2); print $2; exit }' .ddev/config.yaml 2>/dev/null)"
 fi
-info "Remote: PHP ${REMOTE_PHP}, Drupal ${REMOTE_DRUPAL_VERSION:-unknown}, database server ${REMOTE_DB_VERSION:-unknown}."
+
+# (The Drupal core version is shown in step 2, locally it comes from the
+# remote composer files.)
+info "Remote: PHP ${REMOTE_PHP}, database ${REMOTE_DB_VERSION:-unknown}"
+info "Local:  PHP ${LOCAL_PHP:-unknown}, database ${LOCAL_DB_TYPE:-unknown} ${LOCAL_DB_VERSION:-unknown} (from .ddev/config.yaml)"
 
 # ------------------------------------------------------------------------------
 # 2. Composer
@@ -590,7 +547,7 @@ fetch_paths "$FETCH_LIST"
 
 # Create the config.yaml and start the containers (needed for composer):
 mkdir -p "./$LOCAL_WEB"
-ddev config --project-type=drupal --docroot="$LOCAL_WEB" --webserver-type="apache-fpm" --composer-version="stable" "${PHP_FLAG[@]}" "${DB_FLAG[@]}" --disable-settings-management --auto
+ddev config --project-type=drupal --docroot="$LOCAL_WEB" --webserver-type="apache-fpm" --composer-version="stable" "${PHP_FLAG[@]}" --disable-settings-management --auto
 ddev start
 
 if [ "$CLEANUP_COMPOSER" != 1 ]; then
@@ -688,7 +645,7 @@ setting() {
 
 DB_DRIVER="$(setting driver)"
 if [ "$DB_DRIVER" != "mysql" ]; then
-  die "The remote database driver is '${DB_DRIVER:-unknown}'. Only 'mysql' (MySQL / MariaDB) is supported, as DDEV's database is MySQL / MariaDB."
+  die "The remote database driver is '${DB_DRIVER:-unknown}'. Only 'mysql' (MySQL / MariaDB) is supported."
 fi
 
 DB_PREFIX="$(setting prefix)"
