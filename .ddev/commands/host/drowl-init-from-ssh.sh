@@ -1009,16 +1009,8 @@ fi
 if [ "$SANITIZE" = 1 ]; then
   info "Sanitizing the database (drush sql:sanitize)..."
   # Users with the administrator role keep their email and password, so the
-  # site's admins can still log in as usual. "--ignored-roles" only exists in
-  # newer drush versions, older ones fail on unknown options, so check first:
-  SANITIZE_OPTS=()
-  if ddev drush sql:sanitize --help 2>/dev/null | grep -q -- '--ignored-roles'; then
-    # Ignore administrator roles
-    SANITIZE_OPTS=(--ignored-roles=administrator)
-  else
-    warn "This drush version does not support 'sql:sanitize --ignored-roles', so the administrator users were sanitized as well."
-  fi
-  ddev drush sql:sanitize "${SANITIZE_OPTS[@]}" -y || die "'drush sql:sanitize' failed. The database still holds unsanitized production data, delete the project with 'ddev delete -Oy'."
+  # site's admins can still log in as usual:
+  ddev drush sql:sanitize --ignored-roles=administrator -y || die "'drush sql:sanitize' failed. The database still holds unsanitized production data, delete the project with 'ddev delete -Oy'."
   rm -f "$DUMP_FILE"
   success "Sanitized the database, the raw remote dump was removed."
 else
@@ -1139,7 +1131,7 @@ if [ "$CLEANUP_COMPOSER" = 1 ]; then
   printf -- '- --cleanup-composer: check the merged keys (require, require-dev, patches, repositories; the remote allow-plugins were added) and the package versions that moved (compare with the remote composer.lock).\n'
 fi
 printf -- '- Check that all patches applied (see the composer output above).\n'
-printf -- '- Compare the remote settings includes (e.g. Redis, Solr, environment settings) with the local %s.\n' "$SETTINGS_PHP"
+printf -- '- The local %s comes from our template, not from the remote. Only the table prefix, the public files path and the stage_file_proxy origin were taken over. Compare it with the remote settings.php and its includes, and copy over what the site needs locally (e.g. config_sync_directory, file_private_path, $config overrides, custom $settings, Redis, Solr, environment-specific includes).\n' "$SETTINGS_PHP"
 printf -- '- Run "ddev drush cex" if the config should be versioned in files/sync.\n'
 printf -- '- The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
 printf -- '- Private files were not copied (stage_file_proxy only serves public files).\n'
