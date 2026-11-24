@@ -3,7 +3,7 @@
 ## Description: Builds a local DDEV development copy of an existing Drupal site from its server over SSH (composer files, custom code, database). Files are served via stage_file_proxy.
 ## Usage: drowl-init-from-ssh [flags]
 ## Example: "ddev drowl-init-from-ssh", "ddev drowl-init-from-ssh --cleanup-composer", "ddev drowl-init-from-ssh --non-interactive --ssh-target=user@example.com --remote-root=/var/www/example.com --origin=https://www.example.com"
-## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh-target","Type":"string","Usage":"SSH target, e.g. user@example.com (required with --non-interactive)"},{"Name":"ssh-port","Type":"string","Usage":"SSH port (default: 22)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, e.g. /var/www/example.com (required with --non-interactive)"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"stage_file_proxy origin, e.g. https://www.example.com (required with --non-interactive)"},{"Name":"non-interactive","Usage":"Never prompt: confirmations are skipped, personal settings are skipped, --ssh-target, --remote-root and --origin are required"},{"Name":"no-sanitize","Usage":"Keep the personal data of the imported database (by default, it is sanitized with drush sql:sanitize and the raw remote dump is not kept)"}]
+## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh-target","Type":"string","Usage":"SSH target, e.g. user@example.com (required with --non-interactive)"},{"Name":"ssh-port","Type":"string","Usage":"SSH port (default: 22)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, absolute or relative to the remote home, e.g. /var/www/example.com or ~/example.com (required with --non-interactive)"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"stage_file_proxy origin, e.g. https://www.example.com (required with --non-interactive)"},{"Name":"non-interactive","Usage":"Never prompt: confirmations are skipped, personal settings are skipped, --ssh-target, --remote-root and --origin are required"},{"Name":"no-sanitize","Usage":"Keep the personal data of the imported database (by default, it is sanitized with drush sql:sanitize and the raw remote dump is not kept)"}]
 
 # The "## Flags:" line above is parsed by DDEV, which only accepts it as a
 # single line of JSON. DDEV generates "ddev drowl-init-from-ssh --help" from
@@ -12,7 +12,8 @@
 #                        dependency keys from the remote
 #   --ssh-target         SSH target, e.g. user@example.com (*)
 #   --ssh-port           SSH port (default: 22)
-#   --remote-root        Remote project root holding the composer.json (*)
+#   --remote-root        Remote project root holding the composer.json, absolute
+#                        or relative to the remote home (~/example.com) (*)
 #   --web-dir            Web directory, relative to the project root (default: web)
 #   --origin             stage_file_proxy origin, e.g. https://www.example.com (*)
 #   --non-interactive    Never prompt: skip confirmations, missing values fail,
@@ -42,13 +43,95 @@
 set -eo pipefail
 
 # ------------------------------------------------------------------------------
+# Configuration (lists, maintained here)
+# ------------------------------------------------------------------------------
+
+# Commands required on the host:
+REQUIRED_HOST_COMMANDS=(ssh rsync jq gzip ddev sed)
+
+# Composer plugins to allow (unless the remote composer.json configures them):
+COMPOSER_ALLOWED_PLUGINS=(
+  cweagans/composer-patches oomphinc/composer-installers-extender
+  szeidler/composer-patches-cli tbachert/spi symfony/runtime
+  dealerdirect/phpcodesniffer-composer-installer phpstan/extension-installer
+  php-http/discovery
+)
+# Packages added to "require" (unless already present):
+COMPOSER_PACKAGES=(cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender)
+# Drupal modules added to "require-dev" (enabled in the post-setup step):
+COMPOSER_DEV_MODULES=(drupal/devel drupal/stage_file_proxy)
+# Further packages added to "require-dev". drupal/core-dev is handled
+# separately, as it has to match the core version:
+COMPOSER_DEV_PACKAGES=(drush/drush drupal/coder:^8 phpstan/phpstan-deprecation-rules kint-php/kint squizlabs/php_codesniffer:^3)
+
+# Folders fetched from the remote web directory (and always created locally):
+CUSTOM_CODE_DIRS=(modules/custom themes/custom profiles/custom)
+# Never fetched via rsync:
+RSYNC_EXCLUDES=(--exclude=node_modules --exclude=.git)
+
+# Copied initiation additions with "web/" paths, which are pointed to the local
+# docroot if it differs:
+DOCROOT_REWRITE_FILES=(.vscode/settings.json phpunit.xml jsconfig.json AGENTS.md)
+
+# Tables dumped without data (only the structure), their data is not needed
+# locally:
+# - cache, cache_*: rebuilt anyway,
+# - sessions: session tokens of the production users,
+# - watchdog, flood: logs, IP addresses,
+# - queue: pending production jobs (mails, newsletters, API syncs), which
+#   would otherwise be processed by the local cron,
+# - semaphore, batch, key_value_expire: locks, running batches, temp stores.
+# (Quoted, so "cache_*" is not expanded as a glob by the local shell.)
+STRUCTURE_ONLY_TABLES=(cache 'cache_*' sessions watchdog flood queue semaphore batch key_value_expire)
+
+# Enabled modules that talk to external (production) services with the
+# credentials from the production database are reported as a warning. Machine
+# name patterns (regex, anchored), by what they could do:
+RISKY_MODULE_PATTERNS=(
+  # Mails (API based mailers are not caught by Mailpit):
+  smtp symfony_mailer symfony_mailer_lite phpmailer_smtp mailsystem swiftmailer
+  sendgrid_integration mailgun mandrill postmark sparkpost amazon_ses mailjet
+  # Newsletters / marketing / CRM:
+  'mailchimp.*' simplenews sendinblue brevo cleverreach salesforce 'hubspot.*'
+  # SMS / push notifications:
+  sms smsframework twilio push_notifications onesignal firebase
+  # Search servers:
+  search_api_solr search_api_opensearch elasticsearch_connector search_api_algolia
+  search_api_typesense acquia_search search_api_pantheon
+  # Purging the production CDN / reverse proxy cache:
+  purge 'purge_.*' varnish_purge acquia_purge cloudflare fastly akamai
+  # Remote file storage, backups to remote destinations:
+  s3fs 'flysystem.*' backup_migrate
+  # Payments:
+  commerce_payment 'commerce_.*_gateway' 'commerce_(stripe|paypal|braintree|mollie|square|authnet)'
+  # Paid APIs (AI, machine translation):
+  ai 'ai_provider_.*' openai 'tmgmt.*'
+  # Webhooks, imports, content sharing:
+  webhooks feeds entity_share_server
+  # Queues / cron:
+  ultimate_cron queue_ui advancedqueue
+  # Analytics (local page views end up in the production project):
+  'posthog.*'
+  # Stored credentials (API keys used by other modules):
+  key encrypt real_aes
+)
+
+# ------------------------------------------------------------------------------
 # Output helpers
 # ------------------------------------------------------------------------------
 
 WARNINGS=()
+NOTES=()
 
 info() {
   printf '\e[36m%s\e[0m\n' "$*"
+}
+
+# Prints an info and collects it for the summary at the end (like warn(), but
+# for facts worth repeating, e.g. the remote and local versions):
+note() {
+  info "$@"
+  NOTES+=("$*")
 }
 
 success() {
@@ -167,7 +250,7 @@ trap 'cleanup 143' TERM
 # Preconditions
 # ------------------------------------------------------------------------------
 
-for cmd in ssh rsync jq gzip ddev sed; do
+for cmd in "${REQUIRED_HOST_COMMANDS[@]}"; do
   command -v "$cmd" >/dev/null 2>&1 || die "'$cmd' is required on the host, but was not found. Please install it first."
 done
 
@@ -231,7 +314,7 @@ fi
 
 ask SSH_TARGET "SSH target (user@host)" "" "ssh-target"
 ask SSH_PORT "SSH port" "22" "ssh-port"
-ask REMOTE_ROOT "Remote project root (folder holding the composer.json, e.g. /var/www/example.com)" "" "remote-root"
+ask REMOTE_ROOT "Remote project root (folder holding the composer.json, e.g. /var/www/example.com or ~/example.com)" "" "remote-root"
 ask REMOTE_WEB "Web directory (relative to the project root)" "web" "web-dir"
 ask ORIGIN "stage_file_proxy origin (e.g. https://www.example.com)" "" "origin"
 
@@ -240,10 +323,18 @@ case "$SSH_TARGET" in
 *[[:space:]]* | -*) die "Invalid SSH target '$SSH_TARGET'." ;;
 esac
 [[ "$SSH_PORT" =~ ^[0-9]+$ ]] || die "Invalid SSH port '$SSH_PORT'."
-# "~/path" is the same as "path" for ssh (relative to the remote home):
-REMOTE_ROOT="${REMOTE_ROOT#\~/}"
 [ "$REMOTE_ROOT" != "/" ] && REMOTE_ROOT="${REMOTE_ROOT%/}"
 [ -n "$REMOTE_ROOT" ] || die "Invalid remote project root."
+# Shown in messages as entered, e.g. "~/example.com":
+REMOTE_ROOT_DISPLAY="$REMOTE_ROOT"
+# All remote paths are quoted, so the remote shell never expands "~". Relative
+# paths are relative to the remote home for ssh and rsync, so "~/path" is the
+# same as "path" and "~" is the same as ".":
+case "$REMOTE_ROOT" in
+\~) REMOTE_ROOT="." ;;
+\~/*) REMOTE_ROOT="${REMOTE_ROOT#\~/}" ;;
+\~*) die "Invalid remote project root '$REMOTE_ROOT'. '~user' paths are not supported, use an absolute path instead." ;;
+esac
 REMOTE_WEB="${REMOTE_WEB#./}"
 REMOTE_WEB="${REMOTE_WEB%/}"
 if [ -z "$REMOTE_WEB" ] || [[ "$REMOTE_WEB" == /* ]] || [[ "/$REMOTE_WEB/" == */../* ]] || [[ ! "$REMOTE_WEB" =~ ^[A-Za-z0-9._/-]+$ ]]; then
@@ -305,7 +396,7 @@ rssh() {
   fi
 }
 
-printf '\n\e[32mAlright! Initialising your project from %s:%s. This will take a while...\e[0m\n' "$SSH_TARGET" "$REMOTE_ROOT"
+printf '\n\e[32mAlright! Initialising your project from %s:%s. This will take a while...\e[0m\n' "$SSH_TARGET" "$REMOTE_ROOT_DISPLAY"
 
 # ------------------------------------------------------------------------------
 # 1. Connect
@@ -371,10 +462,10 @@ probe() {
 }
 
 # Depending on the probe that failed, kill the script with the correct message:
-[ "$(probe root)" = 1 ] || die "The remote project root '${REMOTE_ROOT}' does not exist."
-[ "$(probe composer_json)" = 1 ] || die "No composer.json found in '${REMOTE_ROOT}'."
-[ "$(probe web)" = 1 ] || die "The web directory '${REMOTE_WEB}' does not exist in '${REMOTE_ROOT}'."
-[ "$(probe settings)" = 1 ] || die "No '${REMOTE_WEB}/sites/default/settings.php' found in '${REMOTE_ROOT}'."
+[ "$(probe root)" = 1 ] || die "The remote project root '${REMOTE_ROOT_DISPLAY}' does not exist."
+[ "$(probe composer_json)" = 1 ] || die "No composer.json found in '${REMOTE_ROOT_DISPLAY}'."
+[ "$(probe web)" = 1 ] || die "The web directory '${REMOTE_WEB}' does not exist in '${REMOTE_ROOT_DISPLAY}'."
+[ "$(probe settings)" = 1 ] || die "No '${REMOTE_WEB}/sites/default/settings.php' found in '${REMOTE_ROOT_DISPLAY}'."
 [ "$(probe drush)" = 1 ] || die "'vendor/bin/drush' is missing on the remote. It is required to read the settings and dump the database."
 [ -n "$(probe php)" ] || die "No PHP CLI found on the remote. It is required to run drush."
 [ "$(probe rsync)" = 1 ] || die "rsync is missing on the remote."
@@ -397,75 +488,32 @@ esac
 REMOTE_DRUPAL_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush status --field=drupal-version" </dev/null 2>/dev/null | tr -d '[:space:]' || true)"
 REMOTE_DB_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush sql:query 'SELECT VERSION()'" </dev/null 2>/dev/null | tail -n 1 | tr -d '[:space:]' || true)"
 
-# Use the same database type and version as the remote. DDEV has no command
-# listing the database versions it supports (they differ per CPU
-# architecture), but its validation error for an unsupported version lists
-# them, without changing the config:
-#   "... only supports the following database types and versions:
-#    mariadb: [5.5 10.0 ... 11.8 12.3], mysql: [5.5 ... 8.4 9.7], postgres: [...]"
-DDEV_DB_SUPPORT="$(ddev config --database=mariadb:0.0 --auto 2>&1 || true)"
-ddev_db_versions() {
-  printf '%s' "$DDEV_DB_SUPPORT" | sed -n "s/.*$1: \[\([^]]*\)\].*/\1/p"
+# The local database always comes from .ddev/config.yaml, the remote version
+# is only displayed for comparison.
+# Prints a key of the "database:" block in .ddev/config.yaml, e.g.
+# "config_db version" (quotes stripped):
+config_db() {
+  awk -v key="$1:" '
+    /^database:/ { in_db = 1; next }
+    in_db && /^[^[:space:]#]/ { in_db = 0 }
+    in_db && $1 == key { gsub(/["\047]/, "", $2); print $2; exit }
+  ' .ddev/config.yaml 2>/dev/null
 }
-DDEV_MARIADB_VERSIONS="$(ddev_db_versions mariadb)"
-DDEV_MYSQL_VERSIONS="$(ddev_db_versions mysql)"
+LOCAL_DB_TYPE="$(config_db type)"
+LOCAL_DB_VERSION="$(config_db version)"
 
-# Picks the local database version for the remote one. DDEV only ships images
-# for some versions (e.g. MariaDB 10.11 and 11.4, but not 11.2), and
-# "ddev config" fails for any other version. So:
-# - If DDEV supports the remote version, it is used as is (10.11 -> 10.11).
-# - Otherwise the next higher supported version is used (11.2 -> 11.4), as a
-#   dump from an older server imports into a newer one, but not always the
-#   other way round.
-# - If the remote is newer than all supported versions, the highest supported
-#   one is used (12.5 -> 12.3).
-# - If the supported versions could not be read from DDEV, the remote version
-#   is used as is.
-# Usage: pick_db_version VERSION SUPPORTED_VERSIONS
-pick_db_version() {
-  local want_major="${1%%.*}" want_minor="${1#*.}" candidate major minor last=""
-  if [ -z "$2" ]; then
-    printf '%s' "$1"
-    return 0
-  fi
-  for candidate in $2; do
-    major="${candidate%%.*}"
-    minor="${candidate#*.}"
-    last="$candidate"
-    if [ "$major" -gt "$want_major" ] || { [ "$major" -eq "$want_major" ] && [ "$minor" -ge "$want_minor" ]; }; then
-      printf '%s' "$candidate"
-      return 0
-    fi
-  done
-  printf '%s' "$last"
-}
-
-DB_FLAG=()
-# Old MariaDB versions report themselves with a "5.5.5-" prefix (MySQL
-# compatibility), which is stripped before reading major.minor. Examples: "10.11.6-MariaDB-0+deb12u1", "5.5.5-10.11.6-MariaDB", "8.0.36-0ubuntu0.22.04.1":
-REMOTE_DB_NUMBER="${REMOTE_DB_VERSION#5.5.5-}"
-if [[ "$REMOTE_DB_NUMBER" =~ ^([0-9]+)\.([0-9]+) ]]; then
-  REMOTE_DB_MAJOR_MINOR="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
-  case "$REMOTE_DB_VERSION" in
-  *[Mm]aria[Dd][Bb]*)
-    LOCAL_DB_TYPE="mariadb"
-    LOCAL_DB_VERSION="$(pick_db_version "$REMOTE_DB_MAJOR_MINOR" "$DDEV_MARIADB_VERSIONS")"
-    ;;
-  *)
-    LOCAL_DB_TYPE="mysql"
-    LOCAL_DB_VERSION="$(pick_db_version "$REMOTE_DB_MAJOR_MINOR" "$DDEV_MYSQL_VERSIONS")"
-    ;;
-  esac
-  if [ -z "$DDEV_MARIADB_VERSIONS" ] || [ -z "$DDEV_MYSQL_VERSIONS" ]; then
-    warn "Could not read the database versions DDEV supports, using ${LOCAL_DB_TYPE} ${LOCAL_DB_VERSION} as on the remote."
-  elif [ "$LOCAL_DB_VERSION" != "$REMOTE_DB_MAJOR_MINOR" ]; then
-    warn "DDEV does not support ${LOCAL_DB_TYPE} ${REMOTE_DB_MAJOR_MINOR} (remote: ${REMOTE_DB_VERSION}), using ${LOCAL_DB_TYPE} ${LOCAL_DB_VERSION} locally."
-  fi
-  DB_FLAG=(--database="${LOCAL_DB_TYPE}:${LOCAL_DB_VERSION}")
+# The local PHP version: the remote one if DDEV supports it (see above),
+# otherwise the one from .ddev/config.yaml:
+if [ ${#PHP_FLAG[@]} -gt 0 ]; then
+  LOCAL_PHP="$REMOTE_PHP"
 else
-  warn "Could not detect the remote database server version ('${REMOTE_DB_VERSION}'), using the database from .ddev/config.yaml."
+  LOCAL_PHP="$(awk '$1 == "php_version:" { gsub(/["\047]/, "", $2); print $2; exit }' .ddev/config.yaml 2>/dev/null)"
 fi
-info "Remote: PHP ${REMOTE_PHP}, Drupal ${REMOTE_DRUPAL_VERSION:-unknown}, database server ${REMOTE_DB_VERSION:-unknown}."
+
+# (The Drupal core version is shown in step 2, locally it comes from the
+# remote composer files.)
+note "Remote: PHP ${REMOTE_PHP}, database ${REMOTE_DB_VERSION:-unknown}"
+note "Local:  PHP ${LOCAL_PHP:-unknown}, database ${LOCAL_DB_TYPE:-unknown} ${LOCAL_DB_VERSION:-unknown} (from .ddev/config.yaml)"
 
 # ------------------------------------------------------------------------------
 # 2. Composer
@@ -510,7 +558,7 @@ fetch_paths() {
   [ -s "$existing" ] || return 0
   # --files-from keeps the relative paths, "-r" is needed for folders (it is
   # not implied by "-a" together with --files-from):
-  rsync -a -r "${RSYNC_OPTS[@]}" --files-from="$existing" --exclude=node_modules --exclude=.git -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/" ./
+  rsync -a -r "${RSYNC_OPTS[@]}" --files-from="$existing" "${RSYNC_EXCLUDES[@]}" -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/" ./
 }
 
 # Lists the local files a composer.json / patches file references: patches,
@@ -590,7 +638,7 @@ fetch_paths "$FETCH_LIST"
 
 # Create the config.yaml and start the containers (needed for composer):
 mkdir -p "./$LOCAL_WEB"
-ddev config --project-type=drupal --docroot="$LOCAL_WEB" --webserver-type="apache-fpm" --composer-version="stable" "${PHP_FLAG[@]}" "${DB_FLAG[@]}" --disable-settings-management --auto
+ddev config --project-type=drupal --docroot="$LOCAL_WEB" --webserver-type="apache-fpm" --composer-version="stable" "${PHP_FLAG[@]}" --disable-settings-management --auto
 ddev start
 
 if [ "$CLEANUP_COMPOSER" != 1 ]; then
@@ -688,7 +736,7 @@ setting() {
 
 DB_DRIVER="$(setting driver)"
 if [ "$DB_DRIVER" != "mysql" ]; then
-  die "The remote database driver is '${DB_DRIVER:-unknown}'. Only 'mysql' (MySQL / MariaDB) is supported, as DDEV's database is MySQL / MariaDB."
+  die "The remote database driver is '${DB_DRIVER:-unknown}'. Only 'mysql' (MySQL / MariaDB) is supported."
 fi
 
 DB_PREFIX="$(setting prefix)"
@@ -750,15 +798,14 @@ allow_plugins() {
   done
 }
 
-allow_plugins cweagans/composer-patches oomphinc/composer-installers-extender szeidler/composer-patches-cli tbachert/spi symfony/runtime \
-  dealerdirect/phpcodesniffer-composer-installer phpstan/extension-installer php-http/discovery
+allow_plugins "${COMPOSER_ALLOWED_PLUGINS[@]}"
 
 # Add general dependencies:
-composer_require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender
+composer_require "${COMPOSER_PACKAGES[@]}"
 
 # Add the development modules. They go to require-dev, as this composer.json
 # belongs to a production site:
-composer_require --dev drupal/devel drupal/stage_file_proxy
+composer_require --dev "${COMPOSER_DEV_MODULES[@]}"
 
 # Add DEV dependencies. "drupal/core-dev" (phpunit, phpstan, ...) must match
 # the core version exactly, so prefer the remote core version, which keeps
@@ -773,10 +820,9 @@ if [ -n "$(missing_packages drupal/core-dev)" ]; then
     ddev composer require --dev "drupal/core-dev:^${CORE_MAJOR}" -W --no-audit --no-interaction
   fi
 fi
-composer_require --dev drush/drush drupal/coder:^8 phpstan/phpstan-deprecation-rules kint-php/kint
+composer_require --dev "${COMPOSER_DEV_PACKAGES[@]}"
 
 # PHP Codesniffer Setup:
-composer_require --dev squizlabs/php_codesniffer:^3
 ddev exec chmod +x vendor/bin/phpcs vendor/bin/phpcbf
 
 # ------------------------------------------------------------------------------
@@ -785,17 +831,19 @@ ddev exec chmod +x vendor/bin/phpcs vendor/bin/phpcbf
 
 step "5/11 Custom code"
 
-for dir in modules/custom themes/custom profiles/custom; do
+for dir in "${CUSTOM_CODE_DIRS[@]}"; do
   if rssh "test -d $R_ROOT/$R_WEB/$dir" </dev/null; then
     info "Fetching ${REMOTE_WEB}/${dir}..."
     mkdir -p "./$LOCAL_WEB/$dir"
-    rsync -a "${RSYNC_OPTS[@]}" --exclude=node_modules --exclude=.git -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/$REMOTE_WEB/$dir/" "./$LOCAL_WEB/$dir/"
+    rsync -a "${RSYNC_OPTS[@]}" "${RSYNC_EXCLUDES[@]}" -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/$REMOTE_WEB/$dir/" "./$LOCAL_WEB/$dir/"
   else
     info "No ${REMOTE_WEB}/${dir} on the remote, skipping."
   fi
 done
 # Like drowl-init, there are always custom module, theme and profile folders:
-mkdir -p "./$LOCAL_WEB/modules/custom" "./$LOCAL_WEB/themes/custom" "./$LOCAL_WEB/profiles/custom"
+for dir in "${CUSTOM_CODE_DIRS[@]}"; do
+  mkdir -p "./$LOCAL_WEB/$dir"
+done
 
 # ------------------------------------------------------------------------------
 # 6. Database dump
@@ -807,18 +855,10 @@ mkdir -p ./data/sql
 # The dumps hold production data, only the current user may read them:
 chmod 0700 ./data/sql
 
-# Only the structure of these tables, their data is not needed locally:
-# - cache, cache_*: rebuilt anyway,
-# - sessions: session tokens of the production users,
-# - watchdog, flood: logs, IP addresses,
-# - queue: pending production jobs (mails, newsletters, API syncs), which
-#   would otherwise be processed by the local cron,
-# - semaphore, batch, key_value_expire: locks, running batches, temp stores.
-# drush drops entries matching no table, so list them with and without the
-# prefix:
-# (Quoted, so "cache_*" is not expanded as a glob by the local shell.)
+# Only the structure of STRUCTURE_ONLY_TABLES is dumped. drush drops entries
+# matching no table, so list them with and without the prefix:
 STRUCTURE_TABLES=""
-for table in cache 'cache_*' sessions watchdog flood queue semaphore batch key_value_expire; do
+for table in "${STRUCTURE_ONLY_TABLES[@]}"; do
   STRUCTURE_TABLES="${STRUCTURE_TABLES:+$STRUCTURE_TABLES,}${table}"
   if [ -n "$DB_PREFIX" ]; then
     STRUCTURE_TABLES="${STRUCTURE_TABLES},${DB_PREFIX}${table}"
@@ -890,12 +930,12 @@ done
 # Some of the copied files contain "web/" paths, point them to the docroot
 # (only paths like "./web/", "/var/www/html/web/", "\"web/", "`web/", "(web/"):
 if [ "$LOCAL_WEB" != "web" ]; then
-  for file in .vscode/settings.json phpunit.xml jsconfig.json AGENTS.md; do
+  for file in "${DOCROOT_REWRITE_FILES[@]}"; do
     [ -f "$file" ] || continue
     sed -E "s#(/var/www/html/|\./|[\"\`(])web/#\1${LOCAL_WEB}/#g" "$file" >"$TMP_DIR/docroot-rewrite"
     cat "$TMP_DIR/docroot-rewrite" >"$file"
   done
-  info "Rewrote the 'web/' paths in .vscode/settings.json, phpunit.xml, jsconfig.json and AGENTS.md to '${LOCAL_WEB}/'."
+  info "Rewrote the 'web/' paths in ${DOCROOT_REWRITE_FILES[*]} to '${LOCAL_WEB}/'."
 fi
 
 SETTINGS_PHP="./$LOCAL_WEB/sites/default/settings.php"
@@ -969,16 +1009,8 @@ fi
 if [ "$SANITIZE" = 1 ]; then
   info "Sanitizing the database (drush sql:sanitize)..."
   # Users with the administrator role keep their email and password, so the
-  # site's admins can still log in as usual. "--ignored-roles" only exists in
-  # newer drush versions, older ones fail on unknown options, so check first:
-  SANITIZE_OPTS=()
-  if ddev drush sql:sanitize --help 2>/dev/null | grep -q -- '--ignored-roles'; then
-    # Ignore administrator roles
-    SANITIZE_OPTS=(--ignored-roles=administrator)
-  else
-    warn "This drush version does not support 'sql:sanitize --ignored-roles', so the administrator users were sanitized as well."
-  fi
-  ddev drush sql:sanitize "${SANITIZE_OPTS[@]}" -y || die "'drush sql:sanitize' failed. The database still holds unsanitized production data, delete the project with 'ddev delete -Oy'."
+  # site's admins can still log in as usual:
+  ddev drush sql:sanitize --ignored-roles=administrator -y || die "'drush sql:sanitize' failed. The database still holds unsanitized production data, delete the project with 'ddev delete -Oy'."
   rm -f "$DUMP_FILE"
   success "Sanitized the database, the raw remote dump was removed."
 else
@@ -986,8 +1018,12 @@ else
 fi
 
 # Warn about enabled modules that talk to external (production) services with
-# the credentials from the production database:
-RISKY_MODULES="$(ddev drush pm:list --status=enabled --type=module --format=json 2>/dev/null | jq -r 'keys[] | select(test("^(smtp|symfony_mailer|phpmailer_smtp|mailsystem|swiftmailer|search_api_solr|search_api_opensearch|elasticsearch_connector|s3fs|flysystem.*|commerce_payment|commerce_.*_gateway|mailchimp.*|simplenews|salesforce|hubspot.*|ultimate_cron|queue_ui|advancedqueue)$"))' 2>/dev/null | tr '\n' ' ' || true)"
+# the credentials from the production database (see RISKY_MODULE_PATTERNS):
+RISKY_MODULE_REGEX="^($(
+  IFS='|'
+  printf '%s' "${RISKY_MODULE_PATTERNS[*]}"
+))\$"
+RISKY_MODULES="$(ddev drush pm:list --status=enabled --type=module --format=json 2>/dev/null | jq -r --arg re "$RISKY_MODULE_REGEX" 'keys[] | select(test($re))' 2>/dev/null | tr '\n' ' ' || true)"
 if [ -n "$RISKY_MODULES" ]; then
   warn "These enabled modules may use production credentials / services from the database: ${RISKY_MODULES}. Check their config (and override it in ${SETTINGS_PHP}) before running cron or using them."
 fi
@@ -1041,10 +1077,6 @@ fi
 )
 echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 
-# One-time login link (after sanitizing, only administrators keep their
-# passwords, with --no-sanitize all users do):
-LOGIN_LINK="$(ddev drush uli 2>/dev/null | tail -n 1 || true)"
-
 # ------------------------------------------------------------------------------
 # 10. Template cleanup
 # ------------------------------------------------------------------------------
@@ -1057,63 +1089,53 @@ rm -f ./README.md
 # Remove git files (keep .gitignore, it ignores personal settings, secrets and generated files):
 rm -rf ./.git ./.gitattributes
 
-# Give all Project informations:
-ddev describe
+# ------------------------------------------------------------------------------
+# 11. Summary
+# ------------------------------------------------------------------------------
 
-# Notice about debugging inside attached VS-Code:
-echo -e $'\e\n[33mNOTE: To debug inside the attached VS-Code instance, run `ddev config global --xdebug-ide-location=container && ddev restart`\n\e[0m'
-echo -e $'\e\n[33mNOTE: To enable xhprof profiling, run `ddev config global --xhprof-mode=xhgui && ddev restart`\n\e[0m'
+CURRENT_STEP="11/11 Summary"
 
-# Helper Messages
-echo "Use 'ddev code' to attach VSCode to your running Container."
-echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit."
-echo "Use 'ddev phpunit-coverage path/to/cover' to create a test coverage of the given file-directory."
-echo "Use 'ddev phpcs ${LOCAL_WEB}/modules/custom/my_module' (or phpcbf, phpstan, eslint, stylelint, cspell) to check a project like the drupal.org GitLab CI does."
-echo "Use 'ddev eslint --fix path' or 'ddev stylelint --fix path' to autofix JavaScript / CSS."
-echo "Use 'ddev drupal-ci-update' to update the drupal.org GitLab CI default configs to the latest gitlab_templates 1.x release and refresh the linter setup."
-echo "Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser."
-echo "Use 'ddev drowl-reset-db' to reset the database to its state after initial startup."
+# Project information, useful commands and tips (shared with the other
+# drowl-init commands):
+SUMMARY_OPTS=(--title="drowl-init-from-ssh finished!" --web-dir="$LOCAL_WEB")
 if [ "$SANITIZE" != 1 ]; then
-  echo "Use 'ddev import-db --file=${DUMP_FILE}' to import the original remote database dump again."
+  SUMMARY_OPTS+=(--command="ddev import-db --file=${DUMP_FILE}|Import the original (unsanitized) remote database dump again.")
 fi
+bash .ddev/drowl-init/print-summary.sh "${SUMMARY_OPTS[@]}"
 
-printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
-printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"
+# Section heading, like in print-summary.sh:
+summary_heading() {
+  local line
+  line="$(printf '%*s' $((70 - ${#2})) '' | tr ' ' '-')"
+  printf '\n\e[1;%sm-- %s %s\e[0m\n\n' "$1" "$2" "$line"
+}
 
-# Notice about the personal settings:
-echo -e $'\e\n[33mNOTE: Personal settings (git identity, DRUPALCODE_TOKEN) are stored in .ddev/.env.web. Edit it (see .ddev/.example.env.web for all available variables), then run `ddev restart`.\n\e[0m'
-
-# ------------------------------------------------------------------------------
-# 11. To-do summary
-# ------------------------------------------------------------------------------
-
-step "11/11 Done! Manual follow-ups"
-
-printf '\n\e[1;33mTo do:\e[0m\n'
-printf -- '- Take a look at the composer.json!\n'
+summary_heading 33 "To do"
+printf -- '  - Take a look at the composer.json!\n'
 if [ "$CLEANUP_COMPOSER" = 1 ]; then
-  printf -- '- --cleanup-composer: check the merged keys (require, require-dev, patches, repositories; the remote allow-plugins were added) and the package versions that moved (compare with the remote composer.lock).\n'
+  printf -- '  - --cleanup-composer: check the merged keys (require, require-dev, patches, repositories; the remote allow-plugins were added) and the package versions that moved (compare with the remote composer.lock).\n'
 fi
-printf -- '- Check that all patches applied (see the composer output above).\n'
-printf -- '- Compare the remote settings includes (e.g. Redis, Solr, environment settings) with the local %s.\n' "$SETTINGS_PHP"
-printf -- '- Run "ddev drush cex" if the config should be versioned in files/sync.\n'
-printf -- '- The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
-printf -- '- Private files were not copied (stage_file_proxy only serves public files).\n'
+printf -- '  - Check that all patches applied (see the composer output above).\n'
+printf -- '  - The local %s comes from our template, not from the remote. Only the table prefix, the public files path and the stage_file_proxy origin were taken over. Compare it with the remote settings.php and its includes, and copy over what the site needs locally (e.g. config_sync_directory, file_private_path, $config overrides, custom $settings, Redis, Solr, environment-specific includes).\n' "$SETTINGS_PHP"
+printf -- '  - Run "ddev drush cex" if the config should be versioned in files/sync.\n'
+printf -- '  - The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
+printf -- '  - Private files were not copied (stage_file_proxy only serves public files).\n'
 if [ "$SANITIZE" = 1 ]; then
-  printf -- '- The database was sanitized (user emails and passwords, except for users with the administrator role). Other personal data (e.g. webform submissions, orders, profile fields) is still in it.\n'
+  printf -- '  - The database was sanitized (user emails and passwords, except for users with the administrator role). Other personal data (e.g. webform submissions, orders, profile fields) is still in it.\n'
 fi
-printf -- '- The database holds production data: never use "ddev share" or bind_all_interfaces. When done, remove it with "ddev delete -Oy" and delete data/sql.\n'
-printf -- '- This is NOT a production ready copy. DO NOT PUSH TO PRODUCTION!\n'
+printf -- '  - The database holds production data: never use "ddev share" or bind_all_interfaces. When done, remove it with "ddev delete -Oy" and delete data/sql.\n'
+printf -- '  - This is NOT a production ready copy. DO NOT PUSH TO PRODUCTION!\n'
 
-if [ ${#WARNINGS[@]} -gt 0 ]; then
-  printf '\n\e[1;33mWarnings during the run:\e[0m\n'
-  for warning in "${WARNINGS[@]}"; do
-    printf -- '- %s\n' "$warning"
+if [ ${#NOTES[@]} -gt 0 ]; then
+  summary_heading 36 "Notes"
+  for note_text in "${NOTES[@]}"; do
+    printf -- '  - %s\n' "$note_text"
   done
 fi
 
-if [ -n "$LOGIN_LINK" ]; then
-  printf '\n\e[32mLog in: %s\e[0m\n' "$LOGIN_LINK"
-else
-  printf '\n\e[33mRun "ddev drush uli" to get a login link.\e[0m\n'
+if [ ${#WARNINGS[@]} -gt 0 ]; then
+  summary_heading 31 "Warnings during the run"
+  for warning in "${WARNINGS[@]}"; do
+    printf -- '  - %s\n' "$warning"
+  done
 fi
