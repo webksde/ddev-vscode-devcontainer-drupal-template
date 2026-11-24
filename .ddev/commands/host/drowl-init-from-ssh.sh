@@ -320,7 +320,7 @@ ask() {
       value="$default"
     else
       hint="${hint}${default:+${hint:+, }default: $default}"
-      printf '\e[1;36m%s\e[0m%s\n' "$label" "${hint:+  $'\e[2m'${hint}$'\e[0m'}"
+      printf '\n\e[1;36m%s\e[0m%s\n' "$label" "${hint:+  $'\e[2m'${hint}$'\e[0m'}"
       while true; do
         read -r -p $'\e[36m> \e[0m' value
         value="${value:-$default}"
@@ -433,8 +433,6 @@ run_probe() {
 probe() {
   printf '%s\n' "$PROBE" | sed -n "s/^$1=//p" | tail -n 1
 }
-
-echo
 
 # SSH address: split "user@host[:port]" into the ssh destination and the port
 # (default: 22), then connect. A bare host (no "user@") is accepted as well,
