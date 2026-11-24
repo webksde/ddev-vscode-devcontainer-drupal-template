@@ -307,8 +307,8 @@ done
 
 # Asks for a value, unless it was given as an option. With "optional", an
 # empty value is accepted. The label is shown in bold, followed by the dimmed
-# hint (and default), the value is entered on the next line:
-#   SSH address  user@host[:port], e.g. ...
+# hint and the highlighted default, the value is entered on the next line:
+#   SSH address  user@host[:port], e.g. ...  [default: ...]
 #   > _
 # Usage: ask VARIABLE "Label" "Hint" [default] [option-name] [optional]
 ask() {
@@ -319,8 +319,10 @@ ask() {
       [ -n "$default" ] || [ "$optional" = optional ] || die "Missing value for --${option} (required in non-interactive mode)."
       value="$default"
     else
-      hint="${hint}${default:+${hint:+, }default: $default}"
-      printf '\n\e[1;36m%s\e[0m%s\n' "$label" "${hint:+  $'\e[2m'${hint}$'\e[0m'}"
+      printf '\n\e[1;36m%s\e[0m' "$label"
+      [ -z "$hint" ] || printf '  \e[2m%s\e[0m' "$hint"
+      [ -z "$default" ] || printf '  \e[1;33m[default: %s]\e[0m' "$default"
+      printf '\n'
       while true; do
         read -r -p $'\e[36m> \e[0m' value
         value="${value:-$default}"

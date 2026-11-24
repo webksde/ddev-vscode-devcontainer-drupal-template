@@ -52,14 +52,26 @@ fi
 
 echo -e $'\e[36mPersonal settings (saved to .ddev/.env.web). Leave empty to skip.\e[0m'
 
-read -r -p "Git name${default_name:+ [$default_name]}: " git_name
+# Prints the prompt label, a dimmed hint and the highlighted default (same
+# style as the other drowl-init prompts):
+# Usage: prompt_label "Label" "Hint" [default]
+prompt_label() {
+  printf '\n\e[1;36m%s\e[0m' "$1"
+  [ -z "$2" ] || printf '  \e[2m%s\e[0m' "$2"
+  [ -z "$3" ] || printf '  \e[1;33m[%s]\e[0m' "$3"
+  printf '\n'
+}
+
+prompt_label "Git name" "" "$default_name"
+read -r -p $'\e[36m> \e[0m' git_name
 git_name="${git_name:-$default_name}"
 
-read -r -p "Git mail${default_mail:+ [$default_mail]}: " git_mail
+prompt_label "Git mail" "" "$default_mail"
+read -r -p $'\e[36m> \e[0m' git_mail
 git_mail="${git_mail:-$default_mail}"
 
-echo "DRUPALCODE_TOKEN: fine-grained personal access token from git.drupalcode.org, used by Claude Code (see README.md, \"Personal settings\")."
-read -r -s -p "DRUPALCODE_TOKEN${existing_token:+ [keep existing]}: " drupalcode_token
+prompt_label "DRUPALCODE_TOKEN" "fine-grained personal access token from git.drupalcode.org, used by Claude Code (see README.md, \"Personal settings\")" "${existing_token:+keep existing}"
+read -r -s -p $'\e[36m> \e[0m' drupalcode_token
 echo
 drupalcode_token="${drupalcode_token:-$existing_token}"
 
