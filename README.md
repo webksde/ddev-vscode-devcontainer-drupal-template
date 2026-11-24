@@ -131,7 +131,7 @@ Paths can also be single files, or folders containing several projects (e.g. `we
 
 **Requirements:** `ssh`, `rsync`, `jq` and `gzip` on the host, PHP CLI, `rsync` and `vendor/bin/drush` on the remote. It is a host command, so it uses your host's SSH setup (ssh-agent, `~/.ssh/config`). The connection is opened once and reused, so you enter a passphrase / password only once. Nothing is written on the server.
 
-All questions are asked up front: SSH target and port (default `22`), remote project root (the folder with the `composer.json`), web directory (default `web`), stage_file_proxy origin, a confirmation and the personal settings. Then it runs unattended:
+All questions are asked up front: SSH address (`user@host[:port]`, e.g. `user@example.com:2222`, the port defaults to `22`), remote project root (the folder with the `composer.json`), web directory (default `web`), remote site URL (used as the stage_file_proxy origin, leave it empty to skip the stage_file_proxy setup), a confirmation and the personal settings. Then it runs unattended:
 1. **Connects** and checks the remote. It uses the remote PHP version and the remote database type and version locally. If DDEV does not ship that database version, it uses the next higher one that DDEV supports.
 2. **Composer:** fetches `composer.json` / `composer.lock`, plus the local patches, patches files, scaffold files and path repositories they reference, and runs `composer install`. The remote web directory is kept.
 3. **Reads the remote `settings.php`** (table prefix, public files path). The database password never leaves the server. Multisites are not supported: only the default site (`sites/default/settings.php` and its database) is copied. The other sites are ignored, with a warning, if the remote has further `sites/*/settings.php` files or a `sites/sites.php` with entries.
@@ -152,7 +152,7 @@ Only use it if you know what you are doing.
 
 **`--no-sanitize`** keeps the personal data of the imported database and keeps the raw dump in `data/sql/`. Only use it if you need the real user data for debugging. Either way, the database is a copy of production data: `data/sql/` is only readable by you, never use `ddev share` or `bind_all_interfaces` with it, and remove it with `ddev delete -Oy` (plus `data/sql/`) when you are done. Sanitization only covers users: other personal data (webform submissions, orders, profile fields) stays in the database.
 
-For CI, pass all values as options and add `--non-interactive`. This skips all prompts, confirmations and personal settings, and fails instead of asking for an SSH password. `--ssh-target`, `--remote-root` and `--origin` are required, `--ssh-port` (default `22`) and `--web-dir` (default `web`) are optional: `ddev drowl-init-from-ssh --non-interactive --ssh-target=user@example.com --ssh-port=22 --remote-root=/var/www/example.com --web-dir=web --origin=https://www.example.com`.
+For CI, pass all values as options and add `--non-interactive`. This skips all prompts, confirmations and personal settings, and fails instead of asking for an SSH password. `--ssh` and `--remote-root` are required, `--web-dir` (default `web`) and `--origin` (without it, stage_file_proxy is not set up) are optional: `ddev drowl-init-from-ssh --non-interactive --ssh=user@example.com:2222 --remote-root=/var/www/example.com --web-dir=web --origin=https://www.example.com`.
 
 ### Database
 - `ddev import-db --database=db --file=db.sql.gz`: import a database file.

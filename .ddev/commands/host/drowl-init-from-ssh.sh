@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
 
-## Description: Builds a local DDEV development copy of an existing Drupal site from its server over SSH (composer files, custom code, database). Files are served via stage_file_proxy.
+## Description: Builds a local DDEV development copy of an existing Drupal site from its server over SSH (composer files, custom code, database). Public files can be served via stage_file_proxy.
 ## Usage: drowl-init-from-ssh [flags]
-## Example: "ddev drowl-init-from-ssh", "ddev drowl-init-from-ssh --cleanup-composer", "ddev drowl-init-from-ssh --non-interactive --ssh-target=user@example.com --remote-root=/var/www/example.com --origin=https://www.example.com"
-## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh-target","Type":"string","Usage":"SSH target, e.g. user@example.com (required with --non-interactive)"},{"Name":"ssh-port","Type":"string","Usage":"SSH port (default: 22)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, absolute or relative to the remote home, e.g. /var/www/example.com or ~/example.com (required with --non-interactive)"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"stage_file_proxy origin, e.g. https://www.example.com (required with --non-interactive)"},{"Name":"non-interactive","Usage":"Never prompt: confirmations are skipped, personal settings are skipped, --ssh-target, --remote-root and --origin are required"},{"Name":"no-sanitize","Usage":"Keep the personal data of the imported database (by default, it is sanitized with drush sql:sanitize and the raw remote dump is not kept)"}]
+## Example: "ddev drowl-init-from-ssh", "ddev drowl-init-from-ssh --cleanup-composer", "ddev drowl-init-from-ssh --non-interactive --ssh=user@example.com:2222 --remote-root=/var/www/example.com --origin=https://www.example.com"
+## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh","Type":"string","Usage":"SSH address user@host[:port], e.g. user@example.com or user@example.com:2222, the port defaults to 22 (required with --non-interactive)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, absolute or relative to the remote home, e.g. /var/www/example.com or ~/example.com (required with --non-interactive)"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"Remote site URL, used as the stage_file_proxy origin, e.g. https://www.example.com (optional, leave it out to skip the stage_file_proxy setup)"},{"Name":"non-interactive","Usage":"Never prompt: confirmations are skipped, personal settings are skipped, --ssh and --remote-root are required"},{"Name":"no-sanitize","Usage":"Keep the personal data of the imported database (by default, it is sanitized with drush sql:sanitize and the raw remote dump is not kept)"}]
 
 # The "## Flags:" line above is parsed by DDEV, which only accepts it as a
 # single line of JSON. DDEV generates "ddev drowl-init-from-ssh --help" from
 # it. Readable version (keep both in sync):
 #   --cleanup-composer   Start from our default composer.json, only take over the
 #                        dependency keys from the remote
-#   --ssh-target         SSH target, e.g. user@example.com (*)
-#   --ssh-port           SSH port (default: 22)
+#   --ssh                SSH address user@host[:port], e.g. user@example.com
+#                        or user@example.com:2222 (port default: 22) (*)
 #   --remote-root        Remote project root holding the composer.json, absolute
 #                        or relative to the remote home (~/example.com) (*)
 #   --web-dir            Web directory, relative to the project root (default: web)
-#   --origin             stage_file_proxy origin, e.g. https://www.example.com (*)
+#   --origin             Remote site URL, used as the stage_file_proxy origin,
+#                        e.g. https://www.example.com (empty: skip stage_file_proxy)
 #   --non-interactive    Never prompt: skip confirmations, missing values fail,
 #                        skip personal settings
 #   --no-sanitize        Keep the personal data (user emails, passwords) of the
@@ -138,7 +139,8 @@ success() {
   printf '\e[32m%s\e[0m\n' "$*"
 }
 
-# Prints a warning and collects it for the to-do summary at the end:
+# Prints a warning and collects it for the "Warnings" section of the summary
+# at the end:
 warn() {
   printf '\e[33mWARNING: %s\e[0m\n' "$*" >&2
   WARNINGS+=("$*")
@@ -147,6 +149,49 @@ warn() {
 die() {
   printf '\n\e[31mERROR: %s\e[0m\n' "$*" >&2
   exit 1
+}
+
+# Progress line for a file that grows while it is downloaded: shows the size so
+# far, the elapsed time and the average rate, redrawn every second on stderr.
+# The final size is unknown (the dump is streamed), so there is no percentage.
+# Only on a terminal, so logs (CI, redirected output) stay clean. Stopped with
+# stop_progress (and by cleanup() on errors / Ctrl-C):
+# Usage: start_progress FILE "Label"
+PROGRESS_PID=""
+start_progress() {
+  [ -t 2 ] || return 0
+  local file="$1" label="$2"
+  (
+    # stop_progress waits for the running awk / sleep, so nothing is printed
+    # after the line was cleared:
+    trap 'exit 0' TERM
+    start=$SECONDS
+    # Stops on its own, if the script is gone:
+    while kill -0 "$$" 2>/dev/null; do
+      bytes="$(wc -c <"$file" 2>/dev/null | tr -d ' ')"
+      elapsed=$((SECONDS - start))
+      awk -v label="$label" -v b="${bytes:-0}" -v e="$elapsed" '
+        function human(x,  u, i) {
+          split("B KB MB GB TB", u, " ")
+          for (i = 1; x >= 1024 && i < 5; i++) x /= 1024
+          return sprintf(i == 1 ? "%d %s" : "%.1f %s", x, u[i])
+        }
+        BEGIN {
+          printf "\r\033[K\033[36m%s: %s (%02d:%02d, %s/s)\033[0m", label, human(b), e / 60, e % 60, human(e > 0 ? b / e : 0)
+        }' >&2
+      sleep 1
+    done
+  ) &
+  PROGRESS_PID=$!
+}
+
+stop_progress() {
+  [ -n "$PROGRESS_PID" ] || return 0
+  kill "$PROGRESS_PID" 2>/dev/null || true
+  wait "$PROGRESS_PID" 2>/dev/null || true
+  PROGRESS_PID=""
+  # Clear the progress line:
+  printf '\r\e[K' >&2
 }
 
 CURRENT_STEP="Preparation"
@@ -169,16 +214,14 @@ rq() {
 CLEANUP_COMPOSER=0
 NON_INTERACTIVE=0
 SANITIZE=1
-SSH_TARGET=""
-SSH_PORT=""
+SSH_ADDRESS=""
 REMOTE_ROOT=""
 REMOTE_WEB=""
 ORIGIN=""
 
 set_option() {
   case "$1" in
-  --ssh-target) SSH_TARGET="$2" ;;
-  --ssh-port) SSH_PORT="$2" ;;
+  --ssh) SSH_ADDRESS="$2" ;;
   --remote-root) REMOTE_ROOT="$2" ;;
   --web-dir) REMOTE_WEB="$2" ;;
   --origin) ORIGIN="$2" ;;
@@ -190,10 +233,10 @@ while [ $# -gt 0 ]; do
   --cleanup-composer) CLEANUP_COMPOSER=1 ;;
   --non-interactive) NON_INTERACTIVE=1 ;;
   --no-sanitize) SANITIZE=0 ;;
-  --ssh-target=* | --ssh-port=* | --remote-root=* | --web-dir=* | --origin=*)
+  --ssh=* | --remote-root=* | --web-dir=* | --origin=*)
     set_option "${1%%=*}" "${1#*=}"
     ;;
-  --ssh-target | --ssh-port | --remote-root | --web-dir | --origin)
+  --ssh | --remote-root | --web-dir | --origin)
     [ $# -ge 2 ] || die "Missing value for $1."
     set_option "$1" "$2"
     shift
@@ -210,6 +253,9 @@ done
 # ------------------------------------------------------------------------------
 
 TMP_DIR=""
+# The ssh destination (user@host) and the port, split from --ssh below:
+SSH_TARGET=""
+SSH_PORT=""
 SSH_OPTS=()
 SSH_STARTED=0
 DUMP_PART=""
@@ -223,6 +269,7 @@ cleanup() {
   local status="${1:-0}"
   trap - EXIT INT TERM
   set +e
+  stop_progress
   if [ -n "$DUMP_PART" ] && [ -f "$DUMP_PART" ]; then
     rm -f "$DUMP_PART"
   fi
@@ -258,19 +305,21 @@ done
 # Prompts (all asked up front, afterwards the command runs unattended)
 # ------------------------------------------------------------------------------
 
-# Asks for a value, unless it was given as an option.
-# Usage: ask VARIABLE "Prompt" [default] [option-name]
+# Asks for a value, unless it was given as an option. With "optional", an
+# empty value is accepted.
+# Usage: ask VARIABLE "Prompt" [default] [option-name] [optional]
 ask() {
-  local var="$1" prompt="$2" default="$3" option="$4" value
+  local var="$1" prompt="$2" default="$3" option="$4" optional="$5" value
   value="${!var}"
   if [ -z "$value" ]; then
     if [ "$NON_INTERACTIVE" = 1 ]; then
-      [ -n "$default" ] || die "Missing value for --${option} (required in non-interactive mode)."
+      [ -n "$default" ] || [ "$optional" = optional ] || die "Missing value for --${option} (required in non-interactive mode)."
       value="$default"
     else
-      while [ -z "$value" ]; do
+      while true; do
         read -r -p $'\e[36m'"${prompt}${default:+ [$default]}: "$'\e[0m' value
         value="${value:-$default}"
+        [ -n "$value" ] || [ "$optional" = optional ] && break
       done
     fi
   fi
@@ -312,17 +361,35 @@ if [ "$CLEANUP_COMPOSER" = 1 ]; then
   confirm_or_abort $'\n\e[33mContinue with --cleanup-composer (y/n)?\e[0m'
 fi
 
-ask SSH_TARGET "SSH target (user@host)" "" "ssh-target"
-ask SSH_PORT "SSH port" "22" "ssh-port"
+ask SSH_ADDRESS "SSH address (user@host[:port], e.g. user@example.com:2222, the port defaults to 22, when left out)" "" "ssh"
 ask REMOTE_ROOT "Remote project root (folder holding the composer.json, e.g. /var/www/example.com or ~/example.com)" "" "remote-root"
 ask REMOTE_WEB "Web directory (relative to the project root)" "web" "web-dir"
-ask ORIGIN "stage_file_proxy origin (e.g. https://www.example.com)" "" "origin"
+ask ORIGIN "Remote site URL, used for stage_file_proxy (e.g. https://www.example.com, leave empty to skip stage_file_proxy)" "" "origin" optional
 
-# Validate and normalise the values:
+# Validate and normalise the values.
+# Split the SSH address ("user@host[:port]") into the ssh destination and
+# the port (default: 22). A bare host (no "user@") is accepted as well, ssh
+# then uses the User from ~/.ssh/config or the local username. It is not
+# advertised, as the local username rarely matches the remote one:
+SSH_TARGET="$SSH_ADDRESS"
+SSH_PORT=22
 case "$SSH_TARGET" in
-*[[:space:]]* | -*) die "Invalid SSH target '$SSH_TARGET'." ;;
+*:*:*)
+  die "Invalid SSH address '$SSH_ADDRESS'. IPv6 addresses are not supported, use a host name instead."
+  ;;
+*:*)
+  SSH_PORT="${SSH_TARGET##*:}"
+  SSH_TARGET="${SSH_TARGET%:*}"
+  if [[ ! "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || [ "$SSH_PORT" -lt 1 ] || [ "$SSH_PORT" -gt 65535 ]; then
+    die "Invalid SSH port '$SSH_PORT' in '$SSH_ADDRESS'."
+  fi
+  ;;
 esac
-[[ "$SSH_PORT" =~ ^[0-9]+$ ]] || die "Invalid SSH port '$SSH_PORT'."
+case "$SSH_TARGET" in
+"" | @* | *@ | *[[:space:]]* | -*) die "Invalid SSH address '$SSH_ADDRESS'. Use user@host[:port], e.g. user@example.com:2222." ;;
+esac
+# Shown in messages:
+SSH_DISPLAY="${SSH_TARGET}:${SSH_PORT}"
 [ "$REMOTE_ROOT" != "/" ] && REMOTE_ROOT="${REMOTE_ROOT%/}"
 [ -n "$REMOTE_ROOT" ] || die "Invalid remote project root."
 # Shown in messages as entered, e.g. "~/example.com":
@@ -341,12 +408,14 @@ if [ -z "$REMOTE_WEB" ] || [[ "$REMOTE_WEB" == /* ]] || [[ "/$REMOTE_WEB/" == */
   die "Invalid web directory '$REMOTE_WEB'. It must be relative to the project root, e.g. 'web'."
 fi
 # The origin is written into settings.php inside single quotes, so quotes and
-# backslashes are not allowed:
-ORIGIN_PATTERN="^https?://[^[:space:]'\"\\\\]+\$"
-[[ "$ORIGIN" =~ $ORIGIN_PATTERN ]] || die "Invalid stage_file_proxy origin '$ORIGIN'. It must start with http:// or https:// and must not contain spaces, quotes or backslashes."
-ORIGIN="${ORIGIN%/}"
+# backslashes are not allowed. Empty skips the stage_file_proxy setup:
+if [ -n "$ORIGIN" ]; then
+  ORIGIN_PATTERN="^https?://[^[:space:]'\"\\\\]+\$"
+  [[ "$ORIGIN" =~ $ORIGIN_PATTERN ]] || die "Invalid remote site URL '$ORIGIN'. It must start with http:// or https:// and must not contain spaces, quotes or backslashes."
+  ORIGIN="${ORIGIN%/}"
+fi
 
-confirm_or_abort $'\n\e[33mThis command will NOT initialize a production ready copy of your Website! It will create a modified environment, focused on development and debugging.\n\nDO NOT PUSH TO PRODUCTION!\n\nContinue anyway (y/n)?\e[0m'
+confirm_or_abort $'\n\e[33mThis command will NOT initialize a production ready copy of your Website! It will create a modified environment, focused on development and debugging.\n\nDO NOT PUSH IT BACK TO PRODUCTION!\n\nContinue anyway (y/n)?\e[0m'
 
 # Ask for the personal settings (git identity, DRUPALCODE_TOKEN), written to
 # .ddev/.env.web before the containers start:
@@ -379,6 +448,13 @@ fi
 RSYNC_RSH="ssh ${SSH_OPTS[*]}"
 # Extra rsync options, set once the remote login PATH is known (see below):
 RSYNC_OPTS=()
+# Overall progress for the larger transfers (custom code), on a terminal and
+# with rsync >= 3.1 only (the rsync / openrsync shipped with macOS lacks
+# --info):
+RSYNC_PROGRESS=()
+if [ -t 1 ] && rsync --info=progress2 --version >/dev/null 2>&1; then
+  RSYNC_PROGRESS=(--info=progress2)
+fi
 
 # The PATH of a remote login shell. "ssh host cmd" runs cmd in a non-login,
 # non-interactive shell, which does not read the profile files. So on e.g.
@@ -396,17 +472,17 @@ rssh() {
   fi
 }
 
-printf '\n\e[32mAlright! Initialising your project from %s:%s. This will take a while...\e[0m\n' "$SSH_TARGET" "$REMOTE_ROOT_DISPLAY"
+printf '\n\e[32mAlright! Initialising your project from %s:%s. This will take a while...\e[0m\n' "$SSH_DISPLAY" "$REMOTE_ROOT_DISPLAY"
 
 # ------------------------------------------------------------------------------
 # 1. Connect
 # ------------------------------------------------------------------------------
 
-step "1/11 Connecting to ${SSH_TARGET}"
+step "1/11 Connecting to ${SSH_DISPLAY}"
 
 SSH_STARTED=1
 if ! rssh true </dev/null; then
-  die "Could not connect to '${SSH_TARGET}' (port ${SSH_PORT}). Check the target, the port and your SSH key (ssh-agent / ~/.ssh/config)."
+  die "Could not connect to '${SSH_DISPLAY}'. Check the address, the port and your SSH key (ssh-agent / ~/.ssh/config)."
 fi
 success "Connected."
 
@@ -851,7 +927,7 @@ for dir in "${CUSTOM_CODE_DIRS[@]}"; do
   if rssh "test -d $R_ROOT/$R_WEB/$dir" </dev/null; then
     info "Fetching ${REMOTE_WEB}/${dir}..."
     mkdir -p "./$LOCAL_WEB/$dir"
-    rsync -a "${RSYNC_OPTS[@]}" "${RSYNC_EXCLUDES[@]}" -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/$REMOTE_WEB/$dir/" "./$LOCAL_WEB/$dir/"
+    rsync -a "${RSYNC_OPTS[@]}" "${RSYNC_PROGRESS[@]}" "${RSYNC_EXCLUDES[@]}" -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/$REMOTE_WEB/$dir/" "./$LOCAL_WEB/$dir/"
   else
     info "No ${REMOTE_WEB}/${dir} on the remote, skipping."
   fi
@@ -894,18 +970,22 @@ fi
 DUMP_PART="$DUMP_DIR/remote-dump.sql.gz.part"
 DUMP_FILE="$DUMP_DIR/remote-dump-$(date +%Y-%m-%d_%H-%M-%S).sql.gz"
 REMOTE_DUMP_CMD="cd $R_ROOT && vendor/bin/drush sql:dump $(rq "--structure-tables-list=$STRUCTURE_TABLES") | gzip -c"
-if ! (
+(
   umask 077
-  rssh "bash -o pipefail -c $(rq "$REMOTE_DUMP_CMD")" </dev/null >"$DUMP_PART"
-); then
-  die "The remote database dump failed."
-fi
+  : >"$DUMP_PART"
+)
+start_progress "$DUMP_PART" "Downloaded (gzipped)"
+DUMP_STATUS=0
+rssh "bash -o pipefail -c $(rq "$REMOTE_DUMP_CMD")" </dev/null >>"$DUMP_PART" || DUMP_STATUS=$?
+stop_progress
+[ "$DUMP_STATUS" = 0 ] || die "The remote database dump failed."
 
-# Local integrity check, only then the .part file is renamed. mysqldump ends
-# every complete dump with a "-- Dump completed" line, so a dump that was cut
-# off is detected:
-gzip -t "$DUMP_PART" || die "The database dump is corrupt (gzip -t failed)."
-DUMP_TAIL="$(gzip -dc "$DUMP_PART" | tail -n 3)"
+# Local integrity check, only then the .part file is renamed. Decompressing the
+# whole file fails on corrupt data, and mysqldump ends every complete dump with
+# a "-- Dump completed" line, so a dump that was cut off is detected (one pass,
+# as it can take a while for large dumps):
+info "Checking the dump..."
+DUMP_TAIL="$(gzip -dc "$DUMP_PART" | tail -n 3)" || die "The database dump is corrupt (gzip failed)."
 [[ "$DUMP_TAIL" == *"-- Dump completed"* ]] || die "The database dump is incomplete (no '-- Dump completed' trailer)."
 mv "$DUMP_PART" "$DUMP_FILE"
 DUMP_PART=""
@@ -988,10 +1068,15 @@ fi
 # Set the stage_file_proxy origin in settings.php, so it stays set even if the
 # config is imported (the "drush config-set" below only sets it in the
 # database). The origin was validated above (no quotes or backslashes):
+if [ -n "$ORIGIN" ]; then
+  {
+    printf '\n// Development copy (drowl-init-from-ssh): fetch missing public files from\n'
+    printf '// the remote site.\n'
+    printf "\$config['stage_file_proxy.settings']['origin'] = '%s';\n" "$ORIGIN"
+  } >>"$SETTINGS_PHP"
+  info "Set the stage_file_proxy origin '${ORIGIN}' in ${SETTINGS_PHP}."
+fi
 {
-  printf '\n// Development copy (drowl-init-from-ssh): fetch missing public files from\n'
-  printf '// the remote site.\n'
-  printf "\$config['stage_file_proxy.settings']['origin'] = '%s';\n" "$ORIGIN"
   printf '\n// Development copy (drowl-init-from-ssh): the database comes from\n'
   printf '// production, so do not let this copy act on production services:\n'
   printf '// - no cron on page requests (it would process mails, syncs, ...),\n'
@@ -999,7 +1084,6 @@ fi
   printf '// - no mails via the smtp module (PHP mail() is caught by Mailpit).\n'
   printf "\$config['smtp.settings']['smtp_on'] = FALSE;\n"
 } >>"$SETTINGS_PHP"
-info "Set the stage_file_proxy origin '${ORIGIN}' in ${SETTINGS_PHP}."
 info "Disabled automated_cron and the smtp module in ${SETTINGS_PHP}."
 
 ddev import-db --file="$DUMP_FILE"
@@ -1051,6 +1135,7 @@ fi
 step "8/11 Directories"
 
 mkdir -p ./files/private ./files/sync ./files/translations ./tmp
+success "Created the directories files/private, files/sync, files/translations and tmp."
 
 # ------------------------------------------------------------------------------
 # 9. Post-setup
@@ -1063,11 +1148,13 @@ if ! ddev drush updb -y; then
 fi
 ddev drush cr
 
-# Activate the development modules:
-ddev drush en devel stage_file_proxy -y
-
-# Set the stage_file_proxy origin:
-ddev drush config-set stage_file_proxy.settings origin "$ORIGIN" -y
+# Activate the development modules (stage_file_proxy only with an origin):
+if [ -n "$ORIGIN" ]; then
+  ddev drush en devel stage_file_proxy -y
+  ddev drush config-set stage_file_proxy.settings origin "$ORIGIN" -y
+else
+  ddev drush en devel -y
+fi
 
 # Activate kint as default devel variables dumper:
 ddev drush config-set devel.settings devel_dumper kint -y
@@ -1126,6 +1213,14 @@ summary_heading() {
   printf '\n\e[1;%sm-- %s %s\e[0m\n\n' "$1" "$2" "$line"
 }
 
+# After the tips (print-summary.sh): notes, to do, warnings.
+if [ ${#NOTES[@]} -gt 0 ]; then
+  summary_heading 36 "Notes"
+  for note_text in "${NOTES[@]}"; do
+    printf -- '  - %s\n' "$note_text"
+  done
+fi
+
 summary_heading 33 "To do"
 printf -- '  - Take a look at the composer.json!\n'
 if [ "$CLEANUP_COMPOSER" = 1 ]; then
@@ -1134,23 +1229,20 @@ fi
 printf -- '  - Check that all patches applied (see the composer output above).\n'
 printf -- '  - The local %s comes from our template, not from the remote. Only the table prefix, the public files path and the stage_file_proxy origin were taken over. Compare it with the remote settings.php and its includes, and copy over what the site needs locally (e.g. config_sync_directory, file_private_path, $config overrides, custom $settings, Redis, Solr, environment-specific includes).\n' "$SETTINGS_PHP"
 printf -- '  - Run "ddev drush cex" if the config should be versioned in files/sync.\n'
-printf -- '  - The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
-printf -- '  - Private files were not copied (stage_file_proxy only serves public files).\n'
+if [ -n "$ORIGIN" ]; then
+  printf -- '  - The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
+  printf -- '  - Private files were not copied (stage_file_proxy only serves public files).\n'
+else
+  printf -- '  - No remote site URL was given, so stage_file_proxy was not set up and no files were copied. Copy the public files manually, or enable stage_file_proxy and set its origin at the end of %s ($config['"'"'stage_file_proxy.settings'"'"']['"'"'origin'"'"']).\n' "$SETTINGS_PHP"
+fi
 if [ "$SANITIZE" = 1 ]; then
   printf -- '  - The database was sanitized (user emails and passwords, except for users with the administrator role). Other personal data (e.g. webform submissions, orders, profile fields) is still in it.\n'
 fi
 printf -- '  - The database holds production data: never use "ddev share" or bind_all_interfaces. When done, remove it with "ddev delete -Oy" and delete data/sql.\n'
-printf -- '  - This is NOT a production ready copy. DO NOT PUSH TO PRODUCTION!\n'
-
-if [ ${#NOTES[@]} -gt 0 ]; then
-  summary_heading 36 "Notes"
-  for note_text in "${NOTES[@]}"; do
-    printf -- '  - %s\n' "$note_text"
-  done
-fi
+printf -- '  - This is NOT a production ready copy. DO NOT PUSH IT BACK TO PRODUCTION!\n'
 
 if [ ${#WARNINGS[@]} -gt 0 ]; then
-  summary_heading 31 "Warnings during the run"
+  summary_heading 31 "Warnings"
   for warning in "${WARNINGS[@]}"; do
     printf -- '  - %s\n' "$warning"
   done
