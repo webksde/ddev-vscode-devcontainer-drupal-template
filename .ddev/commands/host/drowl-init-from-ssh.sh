@@ -43,36 +43,22 @@
 
 set -eo pipefail
 
+# shellcheck source=../../drowl-init/lib.sh
+source .ddev/drowl-init/lib.sh
+
 # ------------------------------------------------------------------------------
-# Configuration (lists, maintained here)
+# Configuration (lists, maintained here, the shared ones are in
+# .ddev/drowl-init/steps.sh)
 # ------------------------------------------------------------------------------
 
 # Commands required on the host:
 REQUIRED_HOST_COMMANDS=(ssh rsync jq gzip ddev sed)
 
-# Composer plugins to allow (unless the remote composer.json configures them):
-COMPOSER_ALLOWED_PLUGINS=(
-  cweagans/composer-patches oomphinc/composer-installers-extender
-  szeidler/composer-patches-cli tbachert/spi symfony/runtime
-  dealerdirect/phpcodesniffer-composer-installer phpstan/extension-installer
-  php-http/discovery
-)
-# Packages added to "require" (unless already present):
-COMPOSER_PACKAGES=(cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender)
 # Drupal modules added to "require-dev" (enabled in the post-setup step):
 COMPOSER_DEV_MODULES=(drupal/devel drupal/stage_file_proxy)
-# Further packages added to "require-dev". drupal/core-dev is handled
-# separately, as it has to match the core version:
-COMPOSER_DEV_PACKAGES=(drush/drush drupal/coder:^8 phpstan/phpstan-deprecation-rules kint-php/kint squizlabs/php_codesniffer:^3)
-
-# Folders fetched from the remote web directory (and always created locally):
-CUSTOM_CODE_DIRS=(modules/custom themes/custom profiles/custom)
+# Folders fetched from the remote web directory: DROWL_CUSTOM_CODE_DIRS.
 # Never fetched via rsync:
 RSYNC_EXCLUDES=(--exclude=node_modules --exclude=.git)
-
-# Copied initiation additions with "web/" paths, which are pointed to the local
-# docroot if it differs:
-DOCROOT_REWRITE_FILES=(.vscode/settings.json phpunit.xml jsconfig.json AGENTS.md)
 
 # Tables dumped without data (only the structure), their data is not needed
 # locally:
@@ -118,87 +104,8 @@ RISKY_MODULE_PATTERNS=(
 )
 
 # ------------------------------------------------------------------------------
-# Output helpers
+# Helpers (output, prompts and error handling: .ddev/drowl-init/ui.sh)
 # ------------------------------------------------------------------------------
-
-WARNINGS=()
-NOTES=()
-
-info() {
-  printf '\e[36m%s\e[0m\n' "$*"
-}
-
-# Prints an info and collects it for the summary at the end (like warn(), but
-# for facts worth repeating, e.g. the remote and local versions):
-note() {
-  info "$@"
-  NOTES+=("$*")
-}
-
-success() {
-  printf '\e[32m%s\e[0m\n' "$*"
-}
-
-# Prints a warning and collects it for the "Warnings" section of the summary
-# at the end:
-warn() {
-  printf '\e[33mWARNING: %s\e[0m\n' "$*" >&2
-  WARNINGS+=("$*")
-}
-
-die() {
-  printf '\n\e[31mERROR: %s\e[0m\n' "$*" >&2
-  exit 1
-}
-
-# Progress line for a file that grows while it is downloaded: shows the size so
-# far, the elapsed time and the average rate, redrawn every second on stderr.
-# The final size is unknown (the dump is streamed), so there is no percentage.
-# Only on a terminal, so logs (CI, redirected output) stay clean. Stopped with
-# stop_progress (and by cleanup() on errors / Ctrl-C):
-# Usage: start_progress FILE "Label"
-PROGRESS_PID=""
-start_progress() {
-  [ -t 2 ] || return 0
-  local file="$1" label="$2"
-  (
-    # stop_progress waits for the running awk / sleep, so nothing is printed
-    # after the line was cleared:
-    trap 'exit 0' TERM
-    start=$SECONDS
-    # Stops on its own, if the script is gone:
-    while kill -0 "$$" 2>/dev/null; do
-      bytes="$(wc -c <"$file" 2>/dev/null | tr -d ' ')"
-      elapsed=$((SECONDS - start))
-      awk -v label="$label" -v b="${bytes:-0}" -v e="$elapsed" '
-        function human(x,  u, i) {
-          split("B KB MB GB TB", u, " ")
-          for (i = 1; x >= 1024 && i < 5; i++) x /= 1024
-          return sprintf(i == 1 ? "%d %s" : "%.1f %s", x, u[i])
-        }
-        BEGIN {
-          printf "\r\033[K\033[36m%s: %s (%02d:%02d, %s/s)\033[0m", label, human(b), e / 60, e % 60, human(e > 0 ? b / e : 0)
-        }' >&2
-      sleep 1
-    done
-  ) &
-  PROGRESS_PID=$!
-}
-
-stop_progress() {
-  [ -n "$PROGRESS_PID" ] || return 0
-  kill "$PROGRESS_PID" 2>/dev/null || true
-  wait "$PROGRESS_PID" 2>/dev/null || true
-  PROGRESS_PID=""
-  # Clear the progress line:
-  printf '\r\e[K' >&2
-}
-
-CURRENT_STEP="Preparation"
-step() {
-  CURRENT_STEP="$1"
-  printf '\n\e[1;32m==> %s\e[0m\n' "$1"
-}
 
 # Quotes a value for a remote POSIX shell, as ssh passes the command as one
 # string to the remote shell: wraps it in single quotes and escapes contained
@@ -259,17 +166,10 @@ SSH_PORT=""
 SSH_OPTS=()
 SSH_STARTED=0
 DUMP_PART=""
-# Set once the first local file is written, so a failure hints how to start
-# over:
-LOCAL_CHANGED=0
 
-# Removes temp files and partial dumps, closes the SSH master connection and
-# names the failed step:
-cleanup() {
-  local status="${1:-0}"
-  trap - EXIT INT TERM
-  set +e
-  stop_progress
+# Removes temp files and partial dumps and closes the SSH master connection
+# (called by drowl_cleanup, which also names the failed step):
+drowl_cleanup_hook() {
   if [ -n "$DUMP_PART" ] && [ -f "$DUMP_PART" ]; then
     rm -f "$DUMP_PART"
   fi
@@ -279,104 +179,28 @@ cleanup() {
   if [ -n "$TMP_DIR" ] && [ -d "$TMP_DIR" ]; then
     rm -rf "$TMP_DIR"
   fi
-  if [ "$status" -ne 0 ]; then
-    printf '\n\e[31mdrowl-init-from-ssh failed at step "%s" (exit code %s).\e[0m\n' "$CURRENT_STEP" "$status" >&2
-    if [ "$LOCAL_CHANGED" = 1 ]; then
-      printf '\e[31mThe project is half initialised now. Start over from a fresh clone of the template (run "ddev delete -Oy" in this folder first).\e[0m\n' >&2
-    fi
-  fi
-  exit "$status"
 }
-# EXIT passes the script's exit code. On Ctrl-C (INT) / kill (TERM), $? is not
-# meaningful, so the usual shell codes are passed (128 + signal number):
-trap 'cleanup $?' EXIT
-trap 'cleanup 130' INT
-trap 'cleanup 143' TERM
 
 # ------------------------------------------------------------------------------
 # Preconditions
 # ------------------------------------------------------------------------------
 
-for cmd in "${REQUIRED_HOST_COMMANDS[@]}"; do
-  command -v "$cmd" >/dev/null 2>&1 || die "'$cmd' is required on the host, but was not found. Please install it first."
-done
+drowl_require_host_commands "${REQUIRED_HOST_COMMANDS[@]}"
+drowl_require_fresh_template
+
+drowl_start "Initialising a development copy of an existing Drupal site over SSH!"
 
 # ------------------------------------------------------------------------------
 # Prompts (all asked up front, afterwards the command runs unattended)
 # ------------------------------------------------------------------------------
 
-# Asks for a value, unless it was given as an option. With "optional", an
-# empty value is accepted. The label is shown in bold, followed by the dimmed
-# hint and the highlighted default, the value is entered on the next line:
-#   SSH address  user@host[:port], e.g. ...  [default: ...]
-#   > _
-# A default that is not the value itself (e.g. the port) can be described with
-# "default-note" instead, shown as is: "default port: 22".
-# Usage: ask VARIABLE "Label" "Hint" [default] [option-name] [optional] [default-note]
-ask() {
-  local var="$1" label="$2" hint="$3" default="$4" option="$5" optional="$6" note="$7" value
-  value="${!var}"
-  if [ -z "$value" ]; then
-    if [ "$NON_INTERACTIVE" = 1 ]; then
-      [ -n "$default" ] || [ "$optional" = optional ] || die "Missing value for --${option} (required in non-interactive mode)."
-      value="$default"
-    else
-      printf '\n\e[1;36m%s\e[0m' "$label"
-      [ -z "$hint" ] || printf '  \e[2m%s\e[0m' "$hint"
-      [ -z "${note:-$default}" ] || printf '  \e[1;33m[%s]\e[0m' "${note:-default: $default}"
-      printf '\n'
-      while true; do
-        read -r -p $'\e[36m> \e[0m' value
-        value="${value:-$default}"
-        [ -n "$value" ] || [ "$optional" = optional ] && break
-      done
-    fi
-  fi
-  printf -v "$var" '%s' "$value"
-}
-
-# Asks a y/n question. "n" aborts. Skipped in
-# non-interactive mode.
-confirm_or_abort() {
-  local question="$1" answer
-  # Non-interactive mode skips all confirmations:
-  if [ "$NON_INTERACTIVE" = 1 ]; then
-    return 0
-  fi
-  while true; do
-    read -r -p $'\e[1;33m'"${question} [y/n] "$'\e[0m' answer
-    case ${answer:0:1} in
-    y | Y)
-      return 0
-      ;;
-    n | N)
-      printf '\e[31mAborting...\e[0m\n'
-      # Nothing was changed yet:
-      exit 0
-      ;;
-    *)
-      printf '\e[33mPlease answer y or n.\e[0m\n'
-      ;;
-    esac
-  done
-}
-
 if [ "$CLEANUP_COMPOSER" = 1 ]; then
-  printf '\n\e[1;31mCAUTION: --cleanup-composer\e[0m \e[31mOnly use it if you know what you are doing!\n'
+  printf '\n%s%sCAUTION: --cleanup-composer%s %sOnly use it if you know what you are doing!\n' "$C_BOLD" "$C_RED" "$C_RESET" "$C_RED"
   printf 'It replaces the composer setup with our default composer.json (only require,\n'
   printf 'require-dev, patches and repositories are taken over from the remote) and\n'
-  printf 'drops the remote composer.lock, so package versions can change.\e[0m\n'
+  printf 'drops the remote composer.lock, so package versions can change.%s\n' "$C_RESET"
   confirm_or_abort "Continue with --cleanup-composer?"
 fi
-
-# Rejects an answer. Interactive: prints the reason and clears the variable,
-# so the prompt is asked again. Non-interactive: dies with the reason.
-# Usage: reject VARIABLE "Reason"
-reject() {
-  [ "$NON_INTERACTIVE" = 1 ] && die "$2"
-  printf '\e[31m%s\e[0m\n' "$2" >&2
-  printf -v "$1" '%s' ""
-}
 
 # Each answer is checked right away (against the remote, where possible), so
 # a typo can be fixed at once, before anything is changed locally.
@@ -578,18 +402,14 @@ while true; do
 done
 
 if [ "$NON_INTERACTIVE" != 1 ]; then
-  printf '\n\e[33mThis will NOT create a production ready copy of your website, but a modified\n'
-  printf 'environment focused on development and debugging. \e[1mDO NOT PUSH IT BACK TO PRODUCTION!\e[0m\n'
+  printf '\n%sThis will NOT create a production ready copy of your website, but a modified\n' "$C_YELLOW"
+  printf 'environment focused on development and debugging. %sDO NOT PUSH IT BACK TO PRODUCTION!%s\n' "$C_BOLD" "$C_RESET"
 fi
 confirm_or_abort "Continue anyway?"
 
 # Ask for the personal settings (git identity, DRUPALCODE_TOKEN), written to
 # .ddev/.env.web before the containers start:
-if [ "$NON_INTERACTIVE" = 1 ]; then
-  echo "Non-interactive mode, skipping personal settings. Set them in .ddev/.env.web later (see .ddev/.example.env.web)."
-else
-  bash .ddev/drowl-init/ask-personal-settings.sh
-fi
+drowl_ask_personal_settings
 
 # The local docroot: the remote one, except with --cleanup-composer, where our
 # default composer.json (installer-paths) always uses "web":
@@ -613,13 +433,13 @@ if [ -t 1 ] && rsync --info=progress2 --version >/dev/null 2>&1; then
   RSYNC_PROGRESS=(--info=progress2)
 fi
 
-printf '\n\e[32mAlright! Initialising your project from %s:%s. This will take a while...\e[0m\n' "$SSH_DISPLAY" "$REMOTE_ROOT_DISPLAY"
+printf '\n%sAlright! Initialising your project from %s:%s. This will take a while...%s\n' "$C_GREEN" "$SSH_DISPLAY" "$REMOTE_ROOT_DISPLAY" "$C_RESET"
 
 # ------------------------------------------------------------------------------
-# 1. Check the remote
+# Check the remote
 # ------------------------------------------------------------------------------
 
-step "1/11 Checking the remote ${SSH_DISPLAY}"
+step "Checking the remote ${SSH_DISPLAY}"
 
 # The project root and the web directory were checked after their prompts,
 # check the remote tools now:
@@ -689,11 +509,11 @@ note "Remote: PHP ${REMOTE_PHP}, database ${REMOTE_DB_VERSION:-unknown}"
 note "Local:  PHP ${LOCAL_PHP:-unknown}, database ${LOCAL_DB_TYPE:-unknown} ${LOCAL_DB_VERSION:-unknown} (from .ddev/config.yaml)"
 
 # ------------------------------------------------------------------------------
-# 2. Composer
+# Composer
 # ------------------------------------------------------------------------------
 
-step "2/11 Composer"
-LOCAL_CHANGED=1
+step "Composer"
+DROWL_LOCAL_CHANGED=1
 
 # Keeps the given paths, which are relative and inside the project root:
 filter_local_paths() {
@@ -834,17 +654,8 @@ else
   ddev exec --raw cp /tmp/drowl-recommended-project/composer.json /var/www/html/composer.json
   ddev exec rm -rf /tmp/drowl-recommended-project
 
-  ddev composer config --no-plugins allow-plugins.cweagans/composer-patches true
-  ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
-  ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
-  ddev composer config --no-plugins allow-plugins.tbachert/spi true
-  ddev composer config --no-plugins allow-plugins.symfony/runtime true
-  ddev composer config extra.composer-exit-on-patch-failure true
-  ddev composer config extra.enable-patching true
-  ddev composer config minimum-stability dev
-  ddev exec --raw composer config repositories.asset-packagist --json '{"type": "composer","url": "https://asset-packagist.org"}'
-  ddev exec --raw composer config extra.installer-types --json '["npm-asset", "bower-asset"]'
-  ddev exec --raw composer config 'extra.installer-paths.web/libraries/{$name}' --json '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
+  drowl_composer_allow_plugins "${DROWL_COMPOSER_ALLOWED_PLUGINS[@]}"
+  drowl_composer_defaults "$LOCAL_WEB"
 
   # Take over the dependency keys from the remote. The remote allow-plugins
   # are added as well (ours win), otherwise the update fails on any plugin we
@@ -872,10 +683,10 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 3. Read the remote settings.php
+# Read the remote settings.php
 # ------------------------------------------------------------------------------
 
-step "3/11 Reading the remote settings.php"
+step "Reading the remote settings.php"
 
 # Read the values through a full Drupal bootstrap (drush php:eval), so all
 # includes and conditions of the remote settings.php apply. The database
@@ -928,62 +739,23 @@ info "Remote database: driver $(setting driver), host $(setting host), database 
 info "Remote public files path: ${FILE_PUBLIC_PATH}"
 
 # ------------------------------------------------------------------------------
-# 4. Dev stack
+# Dev stack
 # ------------------------------------------------------------------------------
 
-step "4/11 Dev stack"
+step "Dev stack"
 
-# Prints the given packages ("vendor/name[:constraint]"), which are neither in
-# require nor in require-dev yet:
-missing_packages() {
-  local package
-  for package in "$@"; do
-    # "${package%%:*}" strips the version constraint ("drupal/coder:^8"):
-    jq -e --arg n "${package%%:*}" '((.require // {}) | has($n)) or ((.["require-dev"] // {}) | has($n))' composer.json >/dev/null || printf '%s\n' "$package"
-  done
-}
-
-# Requires the given packages, skipping the ones already present (no moving
-# between require and require-dev).
-# Usage: composer_require [--dev] [-W] package...
-composer_require() {
-  local args=() packages=() package
-  while [ $# -gt 0 ] && [[ "$1" == -* ]]; do
-    args+=("$1")
-    shift
-  done
-  while IFS= read -r package; do
-    packages+=("$package")
-  done < <(missing_packages "$@")
-  if [ ${#packages[@]} -eq 0 ]; then
-    info "Already present: $*"
-    return 0
-  fi
-  ddev composer require "${args[@]}" "${packages[@]}" --no-audit --no-interaction
-}
-
-# Allows the given composer plugins, unless they are already configured:
-allow_plugins() {
-  local plugin
-  for plugin in "$@"; do
-    jq -e --arg p "$plugin" '(.config["allow-plugins"] // {}) | if type == "object" then has($p) else true end' composer.json >/dev/null ||
-      ddev composer config --no-plugins "allow-plugins.$plugin" true
-  done
-}
-
-allow_plugins "${COMPOSER_ALLOWED_PLUGINS[@]}"
-
-# Add general dependencies:
-composer_require "${COMPOSER_PACKAGES[@]}"
+# Allow our composer plugins and add our general dependencies (packages the
+# project already requires are left as they are):
+drowl_composer_base
 
 # Add the development modules. They go to require-dev, as this composer.json
 # belongs to a production site:
-composer_require --dev "${COMPOSER_DEV_MODULES[@]}"
+drowl_composer_require --dev "${COMPOSER_DEV_MODULES[@]}"
 
 # Add DEV dependencies. "drupal/core-dev" (phpunit, phpstan, ...) must match
 # the core version exactly, so prefer the remote core version, which keeps
 # drupal/core where it is:
-if [ -n "$(missing_packages drupal/core-dev)" ]; then
+if [ -n "$(drowl_composer_missing require drupal/core-dev)" ]; then
   if [ "$CLEANUP_COMPOSER" != 1 ] && [[ "$CORE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     if ! ddev composer require --dev "drupal/core-dev:${CORE_VERSION}" -W --no-audit --no-interaction; then
       warn "Requiring drupal/core-dev:${CORE_VERSION} failed, used drupal/core-dev:^${CORE_MAJOR} instead, which may have updated drupal/core."
@@ -993,18 +765,15 @@ if [ -n "$(missing_packages drupal/core-dev)" ]; then
     ddev composer require --dev "drupal/core-dev:^${CORE_MAJOR}" -W --no-audit --no-interaction
   fi
 fi
-composer_require --dev "${COMPOSER_DEV_PACKAGES[@]}"
-
-# PHP Codesniffer Setup:
-ddev exec chmod +x vendor/bin/phpcs vendor/bin/phpcbf
+drowl_composer_dev_packages
 
 # ------------------------------------------------------------------------------
-# 5. Custom code
+# Custom code
 # ------------------------------------------------------------------------------
 
-step "5/11 Custom code"
+step "Custom code"
 
-for dir in "${CUSTOM_CODE_DIRS[@]}"; do
+for dir in "${DROWL_CUSTOM_CODE_DIRS[@]}"; do
   if rssh "test -d $R_ROOT/$R_WEB/$dir" </dev/null; then
     info "Fetching ${REMOTE_WEB}/${dir}..."
     mkdir -p "./$LOCAL_WEB/$dir"
@@ -1013,16 +782,12 @@ for dir in "${CUSTOM_CODE_DIRS[@]}"; do
     info "No ${REMOTE_WEB}/${dir} on the remote, skipping."
   fi
 done
-# Like drowl-init, there are always custom module, theme and profile folders:
-for dir in "${CUSTOM_CODE_DIRS[@]}"; do
-  mkdir -p "./$LOCAL_WEB/$dir"
-done
 
 # ------------------------------------------------------------------------------
-# 6. Database dump
+# Database dump
 # ------------------------------------------------------------------------------
 
-step "6/11 Dumping the remote database (streamed, this can take a while)"
+step "Dumping the remote database (streamed, this can take a while)"
 
 mkdir -p ./data/sql
 # The dumps hold production data, only the current user may read them:
@@ -1077,47 +842,18 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 7. Start and import
+# Start and import
 # ------------------------------------------------------------------------------
 
-step "7/11 Starting DDEV and importing the database"
+step "Starting DDEV and importing the database"
 
-# Require the "PHPMyAdmin" plugin:
-echo 'Requiring the "ddev-phpmyadmin" plugin...'
-ddev get ddev/ddev-phpmyadmin
+drowl_add_ddev_addons ddev/ddev-phpmyadmin
 # The containers are already running (for composer), restart them to load the
 # add-on:
 ddev restart
 
-# Copy all initiation additions (VSCode settings, phpunit.xml, .mcp.json,
-# AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...). The
-# web/ folder goes into the local docroot:
-chmod u+w "./$LOCAL_WEB/sites/default" 2>/dev/null || true
-# "*" and ".[!.]*" match all files incl. dotfiles (.vscode, .claude, ...), but
-# not "." and "..":
-for item in .ddev/initiation-additions/* .ddev/initiation-additions/.[!.]*; do
-  [ -e "$item" ] || continue
-  if [ "$(basename "$item")" = "web" ]; then
-    mkdir -p "./$LOCAL_WEB"
-    cp -R "$item/." "./$LOCAL_WEB/"
-  else
-    cp -R "$item" .
-  fi
-done
-# Some of the copied files contain "web/" paths, point them to the docroot
-# (only paths like "./web/", "/var/www/html/web/", "\"web/", "`web/", "(web/"):
-if [ "$LOCAL_WEB" != "web" ]; then
-  for file in "${DOCROOT_REWRITE_FILES[@]}"; do
-    [ -f "$file" ] || continue
-    sed -E "s#(/var/www/html/|\./|[\"\`(])web/#\1${LOCAL_WEB}/#g" "$file" >"$TMP_DIR/docroot-rewrite"
-    cat "$TMP_DIR/docroot-rewrite" >"$file"
-  done
-  info "Rewrote the 'web/' paths in ${DOCROOT_REWRITE_FILES[*]} to '${LOCAL_WEB}/'."
-fi
-
+drowl_copy_initiation_additions "$LOCAL_WEB"
 SETTINGS_PHP="./$LOCAL_WEB/sites/default/settings.php"
-chmod 0755 "./$LOCAL_WEB/sites/default"
-chmod 0644 "$SETTINGS_PHP"
 
 # Applies a sed expression to the local settings.php. It is used below to
 # replace the default "prefix" and "file_public_path" lines of the template
@@ -1210,19 +946,19 @@ if [ -n "$RISKY_MODULES" ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# 8. Directories
+# Directories
 # ------------------------------------------------------------------------------
 
-step "8/11 Directories"
+step "Directories"
 
-mkdir -p ./files/private ./files/sync ./files/translations ./tmp
-success "Created the directories files/private, files/sync, files/translations and tmp."
+drowl_create_directories "$LOCAL_WEB"
+success "Created the custom code and project directories (files/private, files/sync, files/translations, tmp)."
 
 # ------------------------------------------------------------------------------
-# 9. Post-setup
+# Post-setup
 # ------------------------------------------------------------------------------
 
-step "9/11 Post-setup"
+step "Post-setup"
 
 if ! ddev drush updb -y; then
   warn "'drush updb' failed. Run 'ddev drush updb' again and check the output."
@@ -1240,91 +976,44 @@ fi
 # Activate kint as default devel variables dumper:
 ddev drush config-set devel.settings devel_dumper kint -y
 
-# Activate Error Logging:
-ddev drush config-set system.logging error_level verbose -y
+drowl_dev_settings
+drowl_setup_linters
 
-# Disable css and js aggregation:
-ddev drush config-set system.performance css.preprocess 0 -y
-ddev drush config-set system.performance js.preprocess 0 -y
-
-# Set up the linters like the drupal.org GitLab CI: install core's node modules
-# (eslint, stylelint, prettier, cspell) and link core's configs as fallbacks:
-echo 'Installing core node modules for the linters... (This might take a bit)'
-if ! ddev exec /var/www/html/.ddev/drupal-ci/setup.sh; then
-  warn "The drupal-ci setup failed. Run 'ddev drupal-ci-update' to retry it."
-fi
-
-# Create the "normal" db dump, used by "ddev drowl-reset-db":
-(
-  umask 077
-  ddev export-db "$DDEV_PROJECT" >./data/sql/db-complete-dump.sql.gz
-)
-echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
+# The "normal" dump, used by "ddev drowl-reset-db":
+drowl_export_db ./data/sql/db-complete-dump.sql.gz
 
 # ------------------------------------------------------------------------------
-# 10. Template cleanup
+# Template cleanup
 # ------------------------------------------------------------------------------
 
-step "10/11 Template cleanup"
+step "Template cleanup"
 
-# Remove README.md:
-rm -f ./README.md
-
-# Remove git files (keep .gitignore, it ignores personal settings, secrets and generated files):
-rm -rf ./.git ./.gitattributes
+drowl_remove_template_files
 
 # ------------------------------------------------------------------------------
-# 11. Summary
+# Summary
 # ------------------------------------------------------------------------------
 
-CURRENT_STEP="11/11 Summary"
-
-# Project information, useful commands and tips (shared with the other
-# drowl-init commands):
-SUMMARY_OPTS=(--title="drowl-init-from-ssh finished!" --web-dir="$LOCAL_WEB")
-if [ "$SANITIZE" != 1 ]; then
-  SUMMARY_OPTS+=(--command="ddev import-db --file=${DUMP_FILE}|Import the original (unsanitized) remote database dump again.")
-fi
-bash .ddev/drowl-init/print-summary.sh "${SUMMARY_OPTS[@]}"
-
-# Section heading, like in print-summary.sh:
-summary_heading() {
-  local line
-  line="$(printf '%*s' $((70 - ${#2})) '' | tr ' ' '-')"
-  printf '\n\e[1;%sm-- %s %s\e[0m\n\n' "$1" "$2" "$line"
-}
-
-# After the tips (print-summary.sh): notes, to do, warnings.
-if [ ${#NOTES[@]} -gt 0 ]; then
-  summary_heading 36 "Notes"
-  for note_text in "${NOTES[@]}"; do
-    printf -- '  - %s\n' "$note_text"
-  done
-fi
-
-summary_heading 33 "To do"
-printf -- '  - Take a look at the composer.json!\n'
+todo "Take a look at the composer.json!"
 if [ "$CLEANUP_COMPOSER" = 1 ]; then
-  printf -- '  - --cleanup-composer: check the merged keys (require, require-dev, patches, repositories; the remote allow-plugins were added) and the package versions that moved (compare with the remote composer.lock).\n'
+  todo "--cleanup-composer: check the merged keys (require, require-dev, patches, repositories; the remote allow-plugins were added) and the package versions that moved (compare with the remote composer.lock)."
 fi
-printf -- '  - Check that all patches applied (see the composer output above).\n'
-printf -- '  - The local %s comes from our template, not from the remote. Only the table prefix, the public files path and the stage_file_proxy origin were taken over. Compare it with the remote settings.php and its includes, and copy over what the site needs locally (e.g. config_sync_directory, file_private_path, $config overrides, custom $settings, Redis, Solr, environment-specific includes).\n' "$SETTINGS_PHP"
-printf -- '  - Run "ddev drush cex" if the config should be versioned in files/sync.\n'
+todo "Check that all patches applied (see the composer output above)."
+todo "The local ${SETTINGS_PHP} comes from our template, not from the remote. Only the table prefix, the public files path and the stage_file_proxy origin were taken over. Compare it with the remote settings.php and its includes, and copy over what the site needs locally (e.g. config_sync_directory, file_private_path, \$config overrides, custom \$settings, Redis, Solr, environment-specific includes)."
+todo "Run \"ddev drush cex\" if the config should be versioned in files/sync."
 if [ -n "$ORIGIN" ]; then
-  printf -- '  - The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
-  printf -- '  - Private files were not copied (stage_file_proxy only serves public files).\n'
+  todo "The stage_file_proxy origin (${ORIGIN}) is set at the end of ${SETTINGS_PHP}. Change it there if the public files should come from another site."
+  todo "Private files were not copied (stage_file_proxy only serves public files)."
 else
-  printf -- '  - No remote site URL was given, so stage_file_proxy was not set up and no files were copied. Copy the public files manually, or enable stage_file_proxy and set its origin at the end of %s ($config['"'"'stage_file_proxy.settings'"'"']['"'"'origin'"'"']).\n' "$SETTINGS_PHP"
+  todo "No remote site URL was given, so stage_file_proxy was not set up and no files were copied. Copy the public files manually, or enable stage_file_proxy and set its origin at the end of ${SETTINGS_PHP} (\$config['stage_file_proxy.settings']['origin'])."
 fi
 if [ "$SANITIZE" = 1 ]; then
-  printf -- '  - The database was sanitized (user emails and passwords, except for users with the administrator role). Other personal data (e.g. webform submissions, orders, profile fields) is still in it.\n'
+  todo "The database was sanitized (user emails and passwords, except for users with the administrator role). Other personal data (e.g. webform submissions, orders, profile fields) is still in it."
 fi
-printf -- '  - The database holds production data: never use "ddev share" or bind_all_interfaces. When done, remove it with "ddev delete -Oy" and delete data/sql.\n'
-printf -- '  - This is NOT a production ready copy. DO NOT PUSH IT BACK TO PRODUCTION!\n'
+todo "The database holds production data: never use \"ddev share\" or bind_all_interfaces. When done, remove it with \"ddev delete -Oy\" and delete data/sql."
+todo "This is NOT a production ready copy. DO NOT PUSH IT BACK TO PRODUCTION!"
 
-if [ ${#WARNINGS[@]} -gt 0 ]; then
-  summary_heading 31 "Warnings"
-  for warning in "${WARNINGS[@]}"; do
-    printf -- '  - %s\n' "$warning"
-  done
+if [ "$SANITIZE" != 1 ]; then
+  DROWL_SUMMARY_COMMANDS+=("ddev import-db --file=${DUMP_FILE}|Import the original (unsanitized) remote database dump again.")
 fi
+drowl_print_summary "$LOCAL_WEB"

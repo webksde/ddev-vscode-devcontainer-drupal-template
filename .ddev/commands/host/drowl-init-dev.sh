@@ -1,191 +1,142 @@
 #!/usr/bin/env bash
 
-## Description: Startup A Drupal DDEV Environment, using DROWL Best Practices
-## Usage: drowl-init-dev
-## Example: drowl-init-dev
+## Description: Startup A Drupal core development DDEV Environment (joachim-n/drupal-core-development-project), using DROWL Best Practices
+## Usage: drowl-init-dev [flags]
+## Example: "ddev drowl-init-dev", "ddev drowl-init-dev --non-interactive"
+## Flags: [{"Name":"non-interactive","Usage":"Never prompt, the personal settings are skipped"}]
 
-# exit when any command fails
-set -e
-# keep track of the last executed command
-trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
+# Sets up a Drupal core development project
+# (https://github.com/joachim-n/drupal-core-development-project): Drupal core
+# is a git clone in repos/drupal, symlinked to web/core. Run it once in a
+# freshly cloned copy of the template.
+#
+# Note: Keep this script compatible with bash 3.2 (macOS).
 
-echo -e $"\e\n[32mInitialising a Drupal DEV environment! This will take about ~5 min...\n\e[0m"
+set -eo pipefail
 
+# shellcheck source=../../drowl-init/lib.sh
+source .ddev/drowl-init/lib.sh
+
+DOCROOT="web"
 PHP_VERSION=8.5
 PROJECT_TYPE="drupal12"
+CORE_REPO="repos/drupal"
 
-# Ask for the personal settings (git identity, DRUPALCODE_TOKEN), written to
-# .ddev/.env.web before the containers start:
-bash .ddev/drowl-init/ask-personal-settings.sh
+# Drupal modules added to "require" and enabled:
+# @todo Add devel, devel_php and stage_file_proxy (and set the kint dumper and
+#   the "access devel information" permissions like drowl-init), once they
+#   are Drupal 12 compatible.
+DRUPAL_MODULES=(config_inspector)
+# Drupal modules only added to "require" (not Drupal 12 compatible yet, so not
+# enabled):
+DRUPAL_MODULES_NOT_ENABLED=(backup_migrate coffee examples)
 
-# Remove README.md:
-rm ./README.md
+# ------------------------------------------------------------------------------
+# Arguments
+# ------------------------------------------------------------------------------
 
-# Remove git files (keep .gitignore, it ignores personal settings, secrets and generated files):
-rm -r ./.git ./.gitattributes -f
+while [ $# -gt 0 ]; do
+  case "$1" in
+  --non-interactive) NON_INTERACTIVE=1 ;;
+  *) die "Unknown argument '$1'. See 'ddev drowl-init-dev --help'." ;;
+  esac
+  shift
+done
 
-# Create the config.yaml:
-ddev config --composer-version="stable" --php-version="${PHP_VERSION}" --docroot="web" --webserver-type="apache-fpm" --project-type="${PROJECT_TYPE}" --disable-settings-management --auto
+# ------------------------------------------------------------------------------
+# Setup
+# ------------------------------------------------------------------------------
 
-# For the dev version we are requiring https://github.com/joachim-n/drupal-core-development-project:
-# "ddev composer create-project" refuses to run with a .gitignore in the project
-# root, so park it in .ddev/ meanwhile:
-mv ./.gitignore ./.ddev/.drowl-init.gitignore
-ddev composer create-project "joachim-n/drupal-core-development-project"
-# Restore the .gitignore (appended, in case the created project brought its own):
-cat ./.ddev/.drowl-init.gitignore >> ./.gitignore && rm ./.ddev/.drowl-init.gitignore
+drowl_require_host_commands ddev git
+drowl_require_fresh_template
 
-# Fix autoload path for PHPUnit testing:
-# Create a symlink to the vendor directory so phpunit can find the autoloader
-ln -sf ../../vendor repos/drupal/vendor
-# Add vendor to git exclude so it isn't tracked
-echo "vendor" >> repos/drupal/.git/info/exclude
+drowl_start "Initialising a Drupal core development environment! This will take about ~5 min..."
 
-# Update the config:
+step "Personal settings"
+drowl_ask_personal_settings
+
+step "Creating the project (joachim-n/drupal-core-development-project)"
+drowl_remove_template_files
+drowl_ddev_config --docroot="$DOCROOT" --php-version="$PHP_VERSION" --project-type="$PROJECT_TYPE"
+drowl_composer_create_project "joachim-n/drupal-core-development-project"
 ddev config --update
-
-# Require the "PHPMyAdmin" plugin:
-echo 'Requiring the "ddev-phpmyadmin" plugin...'
-ddev get ddev/ddev-phpmyadmin
-echo 'Requiring the "ddev-selenium-standalone-chrome" plugin...'
-ddev get ddev/ddev-selenium-standalone-chrome
-
-# Starting Drupal DDEV Containers
+drowl_add_ddev_addons "${DROWL_DDEV_ADDONS[@]}"
 ddev start
 
-# Allow specific composer packages:
-ddev composer config --no-plugins allow-plugins.cweagans/composer-patches true
-ddev composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
-ddev composer config --no-plugins allow-plugins.szeidler/composer-patches-cli true
-ddev composer config --no-plugins allow-plugins.tbachert/spi true
-ddev composer config --no-plugins allow-plugins.symfony/runtime true
-
-# Add general dependencies:
-ddev composer require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender --no-audit
-
-# Add drupal dependencies:
-ddev composer require drush/drush drupal/backup_migrate drupal/coffee drupal/examples drupal/config_inspector --no-audit
-
-# @todo These modules are currently not Drupal 12 compatible. Activate them in the future:
-# drupal/devel drupal/devel_php drupal/stage_file_proxy
-
-# Add DEV dependencies (but no modules due to their database relationship)
-ddev composer require --dev drupal/coder:^8 phpstan/phpstan-deprecation-rules kint-php/kint --no-audit
-
-# PHP Codesniffer Setup:
-ddev composer require --dev squizlabs/php_codesniffer:^3 --no-audit
-# Initialize development environment tools:
-ddev exec chmod +x vendor/bin/phpcs
-ddev exec chmod +x vendor/bin/phpcbf
-
-# Drush and Site initialisation:
-ddev drush si --account-name 'admin' --account-pass 'admin' --account-mail 'admin@admin.de' --site-mail 'site@mail.de' --db-url 'mysql://db:db@db/db' -y
-
-# Set the permission for the default folder:
-chmod 0755 ./web/sites/default
-chmod 0644 ./web/sites/default/settings.php
-
-# Copy all initiation additions (VSCode settings, phpunit.xml, .mcp.json,
-# AGENTS.md, CLAUDE.md, jsconfig.json, web/sites/default/settings*, ...):
-cp -R .ddev/initiation-additions/. .
-
-# Ensure PHPUnit/Functional test filesystem targets exist.
-#
-# When `web/core` is a symlink to `repos/drupal/core`, Drupal's test runner
-# effectively treats `repos/drupal` as the application root. In that case it
-# expects `repos/drupal/sites/default/files` to exist for `public://`.
-mkdir -p ./web/sites/default/files
-mkdir -p ./web/sites/default/files/simpletest
-
-# simpletest/ is used for browser test output and other artifacts.
-mkdir -p ./web/sites/simpletest/browser_output
-
-# Symlink the test filesystem targets into the Drupal core repo.
-# Keep existing directories intact; only symlink when missing or already a link.
-if [ ! -e ./repos/drupal/sites/default/files ] || [ -L ./repos/drupal/sites/default/files ]; then
-  ln -sf ../../../../web/sites/default/files ./repos/drupal/sites/default/files
+step "Core repository"
+# The project links vendor into the core repository (so phpunit finds the
+# autoloader). Make sure it exists and is not tracked:
+if [ ! -e "$CORE_REPO/vendor" ]; then
+  ln -s ../../vendor "$CORE_REPO/vendor"
 fi
-if [ ! -e ./repos/drupal/sites/simpletest ] || [ -L ./repos/drupal/sites/simpletest ]; then
-  ln -sf ../../../web/sites/simpletest ./repos/drupal/sites/simpletest
+grep -qx "vendor" "$CORE_REPO/.git/info/exclude" 2>/dev/null || echo "vendor" >>"$CORE_REPO/.git/info/exclude"
+
+step "Composer dependencies"
+# (drupal/core-dev is already required by the project.)
+drowl_composer_base
+DRUPAL_PACKAGES=()
+for module in "${DRUPAL_MODULES[@]}" "${DRUPAL_MODULES_NOT_ENABLED[@]}"; do
+  DRUPAL_PACKAGES+=("drupal/$module")
+done
+drowl_composer_require "${DRUPAL_PACKAGES[@]}"
+drowl_composer_dev_packages
+drowl_composer_defaults "$DOCROOT" --example-patch
+
+step "Installing Drupal"
+drowl_site_install "$DOCROOT"
+drowl_copy_initiation_additions "$DOCROOT"
+# The project's phpunit config fits the repos/drupal layout, it replaces the
+# phpunit.xml of the initiation additions:
+if [ -f phpunit-ddev.xml ]; then
+  mv -f phpunit-ddev.xml phpunit.xml
+else
+  warn "No phpunit-ddev.xml found in the project, kept the template's phpunit.xml. Check its paths before running tests."
+fi
+drowl_create_directories "$DOCROOT"
+drowl_dev_settings
+drowl_create_test_user
+
+step "Test directories"
+# When web/core is a symlink to repos/drupal/core, Drupal's test runner treats
+# repos/drupal as the application root. So it expects
+# repos/drupal/sites/default/files (public://) and repos/drupal/sites/simpletest
+# (browser test output), which are linked to the ones in the docroot:
+mkdir -p "./$DOCROOT/sites/default/files/simpletest" "./$DOCROOT/sites/simpletest/browser_output"
+# Keep existing directories, only link where missing or already a link ("-n"
+# replaces a link to a directory instead of creating one inside it):
+if [ ! -e "$CORE_REPO/sites/default/files" ] || [ -L "$CORE_REPO/sites/default/files" ]; then
+  ln -sfn "../../../../$DOCROOT/sites/default/files" "$CORE_REPO/sites/default/files"
+fi
+if [ ! -e "$CORE_REPO/sites/simpletest" ] || [ -L "$CORE_REPO/sites/simpletest" ]; then
+  ln -sfn "../../../$DOCROOT/sites/simpletest" "$CORE_REPO/sites/simpletest"
+fi
+# Writable for the PHP process:
+chmod 0777 "./$DOCROOT/sites/default/files" "./$DOCROOT/sites/default/files/simpletest"
+chmod 0777 "./$DOCROOT/sites/simpletest" "./$DOCROOT/sites/simpletest/browser_output"
+
+step "Linters"
+drowl_setup_linters
+
+step "Development modules"
+# A dump BEFORE enabling contrib modules, in case they break
+# ("ddev drowl-reset-db --before-contrib"):
+drowl_export_db ./data/sql/db-dump-before-contrib.sql.gz
+ddev drush en "${DRUPAL_MODULES[@]}" -y
+
+step "Database dump"
+# The "normal" dump, used by "ddev drowl-reset-db":
+drowl_export_db ./data/sql/db-complete-dump.sql.gz
+
+step "Cleaning the core repository"
+# Discard all changes the setup made in the core repository and update it.
+# Not fatal (e.g. offline):
+if ! git -C "$CORE_REPO" add --all || ! git -C "$CORE_REPO" reset --hard; then
+  warn "Could not reset the core repository in ${CORE_REPO}. Check 'git status' there."
+fi
+if ! git -C "$CORE_REPO" pull; then
+  warn "Could not update the core repository in ${CORE_REPO}. Run 'git pull' there."
 fi
 
-# Ensure the directories are writable for the PHP process.
-chmod 0777 ./web/sites/default/files ./web/sites/default/files/simpletest
-chmod 0777 ./web/sites/simpletest ./web/sites/simpletest/browser_output
-
-# Set up the linters like the drupal.org GitLab CI: install core's node modules
-# (eslint, stylelint, prettier, cspell) and link core's configs as fallbacks:
-echo 'Installing core node modules for the linters... (This might take a bit)'
-mkdir -p web/modules/custom
-ddev exec /var/www/html/.ddev/drupal-ci/setup.sh
-
-# Add "patches" and "minimum-stability" section in composer.json:
-ddev composer config extra.composer-exit-on-patch-failure true
-ddev exec --raw composer config extra.patches.package-mantainer/package --json '{"description": "path/to/patch"}'
-ddev composer config extra.enable-patching true
-ddev composer config minimum-stability dev
-
-# Add asset-packagist:
-ddev exec --raw composer config repositories.asset-packagist --json '{"type": "composer","url": "https://asset-packagist.org"}'
-ddev exec --raw composer config extra.installer-types --json '["npm-asset", "bower-asset"]'
-ddev exec --raw composer config extra.installer-paths.web/libraries/{\$name\} --json '["type:drupal-library", "type:npm-asset", "type:bower-asset"]'
-
-# Activate Error Logging:
-ddev drush config-set system.logging error_level verbose -y
-
-# Created authenticated test user:
-ddev drush user:create max --mail='max@example.com' --password='max' -y
-
-# Create the custom module, theme and profile folders:
-mkdir -p web/modules/custom web/themes/custom web/profiles/custom
-# Create temp folder:
-mkdir -p ./tmp
-
-# Create private files, config sync and translations directories:
-mkdir -p ./files/private ./files/sync ./files/translations
-
-# Export a DB-Dump to "data/sql", BEFORE enabling contrib modules, in cases,
-# where they break:
-mkdir -p ./data/sql
-ddev export-db "$DDEV_PROJECT" > ./data/sql/db-dump-before-contrib.sql.gz
-echo "Created full database dump under data/sql/db-dump-before-contrib.sql.gz"
-
-# Acitvate drupal development modules:
-ddev drush en config_inspector -y
-# @todo These modules are currently not Drupal 12 compatible. Activate them in the future:
-# devel devel_generate devel_php stage_file_proxy
-
-# Activate kint as default devel variables dumper
-# @todo Enable again, once support is added:
-# ddev drush config-set devel.settings devel_dumper kint -y
-
-# Disable css and js aggregation:
-ddev drush config-set system.performance css.preprocess 0 -y
-ddev drush config-set system.performance js.preprocess 0 -y
-
-# Give authenticated and anonymous users "access devel information" (dsm / kint):
-# @todo Enable again, once support is added:
-# ddev drush role:perm:add anonymous 'access devel information'
-# ddev drush role:perm:add authenticated 'access devel information'
-
-# Create the "normal" db dump:
-ddev export-db "$DDEV_PROJECT" > ./data/sql/db-complete-dump.sql.gz
-echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
-
-# Clean the drupal core git repository:
-
-echo "Cleaning the Drupal Core Repository..."
-cd web/core
-git add --all
-git reset --hard
-git pull
-cd ../../
-
-# Get PHPUnit.xml:
-cp phpunit-ddev.xml phpunit.xml
-# Delete old phpunit.xml:
-rm -f phpunit-ddev.xml
-
-# Project information, useful commands and tips:
-bash .ddev/drowl-init/print-summary.sh --title="drowl-init-dev finished!" \
-  --tip="Some dev modules like examples or backup_migrate are not installed, as they have no official Drupal 12 support. You can try adjusting their 'core_version_requirement' to make them work."
+DROWL_SUMMARY_TIPS+=("Drupal core is a git clone in ${CORE_REPO} (symlinked to ${DOCROOT}/core), work on core issues there.")
+DROWL_SUMMARY_TIPS+=("Some dev modules (${DRUPAL_MODULES_NOT_ENABLED[*]}) are not enabled, as they have no official Drupal 12 support. You can try adjusting their 'core_version_requirement' to make them work.")
+drowl_print_summary "$DOCROOT"

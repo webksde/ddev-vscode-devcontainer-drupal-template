@@ -12,7 +12,7 @@ Start a **contrib** dev environment using Drupal 11, meant for testing and worki
 ```
 git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git contrib-vscode-drupal && cd contrib-vscode-drupal && ddev drowl-init
 ```
-Use `ddev drowl-init -v 10` to install Drupal 10 instead.
+Use `ddev drowl-init -v 10` to install Drupal 10 instead. Add `--non-interactive` (also available for `drowl-init-dev`) to skip the personal settings prompt, e.g. in scripts.
 
 Or start a **core** dev environment using gitified Drupal 12.x-dev, meant for working on core issues:
 ```
@@ -23,6 +23,8 @@ Or create a local development copy of an **existing** Drupal site, straight from
 ```
 git clone https://github.com/webksde/ddev-vscode-devcontainer-drupal-template.git my-site && cd my-site && ddev drowl-init-from-ssh
 ```
+
+If an init command fails, it names the failed step. Start over from a fresh clone (run `ddev delete -Oy` in the folder first); the commands refuse to run again in an already initialised project.
 
 Afterwards:
 - Use `ddev describe` to check the status & URLs of your project.
