@@ -186,27 +186,6 @@ cp phpunit-ddev.xml phpunit.xml
 # Delete old phpunit.xml:
 rm -f phpunit-ddev.xml
 
-# Give all Project informations:
-ddev describe
-
-# Notice about debugging inside attached VS-Code:
-echo -e $'\e\n[33mNOTE: To debug inside the attached VS-Code instance, run `ddev config global --xdebug-ide-location=container`\n\e[0m'
-
-echo -e $'\e\n[33mSome dev modules like examples or backup_migrate are not installed, as they have no official Drupal 12 support. But you can try tinkering with their respective `core_version_requirement` entry to make them work for Drupal 12.\n\e[0m'
-
-# Helper Messages
-echo "Use 'ddev code' to attach VSCode to your running Container."
-echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit."
-echo "Use 'ddev phpunit-coverage path/to/cover' to create a test coverage of the given file-directory."
-echo "Use 'ddev phpcs web/modules/custom/my_module' (or phpcbf, phpstan, eslint, stylelint, cspell) to check a project like the drupal.org GitLab CI does."
-echo "Use 'ddev eslint --fix path' or 'ddev stylelint --fix path' to autofix JavaScript / CSS."
-echo "Use 'ddev drupal-ci-update' to update the drupal.org GitLab CI default configs to the latest gitlab_templates 1.x release and refresh the linter setup."
-echo "Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser."
-echo "Use 'ddev drowl-reset-db' to reset the database to its state after initial startup."
-echo "Use 'ddev import-db --target-db=db --src=db.sql.gz' to import a database file."
-
-printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
-printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"
-
-# Notice about the personal settings:
-echo -e $'\e\n[33mNOTE: Personal settings (git identity, DRUPALCODE_TOKEN) are stored in .ddev/.env.web. Edit it (see .ddev/.example.env.web for all available variables), then run `ddev restart`.\n\e[0m'
+# Project information, useful commands and tips:
+bash .ddev/drowl-init/print-summary.sh --title="drowl-init-dev finished!" \
+  --tip="Some dev modules like examples or backup_migrate are not installed, as they have no official Drupal 12 support. You can try adjusting their 'core_version_requirement' to make them work."

@@ -1077,10 +1077,6 @@ fi
 )
 echo "Created full database dump under data/sql/db-complete-dump.sql.gz"
 
-# One-time login link (after sanitizing, only administrators keep their
-# passwords, with --no-sanitize all users do):
-LOGIN_LINK="$(ddev drush uli 2>/dev/null | tail -n 1 || true)"
-
 # ------------------------------------------------------------------------------
 # 10. Template cleanup
 # ------------------------------------------------------------------------------
@@ -1093,70 +1089,53 @@ rm -f ./README.md
 # Remove git files (keep .gitignore, it ignores personal settings, secrets and generated files):
 rm -rf ./.git ./.gitattributes
 
-# Give all Project informations:
-ddev describe
+# ------------------------------------------------------------------------------
+# 11. Summary
+# ------------------------------------------------------------------------------
 
-# Notice about debugging inside attached VS-Code:
-echo -e $'\e\n[33mNOTE: To debug inside the attached VS-Code instance, run `ddev config global --xdebug-ide-location=container && ddev restart`\n\e[0m'
-echo -e $'\e\n[33mNOTE: To enable xhprof profiling, run `ddev config global --xhprof-mode=xhgui && ddev restart`\n\e[0m'
+CURRENT_STEP="11/11 Summary"
 
-# Helper Messages
-echo "Use 'ddev code' to attach VSCode to your running Container."
-echo "Use 'ddev phpunit path/to/tests' to Test Classes using PHPUnit."
-echo "Use 'ddev phpunit-coverage path/to/cover' to create a test coverage of the given file-directory."
-echo "Use 'ddev phpcs ${LOCAL_WEB}/modules/custom/my_module' (or phpcbf, phpstan, eslint, stylelint, cspell) to check a project like the drupal.org GitLab CI does."
-echo "Use 'ddev eslint --fix path' or 'ddev stylelint --fix path' to autofix JavaScript / CSS."
-echo "Use 'ddev drupal-ci-update' to update the drupal.org GitLab CI default configs to the latest gitlab_templates 1.x release and refresh the linter setup."
-echo "Use 'ddev xdebug on' to turn on xdebug, then in VSCode go to 'Run and Debug', 'Listen for XDebug' and open your Project in the Browser."
-echo "Use 'ddev drowl-reset-db' to reset the database to its state after initial startup."
+# Project information, useful commands and tips (shared with the other
+# drowl-init commands):
+SUMMARY_OPTS=(--title="drowl-init-from-ssh finished!" --web-dir="$LOCAL_WEB")
 if [ "$SANITIZE" != 1 ]; then
-  echo "Use 'ddev import-db --file=${DUMP_FILE}' to import the original remote database dump again."
+  SUMMARY_OPTS+=(--command="ddev import-db --file=${DUMP_FILE}|Import the original (unsanitized) remote database dump again.")
 fi
+bash .ddev/drowl-init/print-summary.sh "${SUMMARY_OPTS[@]}"
 
-printf "\nNote, that most of the linting services are also available in the attached VSCode Container as Extensions"
-printf "\nFor more informations on the cli tools, visit https://github.com/webksde/ddev-vscode-devcontainer-drupal-template\n"
+# Section heading, like in print-summary.sh:
+summary_heading() {
+  local line
+  line="$(printf '%*s' $((70 - ${#2})) '' | tr ' ' '-')"
+  printf '\n\e[1;%sm-- %s %s\e[0m\n\n' "$1" "$2" "$line"
+}
 
-# Notice about the personal settings:
-echo -e $'\e\n[33mNOTE: Personal settings (git identity, DRUPALCODE_TOKEN) are stored in .ddev/.env.web. Edit it (see .ddev/.example.env.web for all available variables), then run `ddev restart`.\n\e[0m'
-
-# ------------------------------------------------------------------------------
-# 11. To-do summary
-# ------------------------------------------------------------------------------
-
-step "11/11 Done! Manual follow-ups"
-
-printf '\n\e[1;33mTo do:\e[0m\n'
-printf -- '- Take a look at the composer.json!\n'
+summary_heading 33 "To do"
+printf -- '  - Take a look at the composer.json!\n'
 if [ "$CLEANUP_COMPOSER" = 1 ]; then
-  printf -- '- --cleanup-composer: check the merged keys (require, require-dev, patches, repositories; the remote allow-plugins were added) and the package versions that moved (compare with the remote composer.lock).\n'
+  printf -- '  - --cleanup-composer: check the merged keys (require, require-dev, patches, repositories; the remote allow-plugins were added) and the package versions that moved (compare with the remote composer.lock).\n'
 fi
-printf -- '- Check that all patches applied (see the composer output above).\n'
-printf -- '- The local %s comes from our template, not from the remote. Only the table prefix, the public files path and the stage_file_proxy origin were taken over. Compare it with the remote settings.php and its includes, and copy over what the site needs locally (e.g. config_sync_directory, file_private_path, $config overrides, custom $settings, Redis, Solr, environment-specific includes).\n' "$SETTINGS_PHP"
-printf -- '- Run "ddev drush cex" if the config should be versioned in files/sync.\n'
-printf -- '- The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
-printf -- '- Private files were not copied (stage_file_proxy only serves public files).\n'
+printf -- '  - Check that all patches applied (see the composer output above).\n'
+printf -- '  - The local %s comes from our template, not from the remote. Only the table prefix, the public files path and the stage_file_proxy origin were taken over. Compare it with the remote settings.php and its includes, and copy over what the site needs locally (e.g. config_sync_directory, file_private_path, $config overrides, custom $settings, Redis, Solr, environment-specific includes).\n' "$SETTINGS_PHP"
+printf -- '  - Run "ddev drush cex" if the config should be versioned in files/sync.\n'
+printf -- '  - The stage_file_proxy origin (%s) is set at the end of %s. Change it there if the public files should come from another site.\n' "$ORIGIN" "$SETTINGS_PHP"
+printf -- '  - Private files were not copied (stage_file_proxy only serves public files).\n'
 if [ "$SANITIZE" = 1 ]; then
-  printf -- '- The database was sanitized (user emails and passwords, except for users with the administrator role). Other personal data (e.g. webform submissions, orders, profile fields) is still in it.\n'
+  printf -- '  - The database was sanitized (user emails and passwords, except for users with the administrator role). Other personal data (e.g. webform submissions, orders, profile fields) is still in it.\n'
 fi
-printf -- '- The database holds production data: never use "ddev share" or bind_all_interfaces. When done, remove it with "ddev delete -Oy" and delete data/sql.\n'
-printf -- '- This is NOT a production ready copy. DO NOT PUSH TO PRODUCTION!\n'
+printf -- '  - The database holds production data: never use "ddev share" or bind_all_interfaces. When done, remove it with "ddev delete -Oy" and delete data/sql.\n'
+printf -- '  - This is NOT a production ready copy. DO NOT PUSH TO PRODUCTION!\n'
 
 if [ ${#NOTES[@]} -gt 0 ]; then
-  printf '\n\e[1;36mNotes:\e[0m\n'
+  summary_heading 36 "Notes"
   for note_text in "${NOTES[@]}"; do
-    printf -- '- %s\n' "$note_text"
+    printf -- '  - %s\n' "$note_text"
   done
 fi
 
 if [ ${#WARNINGS[@]} -gt 0 ]; then
-  printf '\n\e[1;33mWarnings during the run:\e[0m\n'
+  summary_heading 31 "Warnings during the run"
   for warning in "${WARNINGS[@]}"; do
-    printf -- '- %s\n' "$warning"
+    printf -- '  - %s\n' "$warning"
   done
-fi
-
-if [ -n "$LOGIN_LINK" ]; then
-  printf '\n\e[32mLog in: %s\e[0m\n' "$LOGIN_LINK"
-else
-  printf '\n\e[33mRun "ddev drush uli" to get a login link.\e[0m\n'
 fi
