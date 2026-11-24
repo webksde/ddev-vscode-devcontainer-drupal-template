@@ -365,60 +365,216 @@ if [ "$CLEANUP_COMPOSER" = 1 ]; then
   confirm_or_abort "Continue with --cleanup-composer?"
 fi
 
-echo
-ask SSH_ADDRESS "SSH address" "user@host[:port], e.g. user@example.com:2222, port defaults to 22" "" "ssh"
-ask REMOTE_ROOT "Remote project root" "folder of the composer.json, e.g. /var/www/example.com or ~/example.com" "" "remote-root"
-ask REMOTE_WEB "Web directory" "relative to the project root" "web" "web-dir"
-ask ORIGIN "Remote site URL" "for stage_file_proxy, e.g. https://www.example.com, empty to skip" "" "origin" optional
+# Rejects an answer. Interactive: prints the reason and clears the variable,
+# so the prompt is asked again. Non-interactive: dies with the reason.
+# Usage: reject VARIABLE "Reason"
+reject() {
+  [ "$NON_INTERACTIVE" = 1 ] && die "$2"
+  printf '\e[31m%s\e[0m\n' "$2" >&2
+  printf -v "$1" '%s' ""
+}
 
-# Validate and normalise the values.
-# Split the SSH address ("user@host[:port]") into the ssh destination and
-# the port (default: 22). A bare host (no "user@") is accepted as well, ssh
-# then uses the User from ~/.ssh/config or the local username. It is not
-# advertised, as the local username rarely matches the remote one:
-SSH_TARGET="$SSH_ADDRESS"
-SSH_PORT=22
-case "$SSH_TARGET" in
-*:*:*)
-  die "Invalid SSH address '$SSH_ADDRESS'. IPv6 addresses are not supported, use a host name instead."
-  ;;
-*:*)
-  SSH_PORT="${SSH_TARGET##*:}"
-  SSH_TARGET="${SSH_TARGET%:*}"
-  if [[ ! "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || [ "$SSH_PORT" -lt 1 ] || [ "$SSH_PORT" -gt 65535 ]; then
-    die "Invalid SSH port '$SSH_PORT' in '$SSH_ADDRESS'."
+# Each answer is checked right away (against the remote, where possible), so
+# a typo can be fixed at once, before anything is changed locally.
+
+# SSH with connection multiplexing, so the key passphrase is asked once and
+# rsync reuses the connection. Short socket path (unix socket path limit):
+TMP_DIR="$(mktemp -d /tmp/drowl-ssh.XXXXXX)"
+
+# The PATH of a remote login shell, set after connecting (see below), every
+# remote command then runs with it:
+REMOTE_PATH=""
+
+# Runs a command (a single string, run by the remote shell) on the remote:
+rssh() {
+  if [ -n "$REMOTE_PATH" ]; then
+    ssh "${SSH_OPTS[@]}" "$SSH_TARGET" "PATH=$(rq "$REMOTE_PATH"); export PATH; $*"
+  else
+    ssh "${SSH_OPTS[@]}" "$SSH_TARGET" "$*"
   fi
-  ;;
-esac
-case "$SSH_TARGET" in
-"" | @* | *@ | *[[:space:]]* | -*) die "Invalid SSH address '$SSH_ADDRESS'. Use user@host[:port], e.g. user@example.com:2222." ;;
-esac
-# Shown in messages:
-SSH_DISPLAY="${SSH_TARGET}:${SSH_PORT}"
-[ "$REMOTE_ROOT" != "/" ] && REMOTE_ROOT="${REMOTE_ROOT%/}"
-[ -n "$REMOTE_ROOT" ] || die "Invalid remote project root."
-# Shown in messages as entered, e.g. "~/example.com":
-REMOTE_ROOT_DISPLAY="$REMOTE_ROOT"
-# All remote paths are quoted, so the remote shell never expands "~". Relative
-# paths are relative to the remote home for ssh and rsync, so "~/path" is the
-# same as "path" and "~" is the same as ".":
-case "$REMOTE_ROOT" in
-\~) REMOTE_ROOT="." ;;
-\~/*) REMOTE_ROOT="${REMOTE_ROOT#\~/}" ;;
-\~*) die "Invalid remote project root '$REMOTE_ROOT'. '~user' paths are not supported, use an absolute path instead." ;;
-esac
-REMOTE_WEB="${REMOTE_WEB#./}"
-REMOTE_WEB="${REMOTE_WEB%/}"
-if [ -z "$REMOTE_WEB" ] || [[ "$REMOTE_WEB" == /* ]] || [[ "/$REMOTE_WEB/" == */../* ]] || [[ ! "$REMOTE_WEB" =~ ^[A-Za-z0-9._/-]+$ ]]; then
-  die "Invalid web directory '$REMOTE_WEB'. It must be relative to the project root, e.g. 'web'."
+}
+
+# Checks the remote project in a single SSH call, before anything is changed
+# locally. The script is sent via stdin ("sh -s", nothing is written on the
+# remote) with the project root as $1 and the web directory as $2. It prints a
+# "key=value" line per found item (missing items print nothing) and always
+# exits with 0, so a missing item is not mistaken for an SSH error:
+cat >"$TMP_DIR/probe.sh" <<'SH'
+cd "$1" 2>/dev/null || { echo "root=0"; exit 0; }
+echo "root=1"
+[ -f composer.json ] && echo "composer_json=1"
+[ -f composer.lock ] && echo "composer_lock=1"
+[ -x vendor/bin/drush ] && echo "drush=1"
+[ -n "$2" ] || exit 0
+[ -d "$2" ] && echo "web=1"
+[ -f "$2/sites/default/settings.php" ] && echo "settings=1"
+# Multisite: further sites with a settings.php, or a sites.php with entries.
+# (An unmatched glob stays literal, so it is skipped like default/simpletest.)
+for f in "$2"/sites/*/settings.php; do
+  case "$f" in
+  "$2/sites/default/settings.php" | "$2/sites/simpletest/settings.php" | "$2/sites/*/settings.php") ;;
+  *) echo "multisite=1" ;;
+  esac
+done
+[ -f "$2/sites/sites.php" ] && grep -Eq '^[[:space:]]*\$sites\[' "$2/sites/sites.php" && echo "multisite=1"
+command -v php >/dev/null 2>&1 && echo "php=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')"
+command -v rsync >/dev/null 2>&1 && echo "rsync=1"
+command -v gzip >/dev/null 2>&1 && echo "gzip=1"
+{ command -v mysqldump || command -v mariadb-dump; } >/dev/null 2>&1 && echo "mysqldump=1"
+exit 0
+SH
+PROBE=""
+# Runs the probe script with the current REMOTE_ROOT and REMOTE_WEB:
+run_probe() {
+  PROBE="$(rssh "sh -s -- $(rq "$REMOTE_ROOT") $(rq "$REMOTE_WEB")" <"$TMP_DIR/probe.sh")"
+}
+
+# Prints the value of the given key from the probe output, e.g. "probe php":
+probe() {
+  printf '%s\n' "$PROBE" | sed -n "s/^$1=//p" | tail -n 1
+}
+
+echo
+
+# SSH address: split "user@host[:port]" into the ssh destination and the port
+# (default: 22), then connect. A bare host (no "user@") is accepted as well,
+# ssh then uses the User from ~/.ssh/config or the local username. It is not
+# advertised, as the local username rarely matches the remote one:
+while true; do
+  ask SSH_ADDRESS "SSH address" "user@host[:port], e.g. user@example.com:2222, port defaults to 22" "" "ssh"
+  SSH_TARGET="$SSH_ADDRESS"
+  SSH_PORT=22
+  case "$SSH_TARGET" in
+  *:*:*)
+    reject SSH_ADDRESS "Invalid SSH address '$SSH_ADDRESS'. IPv6 addresses are not supported, use a host name instead."
+    continue
+    ;;
+  *:*)
+    SSH_PORT="${SSH_TARGET##*:}"
+    SSH_TARGET="${SSH_TARGET%:*}"
+    if [[ ! "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || [ "$SSH_PORT" -lt 1 ] || [ "$SSH_PORT" -gt 65535 ]; then
+      reject SSH_ADDRESS "Invalid SSH port '$SSH_PORT' in '$SSH_ADDRESS'."
+      continue
+    fi
+    ;;
+  esac
+  case "$SSH_TARGET" in
+  "" | @* | *@ | *[[:space:]]* | -*)
+    reject SSH_ADDRESS "Invalid SSH address '$SSH_ADDRESS'. Use user@host[:port], e.g. user@example.com:2222."
+    continue
+    ;;
+  esac
+  # Shown in messages:
+  SSH_DISPLAY="${SSH_TARGET}:${SSH_PORT}"
+  SSH_OPTS=(-p "$SSH_PORT" -o ConnectTimeout=20 -o ControlMaster=auto -o "ControlPath=$TMP_DIR/cm-%C" -o ControlPersist=10m -o ServerAliveInterval=30)
+  if [ "$NON_INTERACTIVE" = 1 ]; then
+    SSH_OPTS+=(-o BatchMode=yes)
+  fi
+  info "Connecting to ${SSH_DISPLAY}..."
+  if rssh true </dev/null; then
+    SSH_STARTED=1
+    break
+  fi
+  reject SSH_ADDRESS "Could not connect to '${SSH_DISPLAY}'. Check the address, the port and your SSH key (ssh-agent / ~/.ssh/config)."
+done
+success "Connected."
+
+# Read the PATH of a remote bash login shell, as a terminal session (e.g.
+# PuTTY) gets it ("bash -l" reads /etc/profile, ~/.bash_profile / ~/.profile).
+# "ssh host cmd" runs cmd in a non-login, non-interactive shell, which does not
+# read the profile files. So on e.g. Plesk, where PHP lives in
+# /opt/plesk/php/X.Y/bin and is only added to the PATH in the profile, "php"
+# (and so "vendor/bin/drush") is not found. Only the PATH is taken over,
+# instead of running every command in a login shell, as profiles may print
+# text (which would end up in the composer.json or the database dump). So the
+# PATH is printed behind the marker "LOGIN_SHELL_PATH:" and only that line is
+# read:
+# Extra rsync options, set once the remote login PATH is known:
+RSYNC_OPTS=()
+REMOTE_PATH="$(rssh "bash -lc $(rq 'printf "LOGIN_SHELL_PATH:%s\n" "$PATH"')" </dev/null 2>/dev/null | sed -n 's/^LOGIN_SHELL_PATH://p' | tail -n 1 || true)"
+if [ -n "$REMOTE_PATH" ]; then
+  info "Remote login PATH: ${REMOTE_PATH}"
+  # rsync starts "rsync --server" on the remote through the same non-login
+  # shell, so give it the PATH as well:
+  RSYNC_OPTS=(--rsync-path="PATH=$(rq "$REMOTE_PATH"); export PATH; rsync")
+else
+  warn "Could not read the PATH of a remote login shell (bash -l), using the default PATH of non-interactive SSH commands."
 fi
-# The origin is written into settings.php inside single quotes, so quotes and
-# backslashes are not allowed. Empty skips the stage_file_proxy setup:
-if [ -n "$ORIGIN" ]; then
-  ORIGIN_PATTERN="^https?://[^[:space:]'\"\\\\]+\$"
-  [[ "$ORIGIN" =~ $ORIGIN_PATTERN ]] || die "Invalid remote site URL '$ORIGIN'. It must start with http:// or https:// and must not contain spaces, quotes or backslashes."
+
+# Remote project root: must exist and hold a composer.json and drush.
+while true; do
+  ask REMOTE_ROOT "Remote project root" "folder of the composer.json, e.g. /var/www/example.com or ~/example.com" "" "remote-root"
+  [ "$REMOTE_ROOT" != "/" ] && REMOTE_ROOT="${REMOTE_ROOT%/}"
+  # Shown in messages as entered, e.g. "~/example.com":
+  REMOTE_ROOT_DISPLAY="$REMOTE_ROOT"
+  # All remote paths are quoted, so the remote shell never expands "~".
+  # Relative paths are relative to the remote home for ssh and rsync, so
+  # "~/path" is the same as "path" and "~" is the same as ".":
+  case "$REMOTE_ROOT" in
+  \~) REMOTE_ROOT="." ;;
+  \~/*) REMOTE_ROOT="${REMOTE_ROOT#\~/}" ;;
+  \~*)
+    reject REMOTE_ROOT "Invalid remote project root '$REMOTE_ROOT'. '~user' paths are not supported, use an absolute path instead."
+    continue
+    ;;
+  esac
+  run_probe
+  if [ "$(probe root)" != 1 ]; then
+    reject REMOTE_ROOT "The remote project root '${REMOTE_ROOT_DISPLAY}' does not exist."
+  elif [ "$(probe composer_json)" != 1 ]; then
+    reject REMOTE_ROOT "No composer.json found in '${REMOTE_ROOT_DISPLAY}'."
+  elif [ "$(probe drush)" != 1 ]; then
+    reject REMOTE_ROOT "No 'vendor/bin/drush' found in '${REMOTE_ROOT_DISPLAY}'. It is required to read the settings and dump the database."
+  else
+    break
+  fi
+done
+
+# Web directory: relative to the project root, must hold the
+# sites/default/settings.php.
+while true; do
+  ask REMOTE_WEB "Web directory" "relative to the project root" "web" "web-dir"
+  REMOTE_WEB="${REMOTE_WEB#./}"
+  REMOTE_WEB="${REMOTE_WEB%/}"
+  if [ -z "$REMOTE_WEB" ] || [[ "$REMOTE_WEB" == /* ]] || [[ "/$REMOTE_WEB/" == */../* ]] || [[ ! "$REMOTE_WEB" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+    reject REMOTE_WEB "Invalid web directory '$REMOTE_WEB'. It must be relative to the project root, e.g. 'web'."
+    continue
+  fi
+  run_probe
+  if [ "$(probe web)" != 1 ]; then
+    reject REMOTE_WEB "The web directory '${REMOTE_WEB}' does not exist in '${REMOTE_ROOT_DISPLAY}'."
+  elif [ "$(probe settings)" != 1 ]; then
+    reject REMOTE_WEB "No '${REMOTE_WEB}/sites/default/settings.php' found in '${REMOTE_ROOT_DISPLAY}'."
+  else
+    break
+  fi
+done
+
+# Remote site URL (optional): written into settings.php inside single quotes,
+# so quotes and backslashes are not allowed. Empty skips the stage_file_proxy
+# setup. If curl is available, the URL must answer (any HTTP status, e.g. a
+# 403 behind basic auth, counts). Entering an unreachable URL a second time
+# accepts it anyway (e.g. only reachable via VPN):
+ORIGIN_PATTERN="^https?://[^[:space:]'\"\\\\]+\$"
+ORIGIN_UNREACHABLE=""
+while true; do
+  ask ORIGIN "Remote site URL" "for stage_file_proxy, e.g. https://www.example.com, empty to skip" "" "origin" optional
+  [ -n "$ORIGIN" ] || break
+  if [[ ! "$ORIGIN" =~ $ORIGIN_PATTERN ]]; then
+    reject ORIGIN "Invalid remote site URL '$ORIGIN'. It must start with http:// or https:// and must not contain spaces, quotes or backslashes."
+    continue
+  fi
   ORIGIN="${ORIGIN%/}"
-fi
+  if ! command -v curl >/dev/null 2>&1 || [ "$ORIGIN" = "$ORIGIN_UNREACHABLE" ] || curl -sS -o /dev/null --max-time 15 -L "$ORIGIN"; then
+    break
+  fi
+  if [ "$NON_INTERACTIVE" = 1 ]; then
+    warn "Could not reach '${ORIGIN}', stage_file_proxy is set up with it anyway."
+    break
+  fi
+  ORIGIN_UNREACHABLE="$ORIGIN"
+  reject ORIGIN "Could not reach '${ORIGIN}'. Enter another URL, leave it empty to skip, or enter the same URL again to use it anyway."
+done
 
 if [ "$NON_INTERACTIVE" != 1 ]; then
   printf '\n\e[33mThis will NOT create a production ready copy of your website, but a modified\n'
@@ -445,18 +601,9 @@ fi
 R_ROOT="$(rq "$REMOTE_ROOT")"
 R_WEB="$(rq "$REMOTE_WEB")"
 
-# SSH with connection multiplexing, so the key passphrase is asked once and
-# rsync reuses the connection. Short socket path (unix socket path limit):
-TMP_DIR="$(mktemp -d /tmp/drowl-ssh.XXXXXX)"
-SSH_OPTS=(-p "$SSH_PORT" -o ControlMaster=auto -o "ControlPath=$TMP_DIR/cm-%C" -o ControlPersist=10m -o ServerAliveInterval=30)
-if [ "$NON_INTERACTIVE" = 1 ]; then
-  SSH_OPTS+=(-o BatchMode=yes)
-fi
 # rsync takes the ssh command as a single string (-e), using the same options
 # reuses the multiplexed connection:
 RSYNC_RSH="ssh ${SSH_OPTS[*]}"
-# Extra rsync options, set once the remote login PATH is known (see below):
-RSYNC_OPTS=()
 # Overall progress for the larger transfers (custom code), on a terminal and
 # with rsync >= 3.1 only (the rsync / openrsync shipped with macOS lacks
 # --info):
@@ -465,93 +612,17 @@ if [ -t 1 ] && rsync --info=progress2 --version >/dev/null 2>&1; then
   RSYNC_PROGRESS=(--info=progress2)
 fi
 
-# The PATH of a remote login shell. "ssh host cmd" runs cmd in a non-login,
-# non-interactive shell, which does not read the profile files. So on e.g.
-# Plesk, where PHP lives in /opt/plesk/php/X.Y/bin and is only added to the
-# PATH in the profile, "php" (and so "vendor/bin/drush") is not found. Set after
-# connecting, every remote command then runs with it:
-REMOTE_PATH=""
-
-# Runs a command (a single string, run by the remote shell) on the remote:
-rssh() {
-  if [ -n "$REMOTE_PATH" ]; then
-    ssh "${SSH_OPTS[@]}" "$SSH_TARGET" "PATH=$(rq "$REMOTE_PATH"); export PATH; $*"
-  else
-    ssh "${SSH_OPTS[@]}" "$SSH_TARGET" "$*"
-  fi
-}
-
 printf '\n\e[32mAlright! Initialising your project from %s:%s. This will take a while...\e[0m\n' "$SSH_DISPLAY" "$REMOTE_ROOT_DISPLAY"
 
 # ------------------------------------------------------------------------------
-# 1. Connect
+# 1. Check the remote
 # ------------------------------------------------------------------------------
 
-step "1/11 Connecting to ${SSH_DISPLAY}"
+step "1/11 Checking the remote ${SSH_DISPLAY}"
 
-SSH_STARTED=1
-if ! rssh true </dev/null; then
-  die "Could not connect to '${SSH_DISPLAY}'. Check the address, the port and your SSH key (ssh-agent / ~/.ssh/config)."
-fi
-success "Connected."
-
-# Read the PATH of a remote bash login shell, as a terminal session (e.g.
-# PuTTY) gets it ("bash -l" reads /etc/profile, ~/.bash_profile / ~/.profile).
-# Only the PATH is taken over, instead of running every command in a login
-# shell, as profiles may print text (which would end up in the composer.json or
-# the database dump). So the PATH is printed behind the marker
-# "LOGIN_SHELL_PATH:" and only that line is read:
-REMOTE_PATH="$(rssh "bash -lc $(rq 'printf "LOGIN_SHELL_PATH:%s\n" "$PATH"')" </dev/null 2>/dev/null | sed -n 's/^LOGIN_SHELL_PATH://p' | tail -n 1 || true)"
-if [ -n "$REMOTE_PATH" ]; then
-  info "Remote login PATH: ${REMOTE_PATH}"
-  # rsync starts "rsync --server" on the remote through the same non-login
-  # shell, so give it the PATH as well:
-  RSYNC_OPTS=(--rsync-path="PATH=$(rq "$REMOTE_PATH"); export PATH; rsync")
-else
-  warn "Could not read the PATH of a remote login shell (bash -l), using the default PATH of non-interactive SSH commands."
-fi
-
-# Check the remote project in a single SSH call, before anything is changed
-# locally. The script is sent via stdin ("sh -s", nothing is written on the
-# remote) with the project root as $1 and the web directory as $2. It prints a
-# "key=value" line per found item (missing items print nothing) and always
-# exits with 0, so a missing item is not mistaken for an SSH error:
-cat >"$TMP_DIR/probe.sh" <<'SH'
-cd "$1" 2>/dev/null || { echo "root=0"; exit 0; }
-echo "root=1"
-[ -f composer.json ] && echo "composer_json=1"
-[ -f composer.lock ] && echo "composer_lock=1"
-[ -x vendor/bin/drush ] && echo "drush=1"
-[ -d "$2" ] && echo "web=1"
-[ -f "$2/sites/default/settings.php" ] && echo "settings=1"
-# Multisite: further sites with a settings.php, or a sites.php with entries.
-# (An unmatched glob stays literal, so it is skipped like default/simpletest.)
-for f in "$2"/sites/*/settings.php; do
-  case "$f" in
-  "$2/sites/default/settings.php" | "$2/sites/simpletest/settings.php" | "$2/sites/*/settings.php") ;;
-  *) echo "multisite=1" ;;
-  esac
-done
-[ -f "$2/sites/sites.php" ] && grep -Eq '^[[:space:]]*\$sites\[' "$2/sites/sites.php" && echo "multisite=1"
-command -v php >/dev/null 2>&1 && echo "php=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')"
-command -v rsync >/dev/null 2>&1 && echo "rsync=1"
-command -v gzip >/dev/null 2>&1 && echo "gzip=1"
-{ command -v mysqldump || command -v mariadb-dump; } >/dev/null 2>&1 && echo "mysqldump=1"
-exit 0
-SH
-PROBE="$(rssh "sh -s -- $R_ROOT $R_WEB" <"$TMP_DIR/probe.sh")"
-
-# Prints the value of the given key from the probe output, e.g. "probe php":
-probe() {
-  printf '%s\n' "$PROBE" | sed -n "s/^$1=//p" | tail -n 1
-}
-
-# Depending on the probe that failed, kill the script with the correct message:
-[ "$(probe root)" = 1 ] || die "The remote project root '${REMOTE_ROOT_DISPLAY}' does not exist."
-[ "$(probe composer_json)" = 1 ] || die "No composer.json found in '${REMOTE_ROOT_DISPLAY}'."
-[ "$(probe web)" = 1 ] || die "The web directory '${REMOTE_WEB}' does not exist in '${REMOTE_ROOT_DISPLAY}'."
-[ "$(probe settings)" = 1 ] || die "No '${REMOTE_WEB}/sites/default/settings.php' found in '${REMOTE_ROOT_DISPLAY}'."
-[ "$(probe drush)" = 1 ] || die "'vendor/bin/drush' is missing on the remote. It is required to read the settings and dump the database."
+# The project root and the web directory were checked after their prompts,
+# check the remote tools now:
+run_probe
 [ -n "$(probe php)" ] || die "No PHP CLI found on the remote. It is required to run drush."
 [ "$(probe rsync)" = 1 ] || die "rsync is missing on the remote."
 [ "$(probe gzip)" = 1 ] || die "gzip is missing on the remote."
