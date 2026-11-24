@@ -335,7 +335,7 @@ ask() {
   printf -v "$var" '%s' "$value"
 }
 
-# Asks a y/n question, like drowl-init-from-existing. "n" aborts. Skipped in
+# Asks a y/n question. "n" aborts. Skipped in
 # non-interactive mode.
 confirm_or_abort() {
   local question="$1" answer
