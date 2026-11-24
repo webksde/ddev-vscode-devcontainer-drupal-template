@@ -46,9 +46,17 @@ set -eo pipefail
 # ------------------------------------------------------------------------------
 
 WARNINGS=()
+NOTES=()
 
 info() {
   printf '\e[36m%s\e[0m\n' "$*"
+}
+
+# Prints an info and collects it for the summary at the end (like warn(), but
+# for facts worth repeating, e.g. the remote and local versions):
+note() {
+  info "$@"
+  NOTES+=("$*")
 }
 
 success() {
@@ -421,8 +429,8 @@ fi
 
 # (The Drupal core version is shown in step 2, locally it comes from the
 # remote composer files.)
-info "Remote: PHP ${REMOTE_PHP}, database ${REMOTE_DB_VERSION:-unknown}"
-info "Local:  PHP ${LOCAL_PHP:-unknown}, database ${LOCAL_DB_TYPE:-unknown} ${LOCAL_DB_VERSION:-unknown} (from .ddev/config.yaml)"
+note "Remote: PHP ${REMOTE_PHP}, database ${REMOTE_DB_VERSION:-unknown}"
+note "Local:  PHP ${LOCAL_PHP:-unknown}, database ${LOCAL_DB_TYPE:-unknown} ${LOCAL_DB_VERSION:-unknown} (from .ddev/config.yaml)"
 
 # ------------------------------------------------------------------------------
 # 2. Composer
@@ -1061,6 +1069,13 @@ if [ "$SANITIZE" = 1 ]; then
 fi
 printf -- '- The database holds production data: never use "ddev share" or bind_all_interfaces. When done, remove it with "ddev delete -Oy" and delete data/sql.\n'
 printf -- '- This is NOT a production ready copy. DO NOT PUSH TO PRODUCTION!\n'
+
+if [ ${#NOTES[@]} -gt 0 ]; then
+  printf '\n\e[1;36mNotes:\e[0m\n'
+  for note_text in "${NOTES[@]}"; do
+    printf -- '- %s\n' "$note_text"
+  done
+fi
 
 if [ ${#WARNINGS[@]} -gt 0 ]; then
   printf '\n\e[1;33mWarnings during the run:\e[0m\n'
