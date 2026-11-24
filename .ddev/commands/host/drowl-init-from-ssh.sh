@@ -310,9 +310,11 @@ done
 # hint and the highlighted default, the value is entered on the next line:
 #   SSH address  user@host[:port], e.g. ...  [default: ...]
 #   > _
-# Usage: ask VARIABLE "Label" "Hint" [default] [option-name] [optional]
+# A default that is not the value itself (e.g. the port) can be described with
+# "default-note" instead, shown as is: "default port: 22".
+# Usage: ask VARIABLE "Label" "Hint" [default] [option-name] [optional] [default-note]
 ask() {
-  local var="$1" label="$2" hint="$3" default="$4" option="$5" optional="$6" value
+  local var="$1" label="$2" hint="$3" default="$4" option="$5" optional="$6" note="$7" value
   value="${!var}"
   if [ -z "$value" ]; then
     if [ "$NON_INTERACTIVE" = 1 ]; then
@@ -321,7 +323,7 @@ ask() {
     else
       printf '\n\e[1;36m%s\e[0m' "$label"
       [ -z "$hint" ] || printf '  \e[2m%s\e[0m' "$hint"
-      [ -z "$default" ] || printf '  \e[1;33m[default: %s]\e[0m' "$default"
+      [ -z "${note:-$default}" ] || printf '  \e[1;33m[%s]\e[0m' "${note:-default: $default}"
       printf '\n'
       while true; do
         read -r -p $'\e[36m> \e[0m' value
@@ -441,7 +443,7 @@ probe() {
 # ssh then uses the User from ~/.ssh/config or the local username. It is not
 # advertised, as the local username rarely matches the remote one:
 while true; do
-  ask SSH_ADDRESS "SSH address" "user@host[:port], e.g. user@example.com:2222, port defaults to 22" "" "ssh"
+  ask SSH_ADDRESS "SSH address" "user@host[:port], e.g. user@example.com:2222" "" "ssh" "" "default port: 22"
   SSH_TARGET="$SSH_ADDRESS"
   SSH_PORT=22
   case "$SSH_TARGET" in
