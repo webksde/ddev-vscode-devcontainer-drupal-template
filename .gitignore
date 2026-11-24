@@ -2,12 +2,18 @@
 /vendor/
 /web/
 
+# Ignore directories for temporary or user-generated files
+/files/private/
+/log/
+/tmp/
+
 # Ignore Drupal directories
 /web/modules/custom/
 /web/themes/contrib/
 /web/profiles/contrib/
 /web/libraries/
 /web/sites/simpletest/
+/drush/contrib/
 
 # Ignore Drupal files
 /web/modules/README.txt
