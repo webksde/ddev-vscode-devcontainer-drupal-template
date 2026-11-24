@@ -43,6 +43,80 @@
 set -eo pipefail
 
 # ------------------------------------------------------------------------------
+# Configuration (lists, maintained here)
+# ------------------------------------------------------------------------------
+
+# Commands required on the host:
+REQUIRED_HOST_COMMANDS=(ssh rsync jq gzip ddev sed)
+
+# Composer plugins to allow (unless the remote composer.json configures them):
+COMPOSER_ALLOWED_PLUGINS=(
+  cweagans/composer-patches oomphinc/composer-installers-extender
+  szeidler/composer-patches-cli tbachert/spi symfony/runtime
+  dealerdirect/phpcodesniffer-composer-installer phpstan/extension-installer
+  php-http/discovery
+)
+# Packages added to "require" (unless already present):
+COMPOSER_PACKAGES=(cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender)
+# Drupal modules added to "require-dev" (enabled in the post-setup step):
+COMPOSER_DEV_MODULES=(drupal/devel drupal/stage_file_proxy)
+# Further packages added to "require-dev". drupal/core-dev is handled
+# separately, as it has to match the core version:
+COMPOSER_DEV_PACKAGES=(drush/drush drupal/coder:^8 phpstan/phpstan-deprecation-rules kint-php/kint squizlabs/php_codesniffer:^3)
+
+# Folders fetched from the remote web directory (and always created locally):
+CUSTOM_CODE_DIRS=(modules/custom themes/custom profiles/custom)
+# Never fetched via rsync:
+RSYNC_EXCLUDES=(--exclude=node_modules --exclude=.git)
+
+# Copied initiation additions with "web/" paths, which are pointed to the local
+# docroot if it differs:
+DOCROOT_REWRITE_FILES=(.vscode/settings.json phpunit.xml jsconfig.json AGENTS.md)
+
+# Tables dumped without data (only the structure), their data is not needed
+# locally:
+# - cache, cache_*: rebuilt anyway,
+# - sessions: session tokens of the production users,
+# - watchdog, flood: logs, IP addresses,
+# - queue: pending production jobs (mails, newsletters, API syncs), which
+#   would otherwise be processed by the local cron,
+# - semaphore, batch, key_value_expire: locks, running batches, temp stores.
+# (Quoted, so "cache_*" is not expanded as a glob by the local shell.)
+STRUCTURE_ONLY_TABLES=(cache 'cache_*' sessions watchdog flood queue semaphore batch key_value_expire)
+
+# Enabled modules that talk to external (production) services with the
+# credentials from the production database are reported as a warning. Machine
+# name patterns (regex, anchored), by what they could do:
+RISKY_MODULE_PATTERNS=(
+  # Mails (API based mailers are not caught by Mailpit):
+  smtp symfony_mailer symfony_mailer_lite phpmailer_smtp mailsystem swiftmailer
+  sendgrid_integration mailgun mandrill postmark sparkpost amazon_ses mailjet
+  # Newsletters / marketing / CRM:
+  'mailchimp.*' simplenews sendinblue brevo cleverreach salesforce 'hubspot.*'
+  # SMS / push notifications:
+  sms smsframework twilio push_notifications onesignal firebase
+  # Search servers:
+  search_api_solr search_api_opensearch elasticsearch_connector search_api_algolia
+  search_api_typesense acquia_search search_api_pantheon
+  # Purging the production CDN / reverse proxy cache:
+  purge 'purge_.*' varnish_purge acquia_purge cloudflare fastly akamai
+  # Remote file storage, backups to remote destinations:
+  s3fs 'flysystem.*' backup_migrate
+  # Payments:
+  commerce_payment 'commerce_.*_gateway' 'commerce_(stripe|paypal|braintree|mollie|square|authnet)'
+  # Paid APIs (AI, machine translation):
+  ai 'ai_provider_.*' openai 'tmgmt.*'
+  # Webhooks, imports, content sharing:
+  webhooks feeds entity_share_server
+  # Queues / cron:
+  ultimate_cron queue_ui advancedqueue
+  # Analytics (local page views end up in the production project):
+  'posthog.*'
+  # Stored credentials (API keys used by other modules):
+  key encrypt real_aes
+)
+
+# ------------------------------------------------------------------------------
 # Output helpers
 # ------------------------------------------------------------------------------
 
@@ -176,7 +250,7 @@ trap 'cleanup 143' TERM
 # Preconditions
 # ------------------------------------------------------------------------------
 
-for cmd in ssh rsync jq gzip ddev sed; do
+for cmd in "${REQUIRED_HOST_COMMANDS[@]}"; do
   command -v "$cmd" >/dev/null 2>&1 || die "'$cmd' is required on the host, but was not found. Please install it first."
 done
 
@@ -484,7 +558,7 @@ fetch_paths() {
   [ -s "$existing" ] || return 0
   # --files-from keeps the relative paths, "-r" is needed for folders (it is
   # not implied by "-a" together with --files-from):
-  rsync -a -r "${RSYNC_OPTS[@]}" --files-from="$existing" --exclude=node_modules --exclude=.git -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/" ./
+  rsync -a -r "${RSYNC_OPTS[@]}" --files-from="$existing" "${RSYNC_EXCLUDES[@]}" -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/" ./
 }
 
 # Lists the local files a composer.json / patches file references: patches,
@@ -724,15 +798,14 @@ allow_plugins() {
   done
 }
 
-allow_plugins cweagans/composer-patches oomphinc/composer-installers-extender szeidler/composer-patches-cli tbachert/spi symfony/runtime \
-  dealerdirect/phpcodesniffer-composer-installer phpstan/extension-installer php-http/discovery
+allow_plugins "${COMPOSER_ALLOWED_PLUGINS[@]}"
 
 # Add general dependencies:
-composer_require cweagans/composer-patches szeidler/composer-patches-cli oomphinc/composer-installers-extender
+composer_require "${COMPOSER_PACKAGES[@]}"
 
 # Add the development modules. They go to require-dev, as this composer.json
 # belongs to a production site:
-composer_require --dev drupal/devel drupal/stage_file_proxy
+composer_require --dev "${COMPOSER_DEV_MODULES[@]}"
 
 # Add DEV dependencies. "drupal/core-dev" (phpunit, phpstan, ...) must match
 # the core version exactly, so prefer the remote core version, which keeps
@@ -747,10 +820,9 @@ if [ -n "$(missing_packages drupal/core-dev)" ]; then
     ddev composer require --dev "drupal/core-dev:^${CORE_MAJOR}" -W --no-audit --no-interaction
   fi
 fi
-composer_require --dev drush/drush drupal/coder:^8 phpstan/phpstan-deprecation-rules kint-php/kint
+composer_require --dev "${COMPOSER_DEV_PACKAGES[@]}"
 
 # PHP Codesniffer Setup:
-composer_require --dev squizlabs/php_codesniffer:^3
 ddev exec chmod +x vendor/bin/phpcs vendor/bin/phpcbf
 
 # ------------------------------------------------------------------------------
@@ -759,17 +831,19 @@ ddev exec chmod +x vendor/bin/phpcs vendor/bin/phpcbf
 
 step "5/11 Custom code"
 
-for dir in modules/custom themes/custom profiles/custom; do
+for dir in "${CUSTOM_CODE_DIRS[@]}"; do
   if rssh "test -d $R_ROOT/$R_WEB/$dir" </dev/null; then
     info "Fetching ${REMOTE_WEB}/${dir}..."
     mkdir -p "./$LOCAL_WEB/$dir"
-    rsync -a "${RSYNC_OPTS[@]}" --exclude=node_modules --exclude=.git -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/$REMOTE_WEB/$dir/" "./$LOCAL_WEB/$dir/"
+    rsync -a "${RSYNC_OPTS[@]}" "${RSYNC_EXCLUDES[@]}" -e "$RSYNC_RSH" "$SSH_TARGET:$REMOTE_ROOT/$REMOTE_WEB/$dir/" "./$LOCAL_WEB/$dir/"
   else
     info "No ${REMOTE_WEB}/${dir} on the remote, skipping."
   fi
 done
 # Like drowl-init, there are always custom module, theme and profile folders:
-mkdir -p "./$LOCAL_WEB/modules/custom" "./$LOCAL_WEB/themes/custom" "./$LOCAL_WEB/profiles/custom"
+for dir in "${CUSTOM_CODE_DIRS[@]}"; do
+  mkdir -p "./$LOCAL_WEB/$dir"
+done
 
 # ------------------------------------------------------------------------------
 # 6. Database dump
@@ -781,18 +855,10 @@ mkdir -p ./data/sql
 # The dumps hold production data, only the current user may read them:
 chmod 0700 ./data/sql
 
-# Only the structure of these tables, their data is not needed locally:
-# - cache, cache_*: rebuilt anyway,
-# - sessions: session tokens of the production users,
-# - watchdog, flood: logs, IP addresses,
-# - queue: pending production jobs (mails, newsletters, API syncs), which
-#   would otherwise be processed by the local cron,
-# - semaphore, batch, key_value_expire: locks, running batches, temp stores.
-# drush drops entries matching no table, so list them with and without the
-# prefix:
-# (Quoted, so "cache_*" is not expanded as a glob by the local shell.)
+# Only the structure of STRUCTURE_ONLY_TABLES is dumped. drush drops entries
+# matching no table, so list them with and without the prefix:
 STRUCTURE_TABLES=""
-for table in cache 'cache_*' sessions watchdog flood queue semaphore batch key_value_expire; do
+for table in "${STRUCTURE_ONLY_TABLES[@]}"; do
   STRUCTURE_TABLES="${STRUCTURE_TABLES:+$STRUCTURE_TABLES,}${table}"
   if [ -n "$DB_PREFIX" ]; then
     STRUCTURE_TABLES="${STRUCTURE_TABLES},${DB_PREFIX}${table}"
@@ -864,12 +930,12 @@ done
 # Some of the copied files contain "web/" paths, point them to the docroot
 # (only paths like "./web/", "/var/www/html/web/", "\"web/", "`web/", "(web/"):
 if [ "$LOCAL_WEB" != "web" ]; then
-  for file in .vscode/settings.json phpunit.xml jsconfig.json AGENTS.md; do
+  for file in "${DOCROOT_REWRITE_FILES[@]}"; do
     [ -f "$file" ] || continue
     sed -E "s#(/var/www/html/|\./|[\"\`(])web/#\1${LOCAL_WEB}/#g" "$file" >"$TMP_DIR/docroot-rewrite"
     cat "$TMP_DIR/docroot-rewrite" >"$file"
   done
-  info "Rewrote the 'web/' paths in .vscode/settings.json, phpunit.xml, jsconfig.json and AGENTS.md to '${LOCAL_WEB}/'."
+  info "Rewrote the 'web/' paths in ${DOCROOT_REWRITE_FILES[*]} to '${LOCAL_WEB}/'."
 fi
 
 SETTINGS_PHP="./$LOCAL_WEB/sites/default/settings.php"
@@ -960,8 +1026,12 @@ else
 fi
 
 # Warn about enabled modules that talk to external (production) services with
-# the credentials from the production database:
-RISKY_MODULES="$(ddev drush pm:list --status=enabled --type=module --format=json 2>/dev/null | jq -r 'keys[] | select(test("^(smtp|symfony_mailer|phpmailer_smtp|mailsystem|swiftmailer|search_api_solr|search_api_opensearch|elasticsearch_connector|s3fs|flysystem.*|commerce_payment|commerce_.*_gateway|mailchimp.*|simplenews|salesforce|hubspot.*|ultimate_cron|queue_ui|advancedqueue)$"))' 2>/dev/null | tr '\n' ' ' || true)"
+# the credentials from the production database (see RISKY_MODULE_PATTERNS):
+RISKY_MODULE_REGEX="^($(
+  IFS='|'
+  printf '%s' "${RISKY_MODULE_PATTERNS[*]}"
+))\$"
+RISKY_MODULES="$(ddev drush pm:list --status=enabled --type=module --format=json 2>/dev/null | jq -r --arg re "$RISKY_MODULE_REGEX" 'keys[] | select(test($re))' 2>/dev/null | tr '\n' ' ' || true)"
 if [ -n "$RISKY_MODULES" ]; then
   warn "These enabled modules may use production credentials / services from the database: ${RISKY_MODULES}. Check their config (and override it in ${SETTINGS_PHP}) before running cron or using them."
 fi
