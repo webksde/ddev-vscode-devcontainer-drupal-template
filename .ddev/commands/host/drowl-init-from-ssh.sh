@@ -491,7 +491,6 @@ success "Connected."
 RSYNC_OPTS=()
 REMOTE_PATH="$(rssh "bash -lc $(rq 'printf "LOGIN_SHELL_PATH:%s\n" "$PATH"')" </dev/null 2>/dev/null | sed -n 's/^LOGIN_SHELL_PATH://p' | tail -n 1 || true)"
 if [ -n "$REMOTE_PATH" ]; then
-  info "Remote login PATH: ${REMOTE_PATH}"
   # rsync starts "rsync --server" on the remote through the same non-login
   # shell, so give it the PATH as well:
   RSYNC_OPTS=(--rsync-path="PATH=$(rq "$REMOTE_PATH"); export PATH; rsync")
