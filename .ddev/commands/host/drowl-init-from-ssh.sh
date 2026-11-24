@@ -486,7 +486,23 @@ esac
 
 # The remote Drupal and database server version (via drush, non-fatal):
 REMOTE_DRUPAL_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush status --field=drupal-version" </dev/null 2>/dev/null | tr -d '[:space:]' || true)"
-REMOTE_DB_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush sql:query 'SELECT VERSION()'" </dev/null 2>/dev/null | tail -n 1 | tr -d '[:space:]' || true)"
+# The database version is read through Drupal's own database connection
+# (PDO), as "drush sql:query" needs the mysql / mariadb client on the remote,
+# which is often missing or fails (e.g. newer MariaDB clients enforce SSL).
+# Prints e.g. "MariaDB 10.11.6" or "MySQL 8.0.36":
+read -r -d '' READ_DB_VERSION_PHP <<'PHP' || true
+$connection = \Drupal::database();
+$type = $connection->databaseType();
+if ($type === 'mysql') {
+  $type = method_exists($connection, 'isMariaDb') && $connection->isMariaDb() ? 'MariaDB' : 'MySQL';
+}
+echo 'DROWL_DB_VERSION:' . $type . ' ' . $connection->version() . PHP_EOL;
+PHP
+REMOTE_DB_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush php:eval $(rq "$READ_DB_VERSION_PHP")" </dev/null 2>/dev/null | sed -n 's/^DROWL_DB_VERSION://p' | tail -n 1 || true)"
+# Fallback: the mysql / mariadb client via drush:
+if [ -z "$REMOTE_DB_VERSION" ]; then
+  REMOTE_DB_VERSION="$(rssh "cd $R_ROOT && vendor/bin/drush sql:query 'SELECT VERSION()'" </dev/null 2>/dev/null | tail -n 1 | tr -d '[:space:]' || true)"
+fi
 
 # The local database always comes from .ddev/config.yaml, the remote version
 # is only displayed for comparison.
@@ -1034,7 +1050,7 @@ fi
 
 step "8/11 Directories"
 
-mkdir -p ./files/private ./files/translations ./tmp
+mkdir -p ./files/private ./files/sync ./files/translations ./tmp
 
 # ------------------------------------------------------------------------------
 # 9. Post-setup
