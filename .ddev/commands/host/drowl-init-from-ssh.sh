@@ -3,7 +3,7 @@
 ## Description: Builds a local DDEV development copy of an existing Drupal site from its server over SSH (composer files, custom code, database). Files are served via stage_file_proxy.
 ## Usage: drowl-init-from-ssh [flags]
 ## Example: "ddev drowl-init-from-ssh", "ddev drowl-init-from-ssh --cleanup-composer", "ddev drowl-init-from-ssh --non-interactive --ssh-target=user@example.com --remote-root=/var/www/example.com --origin=https://www.example.com"
-## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh-target","Type":"string","Usage":"SSH target, e.g. user@example.com (required with --non-interactive)"},{"Name":"ssh-port","Type":"string","Usage":"SSH port (default: 22)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, e.g. /var/www/example.com (required with --non-interactive)"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"stage_file_proxy origin, e.g. https://www.example.com (required with --non-interactive)"},{"Name":"non-interactive","Usage":"Never prompt: confirmations are skipped, personal settings are skipped, --ssh-target, --remote-root and --origin are required"},{"Name":"no-sanitize","Usage":"Keep the personal data of the imported database (by default, it is sanitized with drush sql:sanitize and the raw remote dump is not kept)"}]
+## Flags: [{"Name":"cleanup-composer","Usage":"Start from our default composer.json and only take over the dependency keys from the remote (only use it if you know what you are doing)"},{"Name":"ssh-target","Type":"string","Usage":"SSH target, e.g. user@example.com (required with --non-interactive)"},{"Name":"ssh-port","Type":"string","Usage":"SSH port (default: 22)"},{"Name":"remote-root","Type":"string","Usage":"Remote project root holding the composer.json, absolute or relative to the remote home, e.g. /var/www/example.com or ~/example.com (required with --non-interactive)"},{"Name":"web-dir","Type":"string","Usage":"Web directory, relative to the project root (default: web)"},{"Name":"origin","Type":"string","Usage":"stage_file_proxy origin, e.g. https://www.example.com (required with --non-interactive)"},{"Name":"non-interactive","Usage":"Never prompt: confirmations are skipped, personal settings are skipped, --ssh-target, --remote-root and --origin are required"},{"Name":"no-sanitize","Usage":"Keep the personal data of the imported database (by default, it is sanitized with drush sql:sanitize and the raw remote dump is not kept)"}]
 
 # The "## Flags:" line above is parsed by DDEV, which only accepts it as a
 # single line of JSON. DDEV generates "ddev drowl-init-from-ssh --help" from
@@ -12,7 +12,8 @@
 #                        dependency keys from the remote
 #   --ssh-target         SSH target, e.g. user@example.com (*)
 #   --ssh-port           SSH port (default: 22)
-#   --remote-root        Remote project root holding the composer.json (*)
+#   --remote-root        Remote project root holding the composer.json, absolute
+#                        or relative to the remote home (~/example.com) (*)
 #   --web-dir            Web directory, relative to the project root (default: web)
 #   --origin             stage_file_proxy origin, e.g. https://www.example.com (*)
 #   --non-interactive    Never prompt: skip confirmations, missing values fail,
@@ -239,7 +240,7 @@ fi
 
 ask SSH_TARGET "SSH target (user@host)" "" "ssh-target"
 ask SSH_PORT "SSH port" "22" "ssh-port"
-ask REMOTE_ROOT "Remote project root (folder holding the composer.json, e.g. /var/www/example.com)" "" "remote-root"
+ask REMOTE_ROOT "Remote project root (folder holding the composer.json, e.g. /var/www/example.com or ~/example.com)" "" "remote-root"
 ask REMOTE_WEB "Web directory (relative to the project root)" "web" "web-dir"
 ask ORIGIN "stage_file_proxy origin (e.g. https://www.example.com)" "" "origin"
 
@@ -248,10 +249,18 @@ case "$SSH_TARGET" in
 *[[:space:]]* | -*) die "Invalid SSH target '$SSH_TARGET'." ;;
 esac
 [[ "$SSH_PORT" =~ ^[0-9]+$ ]] || die "Invalid SSH port '$SSH_PORT'."
-# "~/path" is the same as "path" for ssh (relative to the remote home):
-REMOTE_ROOT="${REMOTE_ROOT#\~/}"
 [ "$REMOTE_ROOT" != "/" ] && REMOTE_ROOT="${REMOTE_ROOT%/}"
 [ -n "$REMOTE_ROOT" ] || die "Invalid remote project root."
+# Shown in messages as entered, e.g. "~/example.com":
+REMOTE_ROOT_DISPLAY="$REMOTE_ROOT"
+# All remote paths are quoted, so the remote shell never expands "~". Relative
+# paths are relative to the remote home for ssh and rsync, so "~/path" is the
+# same as "path" and "~" is the same as ".":
+case "$REMOTE_ROOT" in
+\~) REMOTE_ROOT="." ;;
+\~/*) REMOTE_ROOT="${REMOTE_ROOT#\~/}" ;;
+\~*) die "Invalid remote project root '$REMOTE_ROOT'. '~user' paths are not supported, use an absolute path instead." ;;
+esac
 REMOTE_WEB="${REMOTE_WEB#./}"
 REMOTE_WEB="${REMOTE_WEB%/}"
 if [ -z "$REMOTE_WEB" ] || [[ "$REMOTE_WEB" == /* ]] || [[ "/$REMOTE_WEB/" == */../* ]] || [[ ! "$REMOTE_WEB" =~ ^[A-Za-z0-9._/-]+$ ]]; then
@@ -313,7 +322,7 @@ rssh() {
   fi
 }
 
-printf '\n\e[32mAlright! Initialising your project from %s:%s. This will take a while...\e[0m\n' "$SSH_TARGET" "$REMOTE_ROOT"
+printf '\n\e[32mAlright! Initialising your project from %s:%s. This will take a while...\e[0m\n' "$SSH_TARGET" "$REMOTE_ROOT_DISPLAY"
 
 # ------------------------------------------------------------------------------
 # 1. Connect
@@ -379,10 +388,10 @@ probe() {
 }
 
 # Depending on the probe that failed, kill the script with the correct message:
-[ "$(probe root)" = 1 ] || die "The remote project root '${REMOTE_ROOT}' does not exist."
-[ "$(probe composer_json)" = 1 ] || die "No composer.json found in '${REMOTE_ROOT}'."
-[ "$(probe web)" = 1 ] || die "The web directory '${REMOTE_WEB}' does not exist in '${REMOTE_ROOT}'."
-[ "$(probe settings)" = 1 ] || die "No '${REMOTE_WEB}/sites/default/settings.php' found in '${REMOTE_ROOT}'."
+[ "$(probe root)" = 1 ] || die "The remote project root '${REMOTE_ROOT_DISPLAY}' does not exist."
+[ "$(probe composer_json)" = 1 ] || die "No composer.json found in '${REMOTE_ROOT_DISPLAY}'."
+[ "$(probe web)" = 1 ] || die "The web directory '${REMOTE_WEB}' does not exist in '${REMOTE_ROOT_DISPLAY}'."
+[ "$(probe settings)" = 1 ] || die "No '${REMOTE_WEB}/sites/default/settings.php' found in '${REMOTE_ROOT_DISPLAY}'."
 [ "$(probe drush)" = 1 ] || die "'vendor/bin/drush' is missing on the remote. It is required to read the settings and dump the database."
 [ -n "$(probe php)" ] || die "No PHP CLI found on the remote. It is required to run drush."
 [ "$(probe rsync)" = 1 ] || die "rsync is missing on the remote."
