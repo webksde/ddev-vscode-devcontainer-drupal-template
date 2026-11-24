@@ -994,24 +994,25 @@ drowl_remove_template_files
 # Summary
 # ------------------------------------------------------------------------------
 
-todo "Take a look at the composer.json!"
+todo "Check the composer.json for site specific settings you do not want locally, e.g. scripts (post-install-cmd / post-update-cmd, git hooks, deploy or cache clear steps, etc.)."
 if [ "$CLEANUP_COMPOSER" = 1 ]; then
-  todo "--cleanup-composer: check the merged keys (require, require-dev, patches, repositories; the remote allow-plugins were added) and the package versions that moved (compare with the remote composer.lock)."
+  todo "WARNING --cleanup-composer: site specific composer.json settings of the remote (scripts, autoload, config, extra, minimum-stability, ...) were overridden by our defaults. Only require, require-dev, patches, repositories and allow-plugins were taken over."
 fi
 todo "Check that all patches applied (see the composer output above)."
-todo "The local ${SETTINGS_PHP} comes from our template, not from the remote. Only the table prefix, the public files path and the stage_file_proxy origin were taken over. Compare it with the remote settings.php and its includes, and copy over what the site needs locally (e.g. config_sync_directory, file_private_path, \$config overrides, custom \$settings, Redis, Solr, environment-specific includes)."
-todo "Run \"ddev drush cex\" if the config should be versioned in files/sync."
+todo "${SETTINGS_PHP} comes from our template. Only the table prefix, public files path and stage_file_proxy origin were taken over. Compare it with the remote settings.php (and its includes) and copy what you need (config_sync_directory, file_private_path, \$config overrides, Redis, Solr, ...)."
+todo "Run \"ddev drush cex\" to version the config in files/sync."
 if [ -n "$ORIGIN" ]; then
-  todo "The stage_file_proxy origin (${ORIGIN}) is set at the end of ${SETTINGS_PHP}. Change it there if the public files should come from another site."
-  todo "Private files were not copied (stage_file_proxy only serves public files)."
+  todo "Public files come from ${ORIGIN} via stage_file_proxy (end of ${SETTINGS_PHP}). Private files were not copied."
 else
-  todo "No remote site URL was given, so stage_file_proxy was not set up and no files were copied. Copy the public files manually, or enable stage_file_proxy and set its origin at the end of ${SETTINGS_PHP} (\$config['stage_file_proxy.settings']['origin'])."
+  todo "No remote site URL given: no stage_file_proxy, no files copied. Copy the public files manually, or set \$config['stage_file_proxy.settings']['origin'] at the end of ${SETTINGS_PHP} and enable the module."
 fi
 if [ "$SANITIZE" = 1 ]; then
-  todo "The database was sanitized (user emails and passwords, except for users with the administrator role). Other personal data (e.g. webform submissions, orders, profile fields) is still in it."
+  todo "The database is a sanitized copy of production (user emails and passwords, except administrators). Other personal data (webform submissions, orders, profile fields) is still in it."
+else
+  todo "WARNING --no-sanitize: the database is an UNSANITIZED copy of production (real user emails and password hashes), also in ${DUMP_FILE}."
 fi
-todo "The database holds production data: never use \"ddev share\" or bind_all_interfaces. When done, remove it with \"ddev delete -Oy\" and delete data/sql."
-todo "This is NOT a production ready copy. DO NOT PUSH IT BACK TO PRODUCTION!"
+todo "Never use \"ddev share\" or bind_all_interfaces with production data. When done: \"ddev delete -Oy\" and delete data/sql."
+todo "NOT a production ready copy. DO NOT PUSH IT BACK TO PRODUCTION!"
 
 if [ "$SANITIZE" != 1 ]; then
   DROWL_SUMMARY_COMMANDS+=("ddev import-db --file=${DUMP_FILE}|Import the original (unsanitized) remote database dump again.")
