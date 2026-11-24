@@ -306,18 +306,23 @@ done
 # ------------------------------------------------------------------------------
 
 # Asks for a value, unless it was given as an option. With "optional", an
-# empty value is accepted.
-# Usage: ask VARIABLE "Prompt" [default] [option-name] [optional]
+# empty value is accepted. The label is shown in bold, followed by the dimmed
+# hint (and default), the value is entered on the next line:
+#   SSH address  user@host[:port], e.g. ...
+#   > _
+# Usage: ask VARIABLE "Label" "Hint" [default] [option-name] [optional]
 ask() {
-  local var="$1" prompt="$2" default="$3" option="$4" optional="$5" value
+  local var="$1" label="$2" hint="$3" default="$4" option="$5" optional="$6" value
   value="${!var}"
   if [ -z "$value" ]; then
     if [ "$NON_INTERACTIVE" = 1 ]; then
       [ -n "$default" ] || [ "$optional" = optional ] || die "Missing value for --${option} (required in non-interactive mode)."
       value="$default"
     else
+      hint="${hint}${default:+${hint:+, }default: $default}"
+      printf '\e[1;36m%s\e[0m%s\n' "$label" "${hint:+  $'\e[2m'${hint}$'\e[0m'}"
       while true; do
-        read -r -p $'\e[36m'"${prompt}${default:+ [$default]}: "$'\e[0m' value
+        read -r -p $'\e[36m> \e[0m' value
         value="${value:-$default}"
         [ -n "$value" ] || [ "$optional" = optional ] && break
       done
@@ -335,36 +340,36 @@ confirm_or_abort() {
     return 0
   fi
   while true; do
-    read -r -p "$question"$'\n' answer
+    read -r -p $'\e[1;33m'"${question} [y/n] "$'\e[0m' answer
     case ${answer:0:1} in
     y | Y)
       return 0
       ;;
     n | N)
-      printf '\n\e[31mAborting...\n\e[0m\n'
+      printf '\e[31mAborting...\e[0m\n'
       # Nothing was changed yet:
       exit 0
       ;;
     *)
-      printf '\n\e[33mI do not understand. Please repeat that.\n\e[0m\n'
+      printf '\e[33mPlease answer y or n.\e[0m\n'
       ;;
     esac
   done
 }
 
 if [ "$CLEANUP_COMPOSER" = 1 ]; then
-  printf '\n\e[1;31m!!! CAUTION: --cleanup-composer !!!\e[0m\n'
-  printf '\e[31mOnly use --cleanup-composer if you know what you are doing! It replaces the\n'
-  printf 'project'\''s composer setup with our default composer.json (only require,\n'
+  printf '\n\e[1;31mCAUTION: --cleanup-composer\e[0m \e[31mOnly use it if you know what you are doing!\n'
+  printf 'It replaces the composer setup with our default composer.json (only require,\n'
   printf 'require-dev, patches and repositories are taken over from the remote) and\n'
   printf 'drops the remote composer.lock, so package versions can change.\e[0m\n'
-  confirm_or_abort $'\n\e[33mContinue with --cleanup-composer (y/n)?\e[0m'
+  confirm_or_abort "Continue with --cleanup-composer?"
 fi
 
-ask SSH_ADDRESS "SSH address (user@host[:port], e.g. user@example.com:2222, the port defaults to 22, when left out)" "" "ssh"
-ask REMOTE_ROOT "Remote project root (folder holding the composer.json, e.g. /var/www/example.com or ~/example.com)" "" "remote-root"
-ask REMOTE_WEB "Web directory (relative to the project root)" "web" "web-dir"
-ask ORIGIN "Remote site URL, used for stage_file_proxy (e.g. https://www.example.com, leave empty to skip stage_file_proxy)" "" "origin" optional
+echo
+ask SSH_ADDRESS "SSH address" "user@host[:port], e.g. user@example.com:2222, port defaults to 22" "" "ssh"
+ask REMOTE_ROOT "Remote project root" "folder of the composer.json, e.g. /var/www/example.com or ~/example.com" "" "remote-root"
+ask REMOTE_WEB "Web directory" "relative to the project root" "web" "web-dir"
+ask ORIGIN "Remote site URL" "for stage_file_proxy, e.g. https://www.example.com, empty to skip" "" "origin" optional
 
 # Validate and normalise the values.
 # Split the SSH address ("user@host[:port]") into the ssh destination and
@@ -415,7 +420,11 @@ if [ -n "$ORIGIN" ]; then
   ORIGIN="${ORIGIN%/}"
 fi
 
-confirm_or_abort $'\n\e[33mThis command will NOT initialize a production ready copy of your Website! It will create a modified environment, focused on development and debugging.\n\nDO NOT PUSH IT BACK TO PRODUCTION!\n\nContinue anyway (y/n)?\e[0m'
+if [ "$NON_INTERACTIVE" != 1 ]; then
+  printf '\n\e[33mThis will NOT create a production ready copy of your website, but a modified\n'
+  printf 'environment focused on development and debugging. \e[1mDO NOT PUSH IT BACK TO PRODUCTION!\e[0m\n'
+fi
+confirm_or_abort "Continue anyway?"
 
 # Ask for the personal settings (git identity, DRUPALCODE_TOKEN), written to
 # .ddev/.env.web before the containers start:
